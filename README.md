@@ -2,7 +2,9 @@
 
 ![](https://img.shields.io/github/release/whitecube/nova-flexible-content.svg?style=flat)
 [![](https://img.shields.io/packagist/dt/whitecube/nova-flexible-content.svg?colorB=green&style=flat)](https://packagist.org/packages/whitecube/nova-flexible-content)
-[![](https://img.shields.io/github/license/whitecube/nova-flexible-content.svg?style=flat)](https://github.com/whitecube/nova-flexible-content/blob/master/LICENSE)
+[![](https://img.shields.io/github/license/whitecube/nova-flexible-content.svg?style=flat)](https://github.com/whitecube/nova-flexible-content/blob/master/LICENSE.md)
+
+**This is fork from `whitecube/nova-flexible-content` reworked for custom purposes**
 
 An easy & complete Flexible Field for Laravel Nova, perfect for repeated and flexible field groups.
 
@@ -16,7 +18,7 @@ See the full docs at [https://whitecube.github.io/nova-flexible-content](https:/
 ### Install
 
 ```
-composer require whitecube/nova-flexible-content
+composer require yaroslawww/nova-flexible-content
 ```
 
 ### Usage
