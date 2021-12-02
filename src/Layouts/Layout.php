@@ -3,18 +3,18 @@
 namespace Whitecube\NovaFlexibleContent\Layouts;
 
 use ArrayAccess;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Concerns\HasAttributes;
+use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
+use Illuminate\Database\Eloquent\Model;
 use JsonSerializable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Flexible;
-use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
-use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
 use Whitecube\NovaFlexibleContent\Concerns\HasFlexible;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
-use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
+use Whitecube\NovaFlexibleContent\Flexible;
+use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
+use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
 
 class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayable
 {
@@ -85,28 +85,28 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * The parent model instance
      *
-     * @var Illuminate\Database\Eloquent\Model
+     * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
 
     /**
      * Create a new base Layout instance
      *
-     * @param string $title
-     * @param string $name
-     * @param array $fields
-     * @param string $key
-     * @param array $attributes
+     * @param string        $title
+     * @param string        $name
+     * @param array         $fields
+     * @param string        $key
+     * @param array         $attributes
      * @param callable|null $removeCallbackMethod
-     * @param int|null $limit
+     * @param int|null      $limit
      * @return void
      */
     public function __construct($title = null, $name = null, $fields = null, $key = null, $attributes = [], callable $removeCallbackMethod = null)
     {
-        $this->title = $title ?? $this->title();
-        $this->name = $name ?? $this->name();
-        $this->fields = new FieldCollection($fields ?? $this->fields());
-        $this->key = is_null($key) ? null : $this->getProcessedKey($key);
+        $this->title                = $title ?? $this->title();
+        $this->name                 = $name  ?? $this->name();
+        $this->fields               = new FieldCollection($fields ?? $this->fields());
+        $this->key                  = is_null($key) ? null : $this->getProcessedKey($key);
         $this->removeCallbackMethod = $removeCallbackMethod;
         $this->setRawAttributes($this->cleanAttributes($attributes));
     }
@@ -155,6 +155,17 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     }
 
     /**
+     * Retrieve the layout's fields as a collection
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function fieldsCollection()
+    {
+        return $this->fields;
+    }
+
+
+    /**
      * Retrieve the layout's unique key
      *
      * @return string
@@ -180,9 +191,60 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      * @param string $key
      * @return bool
      */
-    public function matches($key)
+    public function matches($key): bool
     {
         return ($this->key === $key || $this->_key === $key);
+    }
+
+
+    public function findGroupRecursive($key)
+    {
+        $callback = function ($result, Field $field) use ($key) {
+            if ($field instanceof Flexible) {
+                return $field->findGroupRecursive($key);
+            }
+
+            return null;
+        };
+
+        $result = null;
+        foreach ($this->fields as $key => $value) {
+            $result = $callback($result, $value, $key);
+            if ($result) {
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    public function findGroupRecursiveAndSetAttribute($groupKey, $fieldKey, $newValue): bool
+    {
+        $data = $this->getAttributes();
+
+        function setAttribute(&$array, $groupKey, $fieldKey, $newValue)
+        {
+            foreach ($array as $key => $value) {
+                if (is_object($value)
+                    && $value->key === $groupKey
+                    && is_object($value->attributes)) {
+                    foreach ($value->attributes as $attribute => $attrValue) {
+                        if ($attribute === $fieldKey) {
+                            $value->attributes->$attribute = $newValue;
+
+                            return $array;
+                        }
+                    }
+                }
+                if (is_array($value)) {
+                    setAttribute($array[$key], $groupKey, $fieldKey, $newValue);
+                }
+            }
+
+            return null;
+        }
+
+        return (bool) setAttribute($data, $groupKey, $fieldKey, $newValue);
     }
 
     /**
@@ -210,7 +272,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Get an empty cloned instance
      *
-     * @param  string  $key
+     * @param string $key
      * @return Layout
      */
     public function duplicate($key)
@@ -221,16 +283,16 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Get a cloned instance with set values
      *
-     * @param  string  $key
-     * @param  array  $attributes
+     * @param string $key
+     * @param array  $attributes
      * @return Layout
      */
     public function duplicateAndHydrate($key, array $attributes = [])
     {
-        $fields = $this->fields->map(function($field) {
+        $fields = $this->fields->map(function ($field) {
             return $this->cloneField($field);
         });
-        
+
         $clone = new static(
             $this->title,
             $this->name,
@@ -243,37 +305,41 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
         if (!is_null($this->model)) {
             $clone->setModel($this->model);
         }
+
         return $clone;
     }
 
     /**
      * Create a working field clone instance
      *
-     * @param  \Laravel\Nova\Fields\Field $original
+     * @param \Laravel\Nova\Fields\Field $original
      * @return \Laravel\Nova\Fields\Field
      */
-    protected function cloneField(Field $original) {
+    protected function cloneField(Field $original)
+    {
         $field = clone $original;
 
-        $callables = ['displayCallback','resolveCallback','fillCallback','requiredCallback'];
+        $callables = ['displayCallback', 'resolveCallback', 'fillCallback', 'requiredCallback'];
 
         foreach ($callables as $callable) {
-            if(!is_a($field->$callable ?? null, \Closure::class)) continue;
+            if (!is_a($field->$callable ?? null, \Closure::class)) {
+                continue;
+            }
             $field->$callable = $field->$callable->bindTo($field);
         }
 
         return $field;
     }
-    
+
     /**
      * Resolve fields using given attributes.
      *
-     * @param  boolean $empty
+     * @param bool $empty
      * @return void
      */
     public function resolve($empty = false)
     {
-        $this->fields->each(function($field) use ($empty) {
+        $this->fields->each(function ($field) use ($empty) {
             $field->resolve($empty ? $this->duplicate($this->inUseKey()) : $this);
         });
     }
@@ -297,7 +363,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      * Filter the layout's fields for detail view
      *
      * @param NovaRequest $request
-     * @param $resource
+     * @param             $resource
      */
     public function filterForDetail(NovaRequest $request, $resource)
     {
@@ -313,20 +379,20 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     public function getResolvedValue()
     {
         return [
-            'layout' => $this->name,
+            'layout'     => $this->name,
 
             // The (old) temporary key is preferred to the new one during
             // field resolving because we need to keep track of the current
             // attributes during the next fill request that will override
             // the key with a new, stronger & definitive one.
-            'key' => $this->inUseKey(),
+            'key'        => $this->inUseKey(),
 
             // The layout's fields now temporarily contain the resolved
             // values from the current group's attributes. If multiple
             // groups use the same layout, the current values will be lost
             // since each group uses the same fields by reference. That's
             // why we need to serialize the field's current state.
-            'attributes' => $this->fields->jsonSerialize()
+            'attributes' => $this->fields->jsonSerialize(),
         ];
     }
 
@@ -338,40 +404,40 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      */
     public function fill(ScopedRequest $request)
     {
-        return  $this->fields->map(function($field) use ($request) {
-                    return $field->fill($request, $this);
-                })
-                ->filter(function($callback) {
-                    return is_callable($callback);
-                })
-                ->values()
-                ->all();
+        return $this->fields->map(function ($field) use ($request) {
+            return $field->fill($request, $this);
+        })
+                            ->filter(function ($callback) {
+                                return is_callable($callback);
+                            })
+                            ->values()
+                            ->all();
     }
 
     /**
      * Get validation rules for fields concerned by given request
      *
-     * @param  ScopedRequest $request
-     * @param  string $specificty
-     * @param  string $key
+     * @param ScopedRequest $request
+     * @param string        $specificty
+     * @param string        $key
      * @return array
      */
     public function generateRules(ScopedRequest $request, $specificty, $key)
     {
-        return  $this->fields->map(function($field) use ($request, $specificty, $key) {
-                    return $this->getScopedFieldRules($field, $request, $specificty, $key);
-                })
-                ->collapse()
-                ->all();
+        return $this->fields->map(function ($field) use ($request, $specificty, $key) {
+            return $this->getScopedFieldRules($field, $request, $specificty, $key);
+        })
+                            ->collapse()
+                            ->all();
     }
 
     /**
      * Get validation rules for fields concerned by given request
      *
-     * @param  \Laravel\Nova\Fields\Field $field
-     * @param  ScopedRequest $request
-     * @param  null|string $specificty
-     * @param  string $key
+     * @param \Laravel\Nova\Fields\Field $field
+     * @param ScopedRequest              $request
+     * @param null|string                $specificty
+     * @param string                     $key
      * @return array
      */
     protected function getScopedFieldRules($field, ScopedRequest $request, $specificty, $key)
@@ -380,12 +446,13 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
         $rules = call_user_func([$field, $method], $request);
 
-        return  collect($rules)->mapWithKeys(function($validatorRules, $attribute) use ($key, $field) {
-                    $key = $key . '.attributes.' . $attribute;
-                    return [$key => $this->wrapScopedFieldRules($field, $validatorRules)];
-                })
-                ->filter()
-                ->all();
+        return collect($rules)->mapWithKeys(function ($validatorRules, $attribute) use ($key, $field) {
+            $key = $key . '.attributes.' . $attribute;
+
+            return [$key => $this->wrapScopedFieldRules($field, $validatorRules)];
+        })
+                              ->filter()
+                              ->all();
     }
 
     /**
@@ -406,42 +473,43 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * The default behaviour when removed
      *
-     * @param  Flexible $flexible
-     * @param  Whitecube\NovaFlexibleContent\Layout $layout
+     * @param Flexible                             $flexible
+     * @param Layout $layout
      *
      * @return mixed
      */
-    protected function removeCallback(Flexible $flexible, $layout) {
+    protected function removeCallback(Flexible $flexible, $layout)
+    {
         return;
     }
 
     /**
      * Wrap the rules in an array containing field information for later use
      *
-     * @param  \Laravel\Nova\Fields\Field $field
-     * @param  array $rules
+     * @param \Laravel\Nova\Fields\Field $field
+     * @param array                      $rules
      * @return null|array
      */
     protected function wrapScopedFieldRules($field, array $rules)
     {
-        if(!$rules) {
+        if (!$rules) {
             return;
         }
 
-        if(is_a($rules['attribute'] ?? null, FlexibleAttribute::class)) {
+        if (is_a($rules['attribute'] ?? null, FlexibleAttribute::class)) {
             return $rules;
         }
 
         return [
             'attribute' => FlexibleAttribute::make($field->attribute, $this->inUseKey()),
-            'rules' => $rules,
+            'rules'     => $rules,
         ];
     }
 
     /**
      * Dynamically retrieve attributes on the layout.
      *
-     * @param  string  $key
+     * @param string $key
      * @return mixed
      */
     public function __get($key)
@@ -452,8 +520,8 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Dynamically set attributes on the layout.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
      * @return void
      */
     public function __set($key, $value)
@@ -464,18 +532,18 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Determine if the given attribute exists.
      *
-     * @param  mixed  $offset
+     * @param mixed $offset
      * @return bool
      */
     public function offsetExists($offset)
     {
-        return ! is_null($this->getAttribute($offset));
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
      * Get the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param mixed $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -486,8 +554,8 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Set the value for a given offset.
      *
-     * @param  mixed  $offset
-     * @param  mixed  $value
+     * @param mixed $offset
+     * @param mixed $value
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -498,7 +566,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Unset the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param mixed $offset
      * @return void
      */
     public function offsetUnset($offset)
@@ -509,7 +577,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Determine if an attribute or relation exists on the model.
      *
-     * @param  string  $key
+     * @param string $key
      * @return bool
      */
     public function __isset($key)
@@ -520,7 +588,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Unset an attribute on the model.
      *
-     * @param  string  $key
+     * @param string $key
      * @return void
      */
     public function __unset($key)
@@ -531,13 +599,15 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * Transform empty attribute values to null
      *
-     * @param  array $attributes
+     * @param array $attributes
      * @return array
      */
     protected function cleanAttributes($attributes)
     {
         foreach ($attributes as $key => $value) {
-            if(!is_string($value) || strlen($value)) continue;
+            if (!is_string($value) || strlen($value)) {
+                continue;
+            }
             $attributes[$key] = null;
         }
 
@@ -595,10 +665,10 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
         $this->resolve(true);
 
         return [
-            'name' => $this->name,
-            'title' => $this->title,
+            'name'   => $this->name,
+            'title'  => $this->title,
             'fields' => $this->fields->jsonSerialize(),
-            'limit' => $this->limit,
+            'limit'  => $this->limit,
         ];
     }
 
@@ -611,21 +681,21 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      */
     protected function getProcessedKey($key)
     {
-        if(strpos($key, '-') === false && strlen($key) === 16) return $key;
+        if (strpos($key, '-') === false && strlen($key) === 16) {
+            return $key;
+        }
 
         // The key is either generated by Javascript or not strong enough.
         // Before assigning a new valid key we'll keep track of this one
         // in order to keep it usable in a Flexible::findGroup($key) search.
         $this->_key = $key;
 
-        if (function_exists("random_bytes")) {
-            $bytes = random_bytes(ceil(16/2));
-        }
-        elseif (function_exists("openssl_random_pseudo_bytes")) {
-            $bytes = openssl_random_pseudo_bytes(ceil(16/2));
-        }
-        else {
-            throw new \Exception("No cryptographically secure random function available");
+        if (function_exists('random_bytes')) {
+            $bytes = random_bytes(ceil(16 / 2));
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
+            $bytes = openssl_random_pseudo_bytes(ceil(16 / 2));
+        } else {
+            throw new \Exception('No cryptographically secure random function available');
         }
 
         return substr(bin2hex($bytes), 0, 16);
@@ -640,5 +710,4 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     {
         return $this->attributesToArray();
     }
-
 }

@@ -2,16 +2,15 @@
 
 namespace Whitecube\NovaFlexibleContent;
 
-use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
-use Illuminate\Support\ServiceProvider;
+use Laravel\Nova\Nova;
 use Whitecube\NovaFlexibleContent\Commands\CreateCast;
 use Whitecube\NovaFlexibleContent\Commands\CreateLayout;
 use Whitecube\NovaFlexibleContent\Commands\CreatePreset;
 use Whitecube\NovaFlexibleContent\Commands\CreateResolver;
 use Whitecube\NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
-class FieldServiceProvider extends ServiceProvider
+class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -35,7 +34,9 @@ class FieldServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if (!$this->app->runningInConsole()) return;
+        if (!$this->app->runningInConsole()) {
+            return;
+        }
 
         $this->commands([
             CreateCast::class,
@@ -60,7 +61,7 @@ class FieldServiceProvider extends ServiceProvider
             return;
         }
         
-        if (! $this->app->configurationIsCached()) {
+        if (!$this->app->configurationIsCached()) {
             config()->set('nova.middleware', array_merge(
                 config('nova.middleware', []),
                 [InterceptFlexibleAttributes::class]

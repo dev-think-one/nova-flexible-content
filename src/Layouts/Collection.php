@@ -15,9 +15,8 @@ class Collection extends BaseCollection
      */
     public function find($name)
     {
-        return $this->first(function($layout) use ($name) {
+        return $this->first(function ($layout) use ($name) {
             return $layout->name() === $name;
         });
     }
-
 }

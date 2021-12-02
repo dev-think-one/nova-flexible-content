@@ -3,7 +3,6 @@
 namespace Whitecube\NovaFlexibleContent\Http;
 
 use Illuminate\Http\Request;
-use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
 
 trait ParsesFlexibleAttributes
 {
@@ -36,10 +35,12 @@ trait ParsesFlexibleAttributes
     {
         $this->registerFlexibleFields($request->input(FlexibleAttribute::REGISTER));
 
-        return array_reduce(array_keys($request->all()), function($carry, $attribute) use ($request) {
+        return array_reduce(array_keys($request->all()), function ($carry, $attribute) use ($request) {
             $value = $request->input($attribute);
 
-            if(!$this->isFlexibleAttribute($attribute, $value)) return $carry;
+            if (!$this->isFlexibleAttribute($attribute, $value)) {
+                return $carry;
+            }
 
             $carry[$attribute] = $this->getParsedFlexibleValue($value);
 
@@ -55,15 +56,17 @@ trait ParsesFlexibleAttributes
      */
     protected function getParsedFlexibleValue($value)
     {
-        if(is_string($value)) {
+        if (is_string($value)) {
             $raw = json_decode($value, true);
         } else {
             $raw = $value;
         }
 
-        if(!is_array($raw)) return $value;
+        if (!is_array($raw)) {
+            return $value;
+        }
 
-        return array_map(function($group) {
+        return array_map(function ($group) {
             return $this->getParsedFlexibleGroup($group);
         }, $raw);
     }
@@ -77,8 +80,8 @@ trait ParsesFlexibleAttributes
     protected function getParsedFlexibleGroup($group)
     {
         $clean = [
-            'layout' => $group['layout'] ?? null,
-            'key' => $group['key'] ?? null,
+            'layout'     => $group['layout'] ?? null,
+            'key'        => $group['key'] ?? null,
             'attributes' => [],
         ];
 
@@ -87,7 +90,9 @@ trait ParsesFlexibleAttributes
         }
 
         foreach ($clean['attributes'] as $attribute => $value) {
-            if(!$this->isFlexibleAttribute($attribute, $value)) continue;
+            if (!$this->isFlexibleAttribute($attribute, $value)) {
+                continue;
+            }
             $clean['attributes'][$attribute] = $this->getParsedFlexibleValue($value);
         }
 
@@ -107,8 +112,9 @@ trait ParsesFlexibleAttributes
     {
         $attribute = $this->parseAttribute($attribute, $group);
 
-        if($attribute->isFlexibleFieldsRegister()) {
+        if ($attribute->isFlexibleFieldsRegister()) {
             $this->registerFlexibleFields($value, $group);
+
             return;
         }
 
@@ -136,11 +142,11 @@ trait ParsesFlexibleAttributes
      */
     protected function registerFlexibleFields($value, $group = null)
     {
-        if(!$value) {
+        if (!$value) {
             return;
         }
 
-        if(!is_array($value)) {
+        if (!is_array($value)) {
             $value = json_decode($value);
         }
 
@@ -164,7 +170,7 @@ trait ParsesFlexibleAttributes
     }
 
     /**
-     * Check if given attribute is a registered and usable 
+     * Check if given attribute is a registered and usable
      * flexible attribute
      *
      * @param  string $attribute
@@ -173,11 +179,11 @@ trait ParsesFlexibleAttributes
      */
     protected function isFlexibleAttribute($attribute, $value)
     {
-        if(!$this->getFlexibleAttribute($attribute)) {
+        if (!$this->getFlexibleAttribute($attribute)) {
             return false;
         }
         
-        if(!$value || !is_string($value)) {
+        if (!$value || !is_string($value)) {
             return false;
         }
 
@@ -193,7 +199,9 @@ trait ParsesFlexibleAttributes
     protected function getFlexibleAttribute($attribute)
     {
         foreach ($this->registered as $registered) {
-            if($registered->name === $attribute) return $registered;
+            if ($registered->name === $attribute) {
+                return $registered;
+            }
         }
     }
 }

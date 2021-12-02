@@ -1,4 +1,4 @@
-# ![Laravel Nova Flexible Content](https://github.com/whitecube/nova-flexible-content/raw/master/title.png)
+# ![Laravel Nova Flexible Content](docs/assets/title.png)
 
 ![](https://img.shields.io/github/release/whitecube/nova-flexible-content.svg?style=flat)
 [![](https://img.shields.io/packagist/dt/whitecube/nova-flexible-content.svg?colorB=green&style=flat)](https://packagist.org/packages/whitecube/nova-flexible-content)
@@ -6,7 +6,7 @@
 
 An easy & complete Flexible Field for Laravel Nova, perfect for repeated and flexible field groups.
 
-![Laravel Nova Flexible Content in action](https://github.com/whitecube/nova-flexible-content/raw/master/presentation.gif)
+![Laravel Nova Flexible Content in action](docs/assets/presentation.gif)
 
 ## Quick start
 
@@ -62,7 +62,7 @@ public function fields(Request $request)
     ];
 }
 ```
-![Example of Flexible layouts](https://github.com/whitecube/nova-flexible-content/raw/master/example_layouts.png)
+![Example of Flexible layouts](docs/assets/example_layouts.png)
 
 #### Customizing the button label
 
@@ -73,7 +73,7 @@ Flexible::make('Content')
     ->button('Add something amazing!');
 ```
 
-![Add something amazing](https://github.com/whitecube/nova-flexible-content/raw/master/add_something_amazing.png)
+![Add something amazing](docs/assets/add_something_amazing.png)
 
 ### Using Flexible values in views
 
