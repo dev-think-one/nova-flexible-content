@@ -16,10 +16,10 @@ class FileForFlexible extends File
         parent::__construct(...func_get_args());
 
         $this
-            ->download(function (NovaRequest $request, Model $model, string $disk, $value) {
+            ->download(function (NovaRequest $request, Model $model, ?string $disk, $value) {
                 return Storage::disk($disk)->download($value);
             })
-            ->delete(function (NovaRequest $request, Model $model, string $disk, $value) {
+            ->delete(function (NovaRequest $request, Model $model, ?string $disk, $value) {
                 $this->flexibleSetAttribute($request, $model);
 
                 Storage::disk($disk)->delete($value);
