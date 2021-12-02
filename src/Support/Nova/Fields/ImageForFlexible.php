@@ -16,10 +16,10 @@ class ImageForFlexible extends Image
         parent::__construct(...func_get_args());
 
         $this
-            ->preview(function ($value, string $disk, Model $model) {
+            ->preview(function ($value, string $disk, $model) {
                 return Storage::disk($disk)->url($value);
             })
-            ->download(function (NovaRequest $request, Model $model, string $disk, $value) {
+            ->download(function (NovaRequest $request, Model $model, ?string $disk, $value) {
                 return Storage::disk($disk)->download($value);
             })
             ->delete(function (NovaRequest $request, Model $model, string $disk, $value) {
