@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory as OriginalFileAdderFactory;
 use Whitecube\NovaFlexibleContent\FileAdder\FileAdder as NewFileAdder;
 
+/**
+ * @psalm-suppress UndefinedClass
+ */
 class FileAdderFactory extends OriginalFileAdderFactory
 {
     /**
-     * @param \Illuminate\Database\Eloquent\Model $subject
+     * @param \Illuminate\Database\Eloquent\Model                        $subject
      * @param string|\Symfony\Component\HttpFoundation\File\UploadedFile $file
-     * @param string|null $suffix
+     * @param string|null                                                $suffix
      *
      * @return \Spatie\MediaLibrary\MediaCollections\FileAdder
      */

@@ -5,6 +5,9 @@ namespace Whitecube\NovaFlexibleContent\FileAdder;
 use Spatie\MediaLibrary\MediaCollections\FileAdder as OriginalFileAdder;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @psalm-suppress UndefinedClass
+ */
 class FileAdder extends OriginalFileAdder
 {
     /**

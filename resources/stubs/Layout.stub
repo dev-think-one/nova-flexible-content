@@ -11,14 +11,14 @@ class :classname extends Layout
      *
      * @var string
      */
-    protected $name = ':name';
+    protected string $name = ':name';
 
     /**
      * The displayed title
      *
      * @var string
      */
-    protected $title = ':classname';
+    protected string $title = ':classname';
 
     /**
      * Get the fields displayed by the layout.

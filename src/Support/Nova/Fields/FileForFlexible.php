@@ -19,8 +19,10 @@ class FileForFlexible extends File
             ->download(function (NovaRequest $request, Model $model, ?string $disk, $value) {
                 return Storage::disk($disk)->download($value);
             })
-            ->delete(function (NovaRequest $request, Model $model, ?string $disk, $value) {
-                $this->flexibleSetAttribute($request, $model);
+            ->delete(function (NovaRequest $request, $model, ?string $disk, $value) {
+                if ($model instanceof Model) {
+                    $this->flexibleSetAttribute($request, $model, null);
+                }
 
                 Storage::disk($disk)->delete($value);
 

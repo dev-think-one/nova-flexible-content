@@ -40,6 +40,4 @@ class FlexibleGroup
     {
         return new FlexibleGroupsCollection(Arr::get($this->attributes, $key));
     }
-
-
 }

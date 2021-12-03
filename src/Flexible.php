@@ -2,6 +2,7 @@
 
 namespace Whitecube\NovaFlexibleContent;
 
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -320,7 +321,7 @@ class Flexible extends Field implements Downloadable
 
         $this->buildGroups($model, $attribute);
 
-        $callbacks = GroupsCollection::make($this->syncAndFillGroups($request, $requestAttribute));
+        $callbacks = GroupsCollection::make($this->syncAndFillGroups($request, $requestAttribute, $model));
 
         $this->reFillValue($model, $attribute);
 
@@ -341,23 +342,19 @@ class Flexible extends Field implements Downloadable
 
     /**
      * Process an incoming POST Request
-     *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @param string                                  $requestAttribute
-     * @return array
      */
-    protected function syncAndFillGroups(NovaRequest $request, $requestAttribute)
+    protected function syncAndFillGroups(NovaRequest $request, string $requestAttribute, $model): array
     {
         if (!($raw = $this->extractValue($request, $requestAttribute))) {
-            $this->fireRemoveCallbacks(GroupsCollection::make());
+            $this->fireRemoveCallbacks(GroupsCollection::make(), $request, $model);
             $this->groups = GroupsCollection::make();
 
-            return;
+            return [];
         }
 
         $callbacks = [];
 
-        $new_groups = GroupsCollection::make($raw)->map(function ($item, $key) use ($request, &$callbacks) {
+        $newGroups = GroupsCollection::make($raw)->map(function ($item, $key) use ($request, &$callbacks) {
             $layout     = $item['layout'];
             $key        = $item['key'];
             $attributes = $item['attributes'];
@@ -374,9 +371,9 @@ class Flexible extends Field implements Downloadable
             return $group;
         })->filter();
 
-        $this->fireRemoveCallbacks($new_groups);
+        $this->fireRemoveCallbacks($newGroups, $request, $model);
 
-        $this->groups = $new_groups;
+        $this->groups = $newGroups;
 
         return $callbacks;
     }
@@ -384,19 +381,19 @@ class Flexible extends Field implements Downloadable
     /**
      * Fire's the remove callbacks on the layouts
      *
-     * @param $new_groups GroupsCollection This should be (all) the new groups to bne compared against to find the
+     * @param $newGroups GroupsCollection This should be (all) the new groups to bne compared against to find the
      *     removed groups
      */
-    protected function fireRemoveCallbacks($new_groups)
+    protected function fireRemoveCallbacks(GroupsCollection $newGroups, NovaRequest $request, $model)
     {
-        $new_group_keys = $new_groups->map(function ($item) {
+        $newGroupKeys  = $newGroups->map(function ($item) {
             return $item->inUseKey();
         });
-        $removed_groups = $this->groups->filter(function ($item) use ($new_group_keys) {
-            return !$new_group_keys->contains($item->inUseKey());
-        })->each(function ($group) {
+        $removedGroups = $this->groups->filter(function ($item) use ($newGroupKeys) {
+            return !$newGroupKeys->contains($item->inUseKey());
+        })->each(function (LayoutInterface $group) use ($request, $model) {
             if (method_exists($group, 'fireRemoveCallback')) {
-                $group->fireRemoveCallback($this);
+                $group->fireRemoveCallback($this, $request, $model);
             }
         });
     }
@@ -665,10 +662,11 @@ class Flexible extends Field implements Downloadable
      */
     protected function registerOriginModel($model)
     {
+        /** @psalm-suppress UndefinedClass */
+        $isPageTemplate = is_a($model, "\Whitecube\NovaPage\Pages\Template");
         if (is_a($model, \Laravel\Nova\Resource::class)) {
             $model = $model->model();
-        /** @psalm-suppress UndefinedClass */
-        } elseif (is_a($model, "\Whitecube\NovaPage\Pages\Template", true)) {
+        } elseif ($isPageTemplate) {
             /** @psalm-suppress UndefinedClass */
             $model = $model->getOriginal();
         }

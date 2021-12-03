@@ -7,7 +7,10 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use JsonSerializable;
+use Laravel\Nova\Contracts\Deletable;
+use Laravel\Nova\Contracts\Storable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -23,86 +26,54 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     use HasFlexible;
 
     /**
-     * The layout's name
-     *
-     * @var string
+     * The layout's name.
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * The layout's unique identifier
-     *
-     * @var string
+     * The layout's unique identifier.
      */
-    protected $key;
+    protected ?string $key = null;
 
     /**
-     * The layout's temporary identifier
-     *
-     * @var string
+     * The layout's temporary identifier.
      */
-    protected $_key;
+    protected ?string $_key = null;
 
     /**
-     * The layout's title
-     *
-     * @var string
+     * The layout's human-readable title.
      */
-    protected $title;
+    protected string $title;
 
     /**
-     * The layout's registered fields
-     *
-     * @var \Laravel\Nova\Fields\FieldCollection
+     * The layout's registered fields.
      */
-    protected $fields;
+    protected FieldCollection $fields;
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [];
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
-     * The callback to be called when this layout is removed
+     * The callback to be called when this layout removed.
      */
     protected $removeCallbackMethod;
 
     /**
-     * The maximum amount of this layout type that can be added
-     * Can be set in custom layouts
+     * The maximum amount of this layout type that can be added.
+     * Can be set in custom layouts.
      */
-    protected $limit;
+    protected ?int $limit = null;
 
     /**
      * The parent model instance
-     *
-     * @var \Illuminate\Database\Eloquent\Model
      */
-    protected $model;
+    protected ?Model $model = null;
 
-    /**
-     * Create a new base Layout instance
-     *
-     * @param string        $title
-     * @param string        $name
-     * @param array         $fields
-     * @param string        $key
-     * @param array         $attributes
-     * @param callable|null $removeCallbackMethod
-     * @param int|null      $limit
-     * @return void
-     */
-    public function __construct($title = null, $name = null, $fields = null, $key = null, $attributes = [], callable $removeCallbackMethod = null)
-    {
+    public function __construct(
+        ?string               $title = null,
+        ?string               $name = null,
+        Collection|array|null $fields = null,
+        ?string               $key = null,
+        array                 $attributes = [],
+        callable              $removeCallbackMethod = null
+    ) {
         $this->title                = $title ?? $this->title();
         $this->name                 = $name  ?? $this->name();
         $this->fields               = new FieldCollection($fields ?? $this->fields());
@@ -126,40 +97,32 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
     /**
      * Retrieve the layout's name (identifier)
-     *
-     * @return string
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
 
     /**
      * Retrieve the layout's title
-     *
-     * @return string
      */
-    public function title()
+    public function title(): string
     {
         return $this->title;
     }
 
     /**
-     * Retrieve the layout's fields
-     *
-     * @return array
+     * Retrieve the layout's fields as array.
      */
-    public function fields()
+    public function fields(): array
     {
         return $this->fields ? $this->fields->all() : [];
     }
 
     /**
-     * Retrieve the layout's fields as a collection
-     *
-     * @return \Illuminate\Support\Collection
+     * Retrieve the layout's fields as a collection.
      */
-    public function fieldsCollection()
+    public function fieldsCollection(): FieldCollection
     {
         return $this->fields;
     }
@@ -167,33 +130,28 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
     /**
      * Retrieve the layout's unique key
-     *
-     * @return string
      */
-    public function key()
+    public function key(): ?string
     {
         return $this->key;
     }
 
     /**
-     * Retrieve the key currently in use in the views
-     *
-     * @return string
+     * Retrieve the key currently in use in the views.
      */
-    public function inUseKey()
+    public function inUseKey(): ?string
     {
         return $this->_key ?? $this->key();
     }
 
     /**
-     * Check if this group matches the given key
+     * Check if this group matches the given key.
      *
-     * @param string $key
-     * @return bool
+     * TODO: why it check when key is null? I think there logic error - please check in future.
      */
-    public function matches($key): bool
+    public function matches(?string $key): bool
     {
-        return ($this->key === $key || $this->_key === $key);
+        return $this->key === $key || $this->_key === $key;
     }
 
 
@@ -270,38 +228,31 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     }
 
     /**
-     * Get an empty cloned instance
-     *
-     * @param string $key
-     * @return Layout
+     * @inerhitDoc
      */
-    public function duplicate($key)
+    public function duplicate(?string $key): static
     {
         return $this->duplicateAndHydrate($key);
     }
 
     /**
-     * Get a cloned instance with set values
-     *
-     * @param string $key
-     * @param array  $attributes
-     * @return Layout
+     * @inerhitDoc
      */
-    public function duplicateAndHydrate($key, array $attributes = [])
+    public function duplicateAndHydrate(?string $key, array $attributes = []): static
     {
         $fields = $this->fields->map(function ($field) {
             return $this->cloneField($field);
         });
 
-        $clone = new static(
+        $clone        = new static(
             $this->title,
             $this->name,
             $fields,
             $key,
             $attributes,
             $this->removeCallbackMethod,
-            $this->limit
         );
+        $clone->limit = $this->limit;
         if (!is_null($this->model)) {
             $clone->setModel($this->model);
         }
@@ -456,46 +407,50 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     }
 
     /**
-     * The method to call when this layout is removed
-     *
-     * @param Flexible $flexible
-     * @return mixed
+     * The method to call when this layout removed.
      */
-    public function fireRemoveCallback(Flexible $flexible)
+    public function fireRemoveCallback(Flexible $flexible, NovaRequest $request, $model)
     {
+        $arguments = [$flexible, $this, $request, $model];
         if (is_callable($this->removeCallbackMethod)) {
-            return $this->removeCallbackMethod($flexible, $this);
+            return call_user_func_array($this->removeCallbackMethod, $arguments);
         }
 
-        return $this->removeCallback($flexible, $this);
+        return $this->defaultRemoveCallback(...$arguments);
     }
 
     /**
-     * The default behaviour when removed
+     * The default behaviour when removed.
      *
-     * @param Flexible                             $flexible
-     * @param Layout $layout
-     *
-     * @return mixed
+     * TODO: $model can be Model or Layout - this is problem - so need check and change logic in future
      */
-    protected function removeCallback(Flexible $flexible, $layout)
+    protected function defaultRemoveCallback(Flexible $flexible, LayoutInterface $layout, NovaRequest $request, $model)
     {
-        return;
+        $layout->fieldsCollection()
+               ->each(function (Field $field) use ($layout, $request, $model) {
+                   if ($field instanceof Storable
+                       && $field instanceof Deletable
+                       && property_exists($field, 'deleteCallback')
+                   ) {
+                       if ($field->isPrunable()) {
+                           $field->value = $layout->getAttribute($field->attribute);
+                           call_user_func(
+                               $field->deleteCallback,
+                               $request,
+                               $model,
+                               $field->getStorageDisk(),
+                               $field->getStoragePath()
+                           );
+                       }
+                   }
+               });
     }
 
     /**
      * Wrap the rules in an array containing field information for later use
-     *
-     * @param \Laravel\Nova\Fields\Field $field
-     * @param array                      $rules
-     * @return null|array
      */
-    protected function wrapScopedFieldRules($field, array $rules)
+    protected function wrapScopedFieldRules(Field $field, array $rules = []): array
     {
-        if (!$rules) {
-            return;
-        }
-
         if (is_a($rules['attribute'] ?? null, FlexibleAttribute::class)) {
             return $rules;
         }
@@ -616,10 +571,8 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
     /**
      * Get the attributes that should be converted to dates.
-     *
-     * @return array
      */
-    protected function getDates()
+    protected function getDates(): array
     {
         return $this->dates ?? [];
     }
@@ -703,10 +656,8 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
     /**
      * Convert the model instance to an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->attributesToArray();
     }

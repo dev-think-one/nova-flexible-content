@@ -12,12 +12,11 @@ class FlexibleGroupsCollection extends Collection
 
         $items = [];
         foreach ($this->items as $item) {
-            if(
-                !empty($item['layout'])
+            if (!empty($item['layout'])
                 && !empty($item['key'])
                 && isset($item['attributes'])
             ) {
-                $items[] = new FlexibleGroup($item['layout'], $item['key'], is_array($item['attributes'])?$item['attributes']:[]);
+                $items[] = new FlexibleGroup($item['layout'], $item['key'], is_array($item['attributes']) ? $item['attributes'] : []);
             }
         }
 

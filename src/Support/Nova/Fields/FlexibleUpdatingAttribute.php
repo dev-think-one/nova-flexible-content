@@ -23,7 +23,7 @@ trait FlexibleUpdatingAttribute
      * @param Model       $model
      * @return Model
      */
-    protected function flexibleSetAttribute(NovaRequest $request, Model $model): Model
+    protected function flexibleSetAttribute(NovaRequest $request, Model $model, mixed $newValue = null): Model
     {
         $groupKey = Str::before(
             $request->field,
@@ -56,14 +56,14 @@ trait FlexibleUpdatingAttribute
                           });
 
         $field->groups()
-              ->each(function (Layout $group) use ($groupKey, $fieldKey) {
+              ->each(function (Layout $group) use ($groupKey, $fieldKey, $newValue) {
                   if ($group->key() == $groupKey) {
-                      $group->setAttribute($fieldKey, null);
+                      $group->setAttribute($fieldKey, $newValue);
 
                       return false;
                   }
 
-                  if ($group->findGroupRecursiveAndSetAttribute($groupKey, $fieldKey, null)) {
+                  if ($group->findGroupRecursiveAndSetAttribute($groupKey, $fieldKey, $newValue)) {
                       return false;
                   }
 
