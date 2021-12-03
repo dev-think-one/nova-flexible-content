@@ -691,16 +691,18 @@ class Flexible extends Field implements Downloadable
     public function flattenGroups($parentGroup = null): array
     {
         $flattened = [];
-        foreach ($this->groups as $i => $group) {
-            $group->originalField = ($parentGroup ? $group->originalField . '.attributes.' : '') . $this->attribute;
+        if($this->groups) {
+            foreach ($this->groups as $i => $group) {
+                $group->originalField = ($parentGroup ? $group->originalField . '.attributes.' : '') . $this->attribute;
 
-            foreach ($group->fields() as $groupField) {
-                if ($groupField instanceof Flexible) {
-                    $flattened = array_merge($flattened, $groupField->flattenGroups($group));
+                foreach ($group->fields() as $groupField) {
+                    if ($groupField instanceof Flexible) {
+                        $flattened = array_merge($flattened, $groupField->flattenGroups($group));
+                    }
                 }
-            }
 
-            $flattened[] = $group;
+                $flattened[] = $group;
+            }
         }
 
         return $flattened;
