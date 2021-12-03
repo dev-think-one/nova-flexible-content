@@ -11,7 +11,14 @@
         "group",
         "layout"
     ],
-    "authors": [],
+    "authors": [
+        {
+            "name": "Yaroslav Georgitsa",
+            "email": "yaroslav.georgitsa@gmail.com",
+            "homepage": "https://github.com/yaroslawww",
+            "role": "Developer"
+        }
+    ],
     "repositories": [
         {
             "type": "composer",

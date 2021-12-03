@@ -1,12 +1,16 @@
 # ![Laravel Nova Flexible Content](docs/assets/title.png)
 
-![](https://img.shields.io/github/release/whitecube/nova-flexible-content.svg?style=flat)
-[![](https://img.shields.io/packagist/dt/whitecube/nova-flexible-content.svg?colorB=green&style=flat)](https://packagist.org/packages/whitecube/nova-flexible-content)
-[![](https://img.shields.io/github/license/whitecube/nova-flexible-content.svg?style=flat)](https://github.com/whitecube/nova-flexible-content/blob/master/LICENSE.md)
+[![Packagist License](https://img.shields.io/packagist/l/yaroslawww/nova-flexible-content?color=%234dc71f)](https://github.com/yaroslawww/nova-flexible-content/blob/master/LICENSE.md)
+[![Packagist Version](https://img.shields.io/packagist/v/yaroslawww/nova-flexible-content)](https://packagist.org/packages/yaroslawww/nova-flexible-content)
+[![Build Status](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/build.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
 
 **This is fork from `whitecube/nova-flexible-content` reworked for custom purposes**
 
 An easy & complete Flexible Field for Laravel Nova, perfect for repeated and flexible field groups.
+
+**Version 1.x.x will be VERY unstable - please use full version number in composer.json to prevent unexpected errors**
 
 ![Laravel Nova Flexible Content in action](docs/assets/presentation.gif)
 

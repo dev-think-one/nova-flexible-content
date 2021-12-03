@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Support\Nova\Fields;
+namespace Whitecube\NovaFlexibleContent\Nova\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

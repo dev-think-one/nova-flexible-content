@@ -48,7 +48,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * The layout's registered fields.
      */
-    protected FieldCollection $fields;
+    protected ?FieldCollection $fields = null;
 
     /**
      * The callback to be called when this layout removed.
@@ -74,9 +74,9 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
         array                 $attributes = [],
         callable              $removeCallbackMethod = null
     ) {
+        $this->fields               = FieldCollection::make($fields ?? $this->fields());
         $this->title                = $title ?? $this->title();
         $this->name                 = $name  ?? $this->name();
-        $this->fields               = new FieldCollection($fields ?? $this->fields());
         $this->key                  = is_null($key) ? null : $this->getProcessedKey($key);
         $this->removeCallbackMethod = $removeCallbackMethod;
         $this->setRawAttributes($this->cleanAttributes($attributes));
@@ -124,7 +124,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      */
     public function fieldsCollection(): FieldCollection
     {
-        return $this->fields;
+        return $this->fields ?? FieldCollection::make();
     }
 
 
@@ -176,33 +176,36 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
         return $result;
     }
 
+    /**
+     * TODO: rebuild
+     */
     public function findGroupRecursiveAndSetAttribute($groupKey, $fieldKey, $newValue): bool
     {
         $data = $this->getAttributes();
 
-        function setAttribute(&$array, $groupKey, $fieldKey, $newValue)
-        {
-            foreach ($array as $key => $value) {
-                if (is_object($value)
-                    && $value->key === $groupKey
-                    && is_object($value->attributes)) {
-                    foreach ($value->attributes as $attribute => $attrValue) {
-                        if ($attribute === $fieldKey) {
-                            $value->attributes->$attribute = $newValue;
+        return (bool) $this->setAttributeInternalCallback($data, $groupKey, $fieldKey, $newValue);
+    }
 
-                            return $array;
-                        }
+    public function setAttributeInternalCallback(&$array, $groupKey, $fieldKey, $newValue)
+    {
+        foreach ($array as $key => $value) {
+            if (is_object($value)
+                && $value->key === $groupKey
+                && is_object($value->attributes)) {
+                foreach ($value->attributes as $attribute => $attrValue) {
+                    if ($attribute === $fieldKey) {
+                        $value->attributes->$attribute = $newValue;
+
+                        return $array;
                     }
                 }
-                if (is_array($value)) {
-                    setAttribute($array[$key], $groupKey, $fieldKey, $newValue);
-                }
             }
-
-            return null;
+            if (is_array($value)) {
+                $this->setAttributeInternalCallback($array[$key], $groupKey, $fieldKey, $newValue);
+            }
         }
 
-        return (bool) setAttribute($data, $groupKey, $fieldKey, $newValue);
+        return null;
     }
 
     /**
@@ -422,15 +425,18 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * The default behaviour when removed.
      *
-     * TODO: $model can be Model or Layout - this is problem - so need check and change logic in future
+     * TODO: confusing code - should be reworked
      */
     protected function defaultRemoveCallback(Flexible $flexible, LayoutInterface $layout, NovaRequest $request, $model)
     {
         $layout->fieldsCollection()
                ->each(function (Field $field) use ($layout, $request, $model) {
-                   if ($field instanceof Storable
-                       && $field instanceof Deletable
-                       && property_exists($field, 'deleteCallback')
+                   if ($field instanceof Flexible) {
+                       $field->resolve($layout);
+                       $this->callRemoveCallbackToFlexible($field, $request, $model);
+                   } elseif ($field instanceof Storable
+                              && $field instanceof Deletable
+                              && property_exists($field, 'deleteCallback')
                    ) {
                        if ($field->isPrunable()) {
                            $field->value = $layout->getAttribute($field->attribute);
@@ -444,6 +450,13 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
                        }
                    }
                });
+    }
+
+    public function callRemoveCallbackToFlexible(Flexible $field, NovaRequest $request, $model)
+    {
+        $field->groups()->each(function (LayoutInterface $layout) use ($field, $request, $model) {
+            $layout->fireRemoveCallback($field, $request, $model);
+        });
     }
 
     /**

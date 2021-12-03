@@ -1,13 +1,13 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Support\Nova\Fields;
+namespace Whitecube\NovaFlexibleContent\Nova\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class ImageForFlexible extends Image
+class FileForFlexible extends File
 {
     use FlexibleUpdatingAttribute;
 
@@ -16,9 +16,6 @@ class ImageForFlexible extends Image
         parent::__construct(...func_get_args());
 
         $this
-            ->preview(function ($value, ?string $disk, $model) {
-                return Storage::disk($disk)->url($value);
-            })
             ->download(function (NovaRequest $request, Model $model, ?string $disk, $value) {
                 return Storage::disk($disk)->download($value);
             })

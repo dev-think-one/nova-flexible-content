@@ -22,9 +22,10 @@ class FieldsCollectionWithFlexibleSearch extends NovaFieldCollection
             $attribute_parts = explode(FlexibleAttribute::GROUP_SEPARATOR, $attribute, 2);
 
             $groups = [];
-            foreach ($fields as $field) {
+            foreach ($fields as $i => $field) {
                 if ($field instanceof Flexible) {
-                    $groups = array_merge($groups, $field->flattenGroups());
+                    $field->index = $i;
+                    $groups       = array_merge($groups, $field->flattenGroups($field));
                 }
             }
 
