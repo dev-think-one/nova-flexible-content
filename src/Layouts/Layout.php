@@ -15,6 +15,7 @@ use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Whitecube\NovaFlexibleContent\Concerns\HasFlexible;
+use Whitecube\NovaFlexibleContent\Contracts\LayoutInterface;
 use Whitecube\NovaFlexibleContent\Flexible;
 use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
 use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
@@ -24,6 +25,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     use HasAttributes;
     use HidesAttributes;
     use HasFlexible;
+    use Collapsable;
 
     /**
      * The layout's name.
@@ -323,7 +325,9 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     public function getResolvedValue()
     {
         return [
-            'layout'     => $this->name,
+            'layout' => $this->name,
+
+            'collapsed'  => $this->isCollapsed(),
 
             // The (old) temporary key is preferred to the new one during
             // field resolving because we need to keep track of the current

@@ -2,14 +2,13 @@
 
 namespace Whitecube\NovaFlexibleContent;
 
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Whitecube\NovaFlexibleContent\Contracts\LayoutInterface;
 use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
 use Whitecube\NovaFlexibleContent\Layouts\Collection as LayoutsCollection;
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Layouts\LayoutInterface;
 use Whitecube\NovaFlexibleContent\Nova\Collections\GroupsCollection;
 use Whitecube\NovaFlexibleContent\Value\Resolver;
 use Whitecube\NovaFlexibleContent\Value\ResolverInterface;
@@ -225,17 +224,10 @@ class Flexible extends Field implements Downloadable
         return $this;
     }
 
-    public function collapsed(bool $value = true)
-    {
-        $this->withMeta(['collapsed' => $value]);
-
-        return $this;
-    }
-
     /**
      * Push a layout instance into the layouts collection
      *
-     * @param \Whitecube\NovaFlexibleContent\Layouts\LayoutInterface $layout
+     * @param \Whitecube\NovaFlexibleContent\Contracts\LayoutInterface $layout
      * @return void
      */
     protected function registerLayout(LayoutInterface $layout)
@@ -353,7 +345,6 @@ class Flexible extends Field implements Downloadable
         }
 
         $callbacks = [];
-
         $newGroups = GroupsCollection::make($raw)->map(function ($item, $key) use ($request, &$callbacks) {
             $layout     = $item['layout'];
             $key        = $item['key'];
@@ -361,10 +352,7 @@ class Flexible extends Field implements Downloadable
 
             $group = $this->findGroup($key) ?? $this->newGroup($layout, $key);
 
-            if (!$group) {
-                return;
-            }
-
+            $group->setCollapsed((bool) ($item['collapsed'] ?? false));
             $scope     = ScopedRequest::scopeFrom($request, $attributes, $key);
             $callbacks = array_merge($callbacks, $group->fill($scope));
 
@@ -407,7 +395,7 @@ class Flexible extends Field implements Downloadable
      */
     protected function extractValue(NovaRequest $request, $attribute)
     {
-        $value = $request[$attribute];
+        $value = $request->input($attribute);
 
         if (!$value) {
             return;

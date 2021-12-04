@@ -3,6 +3,7 @@
 namespace Whitecube\NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
+use Whitecube\NovaFlexibleContent\Layouts\Layout;
 
 class Resolver implements ResolverInterface
 {
@@ -10,17 +11,18 @@ class Resolver implements ResolverInterface
     /**
      * Set the field's value
      *
-     * @param  mixed  $model
-     * @param  string $attribute
-     * @param  \Illuminate\Support\Collection $groups
+     * @param mixed                          $model
+     * @param string                         $attribute
+     * @param \Illuminate\Support\Collection $groups
      * @return string
      */
     public function set($model, $attribute, $groups)
     {
-        return $model->$attribute = $groups->map(function ($group) {
+        return $model->$attribute = $groups->map(function (Layout $group) {
             return [
                 'layout'     => $group->name(),
                 'key'        => $group->key(),
+                'collapsed'  => $group->isCollapsed(),
                 'attributes' => $group->getAttributes(),
             ];
         });
@@ -29,31 +31,30 @@ class Resolver implements ResolverInterface
     /**
      * get the field's value
      *
-     * @param  mixed  $model
-     * @param  string $attribute
-     * @param  \Whitecube\NovaFlexibleContent\Layouts\Collection $groups
+     * @param mixed                                             $model
+     * @param string                                            $attribute
+     * @param \Whitecube\NovaFlexibleContent\Layouts\Collection $groups
      * @return \Illuminate\Support\Collection
      */
     public function get($model, $attribute, $groups)
     {
-        $value = $this->extractValueFromResource($model, $attribute);
-
-        return collect($value)->map(function ($item) use ($groups) {
-            $layout = $groups->find($item->layout);
-
-            if (!$layout) {
-                return;
+        return collect(
+            $this->extractValueFromResource($model, $attribute)
+        )->map(function ($item) use ($groups) {
+            if ($layout = $groups->find($item->layout)) {
+                return $layout->duplicateAndHydrate($item->key, (array) $item->attributes)
+                              ->setCollapsed($item->collapsed ?? false);
             }
 
-            return $layout->duplicateAndHydrate($item->key, (array) $item->attributes);
+            return null;
         })->filter()->values();
     }
 
     /**
      * Find the attribute's value in the given resource
      *
-     * @param  mixed  $resource
-     * @param  string $attribute
+     * @param mixed  $resource
+     * @param string $attribute
      * @return array
      */
     protected function extractValueFromResource($resource, $attribute)

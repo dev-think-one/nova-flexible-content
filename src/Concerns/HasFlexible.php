@@ -107,7 +107,7 @@ trait HasFlexible
      *
      * @param mixed $item
      * @param array $layoutMapping
-     * @return null|\Whitecube\NovaFlexibleContent\Layouts\LayoutInterface
+     * @return null|\Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
      */
     protected function getMappedLayout($item, array $layoutMapping)
     {
@@ -147,7 +147,7 @@ trait HasFlexible
      * @param string $key
      * @param array  $attributes
      * @param array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutInterface
+     * @return \Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
      */
     protected function createMappedLayout($name, $key, $attributes, array $layoutMapping)
     {

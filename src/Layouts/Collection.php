@@ -3,6 +3,7 @@
 namespace Whitecube\NovaFlexibleContent\Layouts;
 
 use Illuminate\Support\Collection as BaseCollection;
+use Whitecube\NovaFlexibleContent\Contracts\LayoutInterface;
 
 class Collection extends BaseCollection
 {

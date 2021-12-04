@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Layouts;
+namespace Whitecube\NovaFlexibleContent\Contracts;
 
 use Laravel\Nova\Fields\FieldCollection;
 use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
