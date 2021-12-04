@@ -146,34 +146,24 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
 
     /**
      * Check if this group matches the given key.
-     *
-     * TODO: why it check when key is null? I think there logic error - please check in future.
      */
-    public function matches(?string $key): bool
+    public function isUseKey(string $groupKey): bool
     {
-        return $this->key === $key || $this->_key === $key;
+        return $this->key === $groupKey || $this->_key === $groupKey;
     }
 
 
-    public function findGroupRecursive($key)
+    public function findFlexibleGroupRecursive(string $groupKey): ?LayoutInterface
     {
-        $callback = function ($result, Field $field) use ($key) {
+        foreach ($this->fields as $field) {
             if ($field instanceof Flexible) {
-                return $field->findGroupRecursive($key);
-            }
-
-            return null;
-        };
-
-        $result = null;
-        foreach ($this->fields as $key => $value) {
-            $result = $callback($result, $value, $key);
-            if ($result) {
-                break;
+                if ($group = $field->findGroupRecursive($groupKey)) {
+                    return $group;
+                }
             }
         }
 
-        return $result;
+        return null;
     }
 
     /**

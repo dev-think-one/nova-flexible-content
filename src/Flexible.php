@@ -464,38 +464,52 @@ class Flexible extends Field implements Downloadable
         return $this->groups = $this->resolver->get($resource, $attribute, $this->layouts);
     }
 
-    /**
-     * Find an existing group based on its key
-     *
-     * @param string $key
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Layout
-     */
-    public function findGroup($key)
+    public function findGroup(string $groupKey): ?LayoutInterface
     {
-        return $this->groups->first(function (Layout $group) use ($key) {
-            return $group->matches($key);
-        });
+        return $this->groups->first(fn (LayoutInterface $group) => $group->isUseKey($groupKey));
     }
 
-    public function findGroupRecursive($key)
+    public function findGroupRecursive(string $groupKey): ?LayoutInterface
     {
-        $callback = function ($result, Layout $group) use ($key) {
-            if ($group->matches($key)) {
+        /** @var LayoutInterface $group */
+        foreach ($this->groups as $group) {
+            if ($group->isUseKey($groupKey)) {
                 return $group;
             }
-
-            return $group->findGroupRecursive($key);
-        };
-
-        $result = null;
-        foreach ($this->groups as $key => $value) {
-            $result = $callback($result, $value, $key);
-            if ($result) {
-                break;
+            if ($foundSubsequenceGroup = $group->findFlexibleGroupRecursive($groupKey)) {
+                return $foundSubsequenceGroup;
             }
         }
 
-        return $result;
+        return null;
+    }
+
+    /**
+     * @return bool - true if group found and false if not found.
+     */
+    public function setAttributeRecursive(string $groupKey, string $fieldKey, mixed $newValue = null): bool
+    {
+        $isUpdated = false;
+
+        $this->groups
+            ->each(function (LayoutInterface $group) use ($groupKey, $fieldKey, $newValue, &$isUpdated) {
+                if ($group->isUseKey($groupKey)) {
+                    $group->setAttribute($fieldKey, $newValue);
+                    $isUpdated = true;
+
+                    // Break loop
+                    return false;
+                }
+
+                if ($group->findGroupRecursiveAndSetAttribute($groupKey, $fieldKey, $newValue)) {
+                    $isUpdated = true;
+
+                    // Break loop
+                    return false;
+                }
+            });
+
+        return $isUpdated;
     }
 
     /**

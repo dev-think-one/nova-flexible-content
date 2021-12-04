@@ -36,10 +36,10 @@ class FieldsCollection extends NovaFieldCollection
         foreach ($resource->updateFields($request) as $field) {
             if ($field instanceof Flexible) {
                 if ($group = $field->findGroupRecursive($groupKey)) {
-                    $fieldToSearch = $group->fieldsCollection()
+                    $foundField = $group->fieldsCollection()
                                            ->first(fn (Field $groupField) => $groupField->attribute == $fieldKey);
-                    if ($fieldToSearch) {
-                        return $fieldToSearch;
+                    if ($foundField) {
+                        return $foundField;
                     }
                 }
             }
