@@ -687,26 +687,4 @@ class Flexible extends Field implements Downloadable
     {
         return static::$model;
     }
-
-    /**
-     * Not optimal solution, but it works.
-     * TODO: rebuild logic
-     */
-    public function flattenGroups($field, $parentGroup = null): array
-    {
-        $flattened = [];
-        foreach ($this->groups() as $groupIndex => $group) {
-            $group->originalField = ($parentGroup ? ($parentGroup->originalField??'') . (isset($field->index) ? '.' . $field->index : '') . '.attributes.' : '') . $field->attribute . '.' . $groupIndex;
-
-            foreach ($group->fieldsCollection() as $groupField) {
-                if ($groupField instanceof Flexible) {
-                    $flattened = array_merge($flattened, $groupField->flattenGroups($groupField, $group));
-                }
-            }
-
-            $flattened[] = $group;
-        }
-
-        return $flattened;
-    }
 }
