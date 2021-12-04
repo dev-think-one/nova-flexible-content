@@ -61,7 +61,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
      * The maximum amount of this layout type that can be added.
      * Can be set in custom layouts.
      */
-    protected ?int $limit = null;
+    protected int $limit = 0;
 
     /**
      * The parent model instance

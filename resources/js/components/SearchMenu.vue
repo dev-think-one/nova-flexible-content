@@ -3,7 +3,7 @@
     v-if="layouts"
     class="w-3/5"
   >
-    <div v-if="limitCounter > 0 || limitCounter === null">
+    <div v-if="allowAddGroup">
       <div v-if="layouts.length === 1">
         <button
           dusk="toggle-layouts-dropdown-or-add-default"
@@ -41,7 +41,7 @@ import Multiselect from 'vue-multiselect';
 export default {
   components: { Multiselect },
 
-  props: ['layouts', 'field', 'resourceName', 'resourceId', 'resource', 'errors', 'limitCounter', 'limitPerLayoutCounter'],
+  props: ['layouts', 'field', 'resourceName', 'resourceId', 'resource', 'errors', 'allowAddGroup', 'allowAddGroupsMap'],
 
   data() {
     return {
@@ -59,7 +59,7 @@ export default {
       };
     },
     availableLayouts() {
-      return this.layouts.filter((layout) => this.limitPerLayoutCounter[layout.name] > 0);
+      return this.layouts.filter((layout) => !this.allowAddGroupsMap.hasOwnProperty(layout.name) || this.allowAddGroupsMap[layout.name]);
     },
   },
 

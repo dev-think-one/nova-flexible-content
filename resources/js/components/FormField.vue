@@ -32,8 +32,8 @@
         :is="field.menu.component"
         :layouts="layouts"
         :field="field"
-        :limit-counter="limitCounter"
-        :limit-per-layout-counter="limitPerLayoutCounter"
+        :allow-add-group="allowAddGroup"
+        :allow-add-groups-map="allowAddGroupsMap"
         :errors="errors"
         :resource-name="resourceName"
         :resource-id="resourceId"
@@ -66,7 +66,7 @@ export default {
 
   computed: {
     layouts() {
-      return this.field.layouts || false;
+      return this.field.layouts || [];
     },
     orderedGroups() {
       return this.order.reduce((groups, key) => {
@@ -75,29 +75,32 @@ export default {
       }, []);
     },
 
-    limitCounter() {
-      if (this.field.limit === null || typeof (this.field.limit) === 'undefined') {
-        return null;
-      }
-
-      // if all layouts reached their limitPerLayout, remove the "Add" button
-      if (Object.values(this.limitPerLayoutCounter).reduce((a, b) => a + b, 0) <= 0) {
-        // return 0;
-      }
-
-      return this.field.limit - Object.keys(this.groups).length;
+    limitPerField() {
+      return parseInt(this.field.limit) || 0;
     },
 
-    limitPerLayoutCounter() {
-      const count = {};
-      this.layouts.forEach((layout) => count[layout.name] = layout.limit);
-      if (Object.keys(this.groups).length > 0) {
-        Object.entries(this.groups).forEach(
-          (group) => (count[group[1].name] === null ? null : count[group[1].name]--),
-        );
+    allowAddGroup() {
+      if (this.limitPerField > 0
+        && (this.limitPerField - Object.keys(this.groups).length) <= 0
+      ) {
+        return false;
       }
 
-      return count;
+      return Object.values(this.allowAddGroupsMap).some((isAllow) => isAllow);
+    },
+
+    allowAddGroupsMap() {
+      return this.layouts.reduce((result, layout) => {
+        const limit = parseInt(layout.limit, 10);
+        if (limit > 0) {
+          result[layout.name] = limit > Object.values(this.groups)
+            .filter((group) => group.name === layout.name).length;
+        } else {
+          result[layout.name] = true;
+        }
+
+        return result;
+      }, {});
     },
   },
 

@@ -15,7 +15,7 @@
           <ul class="list-reset">
             <li
               v-for="layout in layouts"
-              v-if="limitPerLayoutCounter[layout.name] === null || limitPerLayoutCounter[layout.name] > 0"
+              v-if="!allowAddGroupsMap.hasOwnProperty(layout.name) || allowAddGroupsMap[layout.name]"
               class="border-b border-40"
             >
               <a
@@ -31,7 +31,7 @@
       </div>
     </div>
     <button
-      v-if="limitCounter > 0 || limitCounter === null"
+      v-if="allowAddGroup"
       dusk="toggle-layouts-dropdown-or-add-default"
       type="button"
       tabindex="0"
@@ -46,7 +46,7 @@
 <script>
 
 export default {
-  props: ['layouts', 'field', 'resourceName', 'resourceId', 'resource', 'errors', 'limitCounter', 'limitPerLayoutCounter'],
+  props: ['layouts', 'field', 'resourceName', 'resourceId', 'resource', 'errors', 'allowAddGroup', 'allowAddGroupsMap'],
 
   data() {
     return {
@@ -55,11 +55,7 @@ export default {
   },
 
   methods: {
-    /**
-             * Display or hide the layouts choice dropdown if there are multiple layouts
-             * or directly add the only available layout.
-             */
-    toggleLayoutsDropdownOrAddDefault(event) {
+    toggleLayoutsDropdownOrAddDefault() {
       if (this.layouts.length === 1) {
         return this.addGroup(this.layouts[0]);
       }
