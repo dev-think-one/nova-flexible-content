@@ -27,7 +27,7 @@ class FlexibleGroup
         return $this->key;
     }
 
-    public function attribute(mixed $key = null, mixed $default = null): mixed
+    public function getAttribute(mixed $key = null, mixed $default = null): mixed
     {
         if (is_null($key)) {
             return $this->attributes;
