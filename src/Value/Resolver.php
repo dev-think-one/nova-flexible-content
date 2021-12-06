@@ -9,12 +9,7 @@ class Resolver implements ResolverInterface
 {
 
     /**
-     * Set the field's value
-     *
-     * @param mixed                          $model
-     * @param string                         $attribute
-     * @param \Illuminate\Support\Collection $groups
-     * @return string
+     * @inerhitDoc
      */
     public function set($model, $attribute, $groups)
     {
@@ -29,12 +24,7 @@ class Resolver implements ResolverInterface
     }
 
     /**
-     * get the field's value
-     *
-     * @param mixed                                             $model
-     * @param string                                            $attribute
-     * @param \Whitecube\NovaFlexibleContent\Layouts\Collection $groups
-     * @return \Illuminate\Support\Collection
+     * @inerhitDoc
      */
     public function get($model, $attribute, $groups)
     {

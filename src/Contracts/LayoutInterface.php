@@ -7,9 +7,9 @@ use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
 
 interface LayoutInterface
 {
-    public function name();
+    public function name(): string;
 
-    public function title();
+    public function title(): string;
 
     public function fields(): array;
 

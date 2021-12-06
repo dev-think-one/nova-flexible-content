@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Nova\Collections;
+namespace Whitecube\NovaFlexibleContent\Layouts;
 
 use Illuminate\Support\Collection;
 

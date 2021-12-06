@@ -4,8 +4,8 @@ namespace Whitecube\NovaFlexibleContent\Concerns;
 
 use Illuminate\Support\Collection as BaseCollection;
 use Laravel\Nova\NovaServiceProvider;
-use Whitecube\NovaFlexibleContent\Layouts\Collection;
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
+use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection;
 use Whitecube\NovaFlexibleContent\Value\FlexibleCast;
 
 trait HasFlexible
@@ -16,7 +16,7 @@ trait HasFlexible
      *
      * @param string $attribute
      * @param array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Collection
+     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
     public function flexible($attribute, $layoutMapping = [])
     {
@@ -30,7 +30,7 @@ trait HasFlexible
      *
      * @param array $value
      * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Collection
+     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
     public function cast($value, $layoutMapping = [])
     {
@@ -48,17 +48,17 @@ trait HasFlexible
      *
      * @param mixed $value
      * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Collection
+     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
     public function toFlexible($value, $layoutMapping = [])
     {
         $flexible = $this->getFlexibleArrayFromValue($value);
 
         if (is_null($flexible)) {
-            return new Collection();
+            return new LayoutsCollection();
         }
 
-        return new Collection(
+        return new LayoutsCollection(
             array_filter($this->getMappedFlexibleLayouts($flexible, $layoutMapping))
         );
     }

@@ -9,10 +9,7 @@ class FlexibleCast implements CastsAttributes
 {
     use HasFlexible;
 
-    /**
-     * @var array
-     */
-    protected $layouts = [];
+    protected array $layouts = [];
 
     /**
      * @var \Illuminate\Database\Eloquent\Model
@@ -31,7 +28,7 @@ class FlexibleCast implements CastsAttributes
         return $value;
     }
 
-    protected function getLayoutMapping()
+    protected function getLayoutMapping(): array
     {
         return $this->layouts;
     }

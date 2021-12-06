@@ -462,7 +462,7 @@ transform them into Layout instance:
  *
  * @param  mixed  $resource
  * @param  string $attribute
- * @param  Whitecube\NovaFlexibleContent\Layouts\Collection $layouts
+ * @param  Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection $layouts
  * @return Illuminate\Support\Collection
  */
 public function get($resource, $attribute, $layouts) {
@@ -471,7 +471,7 @@ public function get($resource, $attribute, $layouts) {
     return $blocks->map(function($block) use ($layouts) {
         $layout = $layouts->find($block->name);
 
-        if(!$layout) return;
+        if(!$layout) {return;}
 
         return $layout->duplicateAndHydrate($block->id, ['value' => $block->value]);
     })->filter();

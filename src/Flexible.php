@@ -2,14 +2,15 @@
 
 namespace Whitecube\NovaFlexibleContent;
 
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Whitecube\NovaFlexibleContent\Contracts\LayoutInterface;
 use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
-use Whitecube\NovaFlexibleContent\Layouts\Collection as LayoutsCollection;
+use Whitecube\NovaFlexibleContent\Layouts\GroupsCollection;
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Nova\Collections\GroupsCollection;
+use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
 use Whitecube\NovaFlexibleContent\Value\Resolver;
 use Whitecube\NovaFlexibleContent\Value\ResolverInterface;
 
@@ -25,7 +26,7 @@ class Flexible extends Field implements Downloadable
     /**
      * The available layouts collection
      *
-     * @var \Whitecube\NovaFlexibleContent\Layouts\Collection
+     * @var \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
     protected $layouts;
 
@@ -53,7 +54,7 @@ class Flexible extends Field implements Downloadable
     /**
      * All the validated attributes
      *
-     * @var \Illuminate\Database\Eloquent\Model
+     * @var Model
      */
     public static $model;
 
@@ -80,7 +81,7 @@ class Flexible extends Field implements Downloadable
     /**
      * Get the field layouts
      *
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Collection
+     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
     public function layouts()
     {
@@ -98,45 +99,34 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * @param string $component The name of the component to use for the menu
-     *
-     * @param array  $data
-     *
-     * @return $this
+     * Set custom dropdown menu component.
      */
-    public function menu($component, $data = [])
+    public function menu(string $component, array $data = []): static
     {
         return $this->withMeta(['menu' => compact('component', 'data')]);
     }
 
     /**
-     * Set the button's label
-     *
-     * @param string $label
-     * @return $this
+     * Set the button's label.
      */
-    public function button($label)
+    public function button(string $label): static
     {
         return $this->withMeta(['button' => $label]);
     }
 
     /**
      * Make the flexible content take up the full width
-     * of the form. Labels will sit above
-     *
-     * @return mixed
+     * of the form. Labels will sit above.
      */
-    public function fullWidth()
+    public function fullWidth(): static
     {
         return $this->withMeta(['fullWidth' => true]);
     }
 
     /**
-     *  Prevent the 'Add Layout' button from appearing more than once
-     *
-     * @return $this
+     *  Set max limit of groups in field.
      */
-    public function limit($limit = 1)
+    public function limit(int $limit = 1): static
     {
         return $this->withMeta(['limit' => $limit]);
     }
@@ -372,33 +362,33 @@ class Flexible extends Field implements Downloadable
      * @param $newGroups GroupsCollection This should be (all) the new groups to bne compared against to find the
      *     removed groups
      */
-    protected function fireRemoveCallbacks(GroupsCollection $newGroups, NovaRequest $request, $model)
+    protected function fireRemoveCallbacks(GroupsCollection $newGroups, NovaRequest $request, $model): static
     {
         $newGroupKeys  = $newGroups->map(function ($item) {
             return $item->inUseKey();
         });
-        $removedGroups = $this->groups->filter(function ($item) use ($newGroupKeys) {
+
+        $this->groups->filter(function ($item) use ($newGroupKeys) {
+            // Return only removed groups.
             return !$newGroupKeys->contains($item->inUseKey());
         })->each(function (LayoutInterface $group) use ($request, $model) {
             if (method_exists($group, 'fireRemoveCallback')) {
                 $group->fireRemoveCallback($this, $request, $model);
             }
         });
+
+        return $this;
     }
 
     /**
-     * Find the flexible's value in given request
-     *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @param string                                  $attribute
-     * @return null|array
+     * Find the flexible's value in given request.
      */
-    protected function extractValue(NovaRequest $request, $attribute)
+    protected function extractValue(NovaRequest $request, string $attribute): ?array
     {
         $value = $request->input($attribute);
 
         if (!$value) {
-            return;
+            return null;
         }
 
         if (!is_array($value)) {
@@ -501,21 +491,11 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Create a new group based on its key and layout
-     *
-     * @param string $layout
-     * @param string $key
-     * @return \Whitecube\NovaFlexibleContent\Layouts\Layout
+     * Create a new group based on its key and layout.
      */
-    protected function newGroup($layout, $key)
+    protected function newGroup(string $layout, string $key): ?LayoutInterface
     {
-        $layout = $this->layouts->find($layout);
-
-        if (!$layout) {
-            return;
-        }
-
-        return $layout->duplicate($key);
+        return $this->layouts->find($layout)?->duplicate($key);
     }
 
     /**
@@ -657,12 +637,9 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Registers a reference to the origin model for nested & contained fields
-     *
-     * @param mixed $model
-     * @return void
+     * Registers a reference to the origin model for nested & contained fields.
      */
-    protected function registerOriginModel($model)
+    protected function registerOriginModel($model): static
     {
         /** @psalm-suppress UndefinedClass */
         $isPageTemplate = is_a($model, "\Whitecube\NovaPage\Pages\Template");
@@ -673,19 +650,17 @@ class Flexible extends Field implements Downloadable
             $model = $model->getOriginal();
         }
 
-        if (!is_a($model, \Illuminate\Database\Eloquent\Model::class)) {
-            return;
+        if (is_a($model, Model::class)) {
+            static::$model = $model;
         }
 
-        static::$model = $model;
+        return $this;
     }
 
     /**
-     * Return the previously registered origin model
-     *
-     * @return null|\Illuminate\Database\Eloquent\Model
+     * Return the previously registered origin model.
      */
-    public static function getOriginModel()
+    public static function getOriginModel(): ?Model
     {
         return static::$model;
     }
