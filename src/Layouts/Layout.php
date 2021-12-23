@@ -66,7 +66,7 @@ class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayabl
     /**
      * The parent model instance
      */
-    protected ?Model $model = null;
+    protected Model|Layout|null $model = null;
 
     public function __construct(
         ?string               $title = null,
