@@ -4,14 +4,31 @@ namespace Whitecube\NovaFlexibleContent\Layouts;
 
 use Whitecube\NovaFlexibleContent\Flexible;
 
-abstract class Preset
+class Preset
 {
     protected array $layoutMapping = [];
 
     /**
-     * @return string[]|\Whitecube\NovaFlexibleContent\Layouts\Layout[]
+     * @var string[]|\Whitecube\NovaFlexibleContent\Layouts\Layout[]
      */
-    abstract public function usedLayouts(): array;
+    protected array $usedLayouts = [];
+
+    public static function withLayouts(array $usedLayouts = []): static
+    {
+        return (new static())->useLayouts($usedLayouts);
+    }
+
+    public function useLayouts(array $usedLayouts = []): static
+    {
+        $this->usedLayouts = $usedLayouts;
+
+        return $this;
+    }
+
+    public function usedLayouts(): array
+    {
+        return $this->usedLayouts;
+    }
 
     public function layoutMapping(): array
     {
