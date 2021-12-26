@@ -2,6 +2,7 @@
 
 [![Packagist License](https://img.shields.io/packagist/l/yaroslawww/nova-flexible-content?color=%234dc71f)](https://github.com/yaroslawww/nova-flexible-content/blob/master/LICENSE.md)
 [![Packagist Version](https://img.shields.io/packagist/v/yaroslawww/nova-flexible-content)](https://packagist.org/packages/yaroslawww/nova-flexible-content)
+[![Total Downloads](https://img.shields.io/packagist/dt/yaroslawww/nova-flexible-content)](https://packagist.org/packages/yaroslawww/nova-flexible-content)
 [![Build Status](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/build.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/build-status/master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
