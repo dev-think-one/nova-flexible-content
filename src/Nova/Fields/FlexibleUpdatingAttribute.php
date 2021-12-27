@@ -1,12 +1,12 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Nova\Fields;
+namespace NovaFlexibleContent\Nova\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Flexible;
-use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
+use NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Http\FlexibleAttribute;
 
 trait FlexibleUpdatingAttribute
 {

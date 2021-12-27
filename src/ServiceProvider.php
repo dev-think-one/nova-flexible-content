@@ -1,14 +1,14 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent;
+namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use Whitecube\NovaFlexibleContent\Commands\CreateCast;
-use Whitecube\NovaFlexibleContent\Commands\CreateLayout;
-use Whitecube\NovaFlexibleContent\Commands\CreatePreset;
-use Whitecube\NovaFlexibleContent\Commands\CreateResolver;
-use Whitecube\NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
+use NovaFlexibleContent\Commands\CreateCast;
+use NovaFlexibleContent\Commands\CreateLayout;
+use NovaFlexibleContent\Commands\CreatePreset;
+use NovaFlexibleContent\Commands\CreateResolver;
+use NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -27,6 +27,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/nova-flexible-content.php' => config_path('nova-flexible-content.php'),
+            ], 'config');
+
             $this->commands([
                 CreateCast::class,
                 CreateLayout::class,
@@ -43,7 +47,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(__DIR__ . '/../config/nova-flexible-content.php', 'nova-flexible-content');
     }
 
     /**

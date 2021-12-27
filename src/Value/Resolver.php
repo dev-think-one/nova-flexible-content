@@ -1,12 +1,12 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Value;
+namespace NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
-use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
-use Whitecube\NovaFlexibleContent\Layouts\GroupsCollection;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection;
+use NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 class Resolver implements ResolverInterface
 {

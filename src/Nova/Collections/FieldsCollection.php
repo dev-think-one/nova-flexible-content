@@ -1,12 +1,12 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Nova\Collections;
+namespace NovaFlexibleContent\Nova\Collections;
 
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection as NovaFieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Flexible;
-use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
+use NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Http\FlexibleAttribute;
 
 class FieldsCollection extends NovaFieldCollection
 {

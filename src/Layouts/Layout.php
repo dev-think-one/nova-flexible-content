@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts;
 
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
@@ -14,10 +14,10 @@ use Laravel\Nova\Contracts\Storable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Concerns\HasFlexible;
-use Whitecube\NovaFlexibleContent\Flexible;
-use Whitecube\NovaFlexibleContent\Http\FlexibleAttribute;
-use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
+use NovaFlexibleContent\Concerns\HasFlexible;
+use NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Http\FlexibleAttribute;
+use NovaFlexibleContent\Http\ScopedRequest;
 
 class Layout implements JsonSerializable, ArrayAccess, Arrayable
 {

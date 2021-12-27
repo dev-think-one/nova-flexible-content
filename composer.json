@@ -36,12 +36,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Whitecube\\NovaFlexibleContent\\": "src/"
+            "NovaFlexibleContent\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "NovaFlexibleContent\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -53,7 +53,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Whitecube\\NovaFlexibleContent\\ServiceProvider"
+                "NovaFlexibleContent\\ServiceProvider"
             ]
         }
     },

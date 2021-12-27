@@ -1,18 +1,18 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent;
+namespace NovaFlexibleContent;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
-use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
-use Whitecube\NovaFlexibleContent\Layouts\GroupsCollection;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
-use Whitecube\NovaFlexibleContent\Layouts\Preset;
-use Whitecube\NovaFlexibleContent\Value\Resolver;
+use NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Http\ScopedRequest;
+use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
+use NovaFlexibleContent\Layouts\Preset;
+use NovaFlexibleContent\Value\Resolver;
 
 class Flexible extends Field implements Downloadable
 {
@@ -610,7 +610,7 @@ class Flexible extends Field implements Downloadable
      * Return a previously registered validation key
      *
      * @param  string  $key
-     * @return null|\Whitecube\NovaFlexibleContent\Http\FlexibleAttribute
+     * @return null|\NovaFlexibleContent\Http\FlexibleAttribute
      */
     public static function getValidationKey($key)
     {

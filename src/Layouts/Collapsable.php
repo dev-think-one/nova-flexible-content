@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts;
 
 trait Collapsable
 {

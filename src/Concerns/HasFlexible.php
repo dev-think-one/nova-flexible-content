@@ -1,12 +1,12 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Concerns;
+namespace NovaFlexibleContent\Concerns;
 
 use Illuminate\Support\Collection as BaseCollection;
 use Laravel\Nova\NovaServiceProvider;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection;
-use Whitecube\NovaFlexibleContent\Value\FlexibleCast;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\LayoutsCollection;
+use NovaFlexibleContent\Value\FlexibleCast;
 
 trait HasFlexible
 {
@@ -16,7 +16,7 @@ trait HasFlexible
      *
      * @param  string  $attribute
      * @param  array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * @return \NovaFlexibleContent\Layouts\LayoutsCollection
      */
     public function flexible(string $attribute, array $layoutMapping = [])
     {

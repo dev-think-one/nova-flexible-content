@@ -2,33 +2,25 @@
 
 namespace App\Nova\Flexible\Resolvers;
 
-use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 class ___CLASSNAME___ implements ResolverInterface
 {
     /**
-     * get the field's value
-     *
-     * @param  mixed  $resource
-     * @param  string $attribute
-     * @param  Whitecube\NovaFlexibleContent\Layouts\Collection $layouts
-     * @return Illuminate\Support\Collection
+     * @inerhitDoc
      */
-    public function get($resource, string $attribute, $layouts)
+    public function get(mixed $model, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
-
+        return new GroupsCollection();
     }
 
     /**
-     * Set the field's value
-     *
-     * @param  mixed  $model
-     * @param  string $attribute
-     * @param  Illuminate\Support\Collection $groups
-     * @return string
+     * @inerhitDoc
      */
-    public function set($model, string $attribute, $groups): string
+    public function set(mixed $model, string $attribute, GroupsCollection $groups): string
     {
-
+        return '';
     }
 }

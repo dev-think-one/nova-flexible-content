@@ -1,18 +1,18 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Concerns;
+namespace NovaFlexibleContent\Concerns;
 
 use Ebess\AdvancedNovaMediaLibrary\Fields\Media;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use NovaFlexibleContent\FileAdder\FileAdderFactory;
+use NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Layouts\Layout;
 use Spatie\MediaLibrary\Downloaders\DefaultDownloader;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\InvalidUrl;
 use Spatie\MediaLibrary\MediaCollections\MediaRepository;
-use Whitecube\NovaFlexibleContent\FileAdder\FileAdderFactory;
-use Whitecube\NovaFlexibleContent\Flexible;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
 
 trait HasMediaLibrary
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts;
 
-use Whitecube\NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Flexible;
 
 class Preset
 {
@@ -12,7 +12,7 @@ class Preset
     protected array $_layoutMapping = [];
 
     /**
-     * @var string[]|\Whitecube\NovaFlexibleContent\Layouts\Layout[]
+     * @var string[]|\NovaFlexibleContent\Layouts\Layout[]
      */
     protected array $layouts = [];
 
