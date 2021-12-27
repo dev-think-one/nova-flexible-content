@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Contracts\LayoutInterface;
+use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
 use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
 use Whitecube\NovaFlexibleContent\Layouts\GroupsCollection;
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
 use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
 use Whitecube\NovaFlexibleContent\Layouts\Preset;
 use Whitecube\NovaFlexibleContent\Value\Resolver;
-use Whitecube\NovaFlexibleContent\Value\ResolverInterface;
 
 class Flexible extends Field implements Downloadable
 {
@@ -25,39 +24,26 @@ class Flexible extends Field implements Downloadable
     public $component = 'nova-flexible-content';
 
     /**
-     * The available layouts collection
-     *
-     * @var \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * The available layouts as collection.
      */
-    protected $layouts;
+    protected LayoutsCollection $layouts;
 
     /**
-     * The currently defined layout groups
-     *
-     * @var \Illuminate\Support\Collection
+     * The currently created layout groups.
      */
-    protected $groups;
+    protected GroupsCollection $groups;
 
     /**
      * The field's value setter & getter
-     *
-     * @var \Whitecube\NovaFlexibleContent\Value\ResolverInterface
      */
-    protected $resolver;
+    protected ResolverInterface|null $resolver = null;
 
     /**
      * All the validated attributes
-     *
-     * @var array
      */
-    protected static $validatedKeys = [];
+    protected static array $validatedKeys = [];
 
-    /**
-     * All the validated attributes
-     *
-     * @var Model
-     */
-    public static $model;
+    public static Model|null $model;
 
     /**
      * Create a fresh flexible field instance
@@ -69,32 +55,28 @@ class Flexible extends Field implements Downloadable
      */
     public function __construct($name, $attribute = null, $resolveCallback = null)
     {
+        $this->layouts = new LayoutsCollection();
+        $this->groups  = new GroupsCollection();
+
         parent::__construct($name, $attribute, $resolveCallback);
 
         $this->button(__('Add layout'));
-
-        // The original menu as default
         $this->menu('flexible-drop-menu');
-
         $this->hideFromIndex();
     }
 
     /**
-     * Get the field layouts
-     *
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * Get the field layouts.
      */
-    public function layouts()
+    public function layouts(): LayoutsCollection
     {
         return $this->layouts;
     }
 
     /**
-     * Get the field groups
-     *
-     * @return \Illuminate\Support\Collection|null
+     * Get the field groups.
      */
-    public function groups()
+    public function groups(): GroupsCollection
     {
         return $this->groups;
     }
@@ -133,11 +115,9 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Confirm remove
-     *
-     * @return $this
+     * Set removing confirmable.
      */
-    public function confirmRemove($label = '', $yes = 'Delete', $no = 'Cancel')
+    public function confirmRemove($label = '', $yes = 'Delete', $no = 'Cancel'): static
     {
         return $this->withMeta([
             'confirmRemove'        => true,
@@ -148,19 +128,25 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Set the field's resolver
-     *
-     * @param  mixed  $resolver
-     * @return $this
+     * @deprecated
      */
-    public function resolver($resolver)
+    public function resolver(ResolverInterface|string $resolver): static
     {
-        if (is_string($resolver) && is_a($resolver, ResolverInterface::class, true)) {
+        return $this->setResolver($resolver);
+    }
+
+    /**
+     * Set the field's resolver
+     */
+    public function setResolver(ResolverInterface|string $resolver): static
+    {
+        if (is_string($resolver)
+            && is_a($resolver, ResolverInterface::class, true)) {
             $resolver = new $resolver();
         }
 
         if (!($resolver instanceof ResolverInterface)) {
-            throw new \Exception('Resolver Class "'.get_class($resolver).'" does not implement ResolverInterface.');
+            throw new \Exception('Resolver Class does not implement ResolverInterface.');
         }
 
         $this->resolver = $resolver;
@@ -169,29 +155,34 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Register a new layout
+     * Register a new layout.
      *
-     * @param  array  $arguments
-     * @return $this
+     * @deprecated Please use alternative useLayout
      */
-    public function addLayout(...$arguments)
+    public function addLayout(...$arguments): static
     {
         $count = count($arguments);
 
         if ($count > 1) {
-            $this->registerLayout(new Layout(...$arguments));
+            $layout = new Layout(...$arguments);
+        } else {
+            $layout = $arguments[0];
+        }
 
+        return $this->useLayout($layout);
+    }
+
+    /**
+     * Register a new layout.
+     */
+    public function useLayout(Layout|string $layout): static
+    {
+        if (!is_a($layout, Layout::class, true)) {
             return $this;
         }
 
-        $layout = $arguments[0];
-
-        if (is_string($layout) && is_a($layout, LayoutInterface::class, true)) {
+        if (is_string($layout)) {
             $layout = new $layout();
-        }
-
-        if (!($layout instanceof LayoutInterface)) {
-            throw new \Exception('Layout Class "'.get_class($layout).'" does not implement LayoutInterface.');
         }
 
         $this->registerLayout($layout);
@@ -216,19 +207,13 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Push a layout instance into the layouts collection
-     *
-     * @param  \Whitecube\NovaFlexibleContent\Contracts\LayoutInterface  $layout
-     * @return void
+     * Push a layout instance into the layouts collection.
      */
-    protected function registerLayout(LayoutInterface $layout)
+    protected function registerLayout(Layout $layout)
     {
-        if (!$this->layouts) {
-            $this->layouts = new LayoutsCollection();
-            $this->withMeta(['layouts' => $this->layouts]);
-        }
-
         $this->layouts->push($layout);
+
+        return $this->withMeta(['layouts' => $this->layouts]);
     }
 
     /**
@@ -372,7 +357,7 @@ class Flexible extends Field implements Downloadable
         $this->groups->filter(function ($item) use ($newGroupKeys) {
             // Return only removed groups.
             return !$newGroupKeys->contains($item->inUseKey());
-        })->each(function (LayoutInterface $group) use ($request, $model) {
+        })->each(function (Layout $group) use ($request, $model) {
             if (method_exists($group, 'fireRemoveCallback')) {
                 $group->fireRemoveCallback($this, $request, $model);
             }
@@ -400,12 +385,9 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Resolve all contained groups and their fields
-     *
-     * @param  \Illuminate\Support\Collection  $groups
-     * @return \Illuminate\Support\Collection
+     * Resolve all contained groups and their fields.
      */
-    protected function resolveGroups($groups)
+    protected function resolveGroups(GroupsCollection $groups): GroupsCollection
     {
         return $groups->map(function ($group) {
             return $group->getResolved();
@@ -415,11 +397,8 @@ class Flexible extends Field implements Downloadable
     /**
      * Resolve all contained groups and their fields for display on index and
      * detail views.
-     *
-     * @param  \Illuminate\Support\Collection  $groups
-     * @return \Illuminate\Support\Collection
      */
-    protected function resolveGroupsForDisplay($groups)
+    protected function resolveGroupsForDisplay(GroupsCollection $groups): GroupsCollection
     {
         return $groups->map(function ($group) {
             return $group->getResolvedForDisplay();
@@ -433,24 +412,25 @@ class Flexible extends Field implements Downloadable
      * @param  mixed  $resource
      * @param  string  $attribute
      * @return \Illuminate\Support\Collection
+     * @throws \Exception
      */
-    protected function buildGroups($resource, $attribute)
+    protected function buildGroups($resource, string $attribute)
     {
         if (!$this->resolver) {
-            $this->resolver(Resolver::class);
+            $this->setResolver(Resolver::class);
         }
 
         return $this->groups = $this->resolver->get($resource, $attribute, $this->layouts);
     }
 
-    public function findGroup(string $groupKey): ?LayoutInterface
+    public function findGroup(string $groupKey): ?Layout
     {
-        return $this->groups->first(fn (LayoutInterface $group) => $group->isUseKey($groupKey));
+        return $this->groups->first(fn (Layout $group) => $group->isUseKey($groupKey));
     }
 
-    public function findGroupRecursive(string $groupKey): ?LayoutInterface
+    public function findGroupRecursive(string $groupKey): ?Layout
     {
-        /** @var LayoutInterface $group */
+        /** @var Layout $group */
         foreach ($this->groups as $group) {
             if ($group->isUseKey($groupKey)) {
                 return $group;
@@ -471,7 +451,7 @@ class Flexible extends Field implements Downloadable
         $isUpdated = false;
 
         $this->groups
-            ->each(function (LayoutInterface $group) use ($groupKey, $fieldKey, $newValue, &$isUpdated) {
+            ->each(function (Layout $group) use ($groupKey, $fieldKey, $newValue, &$isUpdated) {
                 if ($group->isUseKey($groupKey)) {
                     $group->setAttribute($fieldKey, $newValue);
                     $isUpdated = true;
@@ -494,7 +474,7 @@ class Flexible extends Field implements Downloadable
     /**
      * Create a new group based on its key and layout.
      */
-    protected function newGroup(string $layout, string $key): ?LayoutInterface
+    protected function newGroup(string $layout, string $key): ?Layout
     {
         return $this->layouts->find($layout)?->duplicate($key);
     }

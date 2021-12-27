@@ -114,7 +114,7 @@ class CreateCast extends Command
     {
         return str_replace(
             [
-                ':classname',
+                '___CLASSNAME___',
             ],
             [
                 $this->classname,

@@ -136,8 +136,8 @@ class CreateLayout extends Command
     {
         return str_replace(
             [
-                ':classname',
-                ':name',
+                '___CLASSNAME___',
+                '___NAME___',
             ],
             [
                 $this->classname,

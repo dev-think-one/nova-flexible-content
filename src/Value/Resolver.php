@@ -3,7 +3,10 @@
 namespace Whitecube\NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
+use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
+use Whitecube\NovaFlexibleContent\Layouts\GroupsCollection;
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
+use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection;
 
 class Resolver implements ResolverInterface
 {
@@ -11,7 +14,7 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function set($model, $attribute, $groups)
+    public function set(mixed $model, string $attribute, GroupsCollection $groups): string
     {
         return $model->$attribute = $groups->map(function (Layout $group) {
             return [
@@ -26,13 +29,13 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function get($model, $attribute, $groups)
+    public function get(mixed $model, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
-        return collect(
+        return GroupsCollection::make(
             $this->extractValueFromResource($model, $attribute)
         )->map(function ($item) use ($groups) {
             if ($layout = $groups->find($item->layout)) {
-                return $layout->duplicateAndHydrate($item->key, (array) $item->attributes)
+                return $layout->duplicate($item->key, (array) $item->attributes)
                               ->setCollapsed($item->collapsed ?? false);
             }
 

@@ -405,7 +405,7 @@ class WysiwygPagePreset extends Preset
     public function handle(Flexible $field)
     {
         $field->button('Add new block');
-        $field->resolver(\App\Nova\Flexible\Resolvers\WysiwygPageResolver::class);
+        $field->setResolver(\App\Nova\Flexible\Resolvers\WysiwygPageResolver::class);
         $field->help('Go to the "<strong>Page blocks</strong>" Resource in order to add new WYSIWYG block types.');
 
         $this->blocks->each(function($block) use ($field) {
@@ -474,7 +474,7 @@ public function get($resource, $attribute, $layouts) {
 
         if(!$layout) {return;}
 
-        return $layout->duplicateAndHydrate($block->id, ['value' => $block->value]);
+        return $layout->duplicate($block->id, ['value' => $block->value]);
     })->filter();
 }
 ```

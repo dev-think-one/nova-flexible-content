@@ -4,9 +4,9 @@ namespace App\Casts;
 
 use Whitecube\NovaFlexibleContent\Value\FlexibleCast;
 
-class :classname extends FlexibleCast
+class ___CLASSNAME___ extends FlexibleCast
 {
-    protected $layouts = [
+    protected array $layouts = [
         // Define your layout mappings
     ];
 }

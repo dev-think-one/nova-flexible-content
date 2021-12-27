@@ -4,28 +4,28 @@ namespace App\Nova\Flexible\Layouts;
 
 use Whitecube\NovaFlexibleContent\Layouts\Layout;
 
-class :classname extends Layout
+class ___CLASSNAME___ extends Layout
 {
     /**
      * The layout's unique identifier
      *
      * @var string
      */
-    protected string $name = ':name';
+    protected string $name = '___NAME___';
 
     /**
      * The displayed title
      *
      * @var string
      */
-    protected string $title = ':classname';
+    protected string $title = '___CLASSNAME___';
 
     /**
      * Get the fields displayed by the layout.
      *
      * @return array
      */
-    public function fields()
+    public function fields(): array
     {
         return [
             // Define the layout's fields.

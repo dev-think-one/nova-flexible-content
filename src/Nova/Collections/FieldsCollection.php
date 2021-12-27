@@ -19,10 +19,7 @@ class FieldsCollection extends NovaFieldCollection
             return $this->findFieldUsedInFlexibleByAttribute($attribute, $default);
         }
 
-        return $this->first(function ($field) use ($attribute) {
-            return isset($field->attribute) &&
-                   $field->attribute == $attribute;
-        }, $default);
+        return parent::findFieldByAttribute($attribute, $default);
     }
 
     public function findFieldUsedInFlexibleByAttribute($attribute, mixed $default = null)

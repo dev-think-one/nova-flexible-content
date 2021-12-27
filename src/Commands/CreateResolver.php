@@ -113,7 +113,7 @@ class CreateResolver extends Command
     protected function buildClass()
     {
         return str_replace(
-            ':classname',
+            '___CLASSNAME___',
             $this->classname,
             $this->files->get(__DIR__ . '/../../resources/stubs/Resolver.stub')
         );

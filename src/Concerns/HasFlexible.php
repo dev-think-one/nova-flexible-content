@@ -14,11 +14,11 @@ trait HasFlexible
     /**
      * Parse a Flexible Content attribute
      *
-     * @param string $attribute
-     * @param array  $layoutMapping
+     * @param  string  $attribute
+     * @param  array  $layoutMapping
      * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
      */
-    public function flexible($attribute, $layoutMapping = [])
+    public function flexible(string $attribute, array $layoutMapping = [])
     {
         $flexible = data_get($this->attributes, $attribute);
 
@@ -26,14 +26,11 @@ trait HasFlexible
     }
 
     /**
-     * Cast a Flexible Content value
-     *
-     * @param array $value
-     * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * Cast a Flexible Content value.
      */
-    public function cast($value, $layoutMapping = [])
+    public function cast($value, array $layoutMapping = [])
     {
+        // TODO: strange condition, SHOULD be reworked.
         if (app()->getProvider(NovaServiceProvider::class)
             && !app()->runningInConsole()
             && !app()->environment('testing')) {
@@ -44,13 +41,9 @@ trait HasFlexible
     }
 
     /**
-     * Parse a Flexible Content from value
-     *
-     * @param mixed $value
-     * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * Parse a Flexible Content from value.
      */
-    public function toFlexible($value, $layoutMapping = [])
+    public function toFlexible(mixed $value, array $layoutMapping = []): LayoutsCollection
     {
         $flexible = $this->getFlexibleArrayFromValue($value);
 
@@ -64,12 +57,9 @@ trait HasFlexible
     }
 
     /**
-     * Transform incoming value into an array of usable layouts
-     *
-     * @param mixed $value
-     * @return array|null
+     * Transform incoming value into an array of usable layouts.
      */
-    protected function getFlexibleArrayFromValue($value)
+    protected function getFlexibleArrayFromValue(mixed $value): ?array
     {
         if (is_string($value)) {
             $value = json_decode($value);
@@ -89,13 +79,9 @@ trait HasFlexible
     }
 
     /**
-     * Map array with Flexible Content Layouts
-     *
-     * @param array $flexible
-     * @param array $layoutMapping
-     * @return array
+     * Map array with Flexible Content Layouts.
      */
-    protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping)
+    protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping): array
     {
         return array_map(function ($item) use ($layoutMapping) {
             return $this->getMappedLayout($item, $layoutMapping);
@@ -103,13 +89,9 @@ trait HasFlexible
     }
 
     /**
-     * Transform given layout value into a usable Layout instance
-     *
-     * @param mixed $item
-     * @param array $layoutMapping
-     * @return null|\Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
+     * Transform given layout value into a usable Layout instance.
      */
-    protected function getMappedLayout($item, array $layoutMapping)
+    protected function getMappedLayout(mixed $item, array $layoutMapping): ?Layout
     {
         $name       = null;
         $key        = null;
@@ -134,22 +116,16 @@ trait HasFlexible
         }
 
         if (is_null($name)) {
-            return;
+            return null;
         }
 
         return $this->createMappedLayout($name, $key, $attributes, $layoutMapping);
     }
 
     /**
-     * Transform given layout value into a usable Layout instance
-     *
-     * @param string $name
-     * @param string $key
-     * @param array  $attributes
-     * @param array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
+     * Transform given layout value into a usable Layout instance.
      */
-    protected function createMappedLayout($name, $key, $attributes, array $layoutMapping)
+    protected function createMappedLayout(string $name, string $key, array $attributes, array $layoutMapping): Layout
     {
         $classname = array_key_exists($name, $layoutMapping)
             ? $layoutMapping[$name]

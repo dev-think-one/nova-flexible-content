@@ -2,9 +2,9 @@
 
 namespace App\Nova\Flexible\Resolvers;
 
-use Whitecube\NovaFlexibleContent\Value\ResolverInterface;
+use Whitecube\NovaFlexibleContent\Contracts\ResolverInterface;
 
-class :classname implements ResolverInterface
+class ___CLASSNAME___ implements ResolverInterface
 {
     /**
      * get the field's value
@@ -14,7 +14,7 @@ class :classname implements ResolverInterface
      * @param  Whitecube\NovaFlexibleContent\Layouts\Collection $layouts
      * @return Illuminate\Support\Collection
      */
-    public function get($resource, $attribute, $layouts)
+    public function get($resource, string $attribute, $layouts)
     {
 
     }
@@ -27,8 +27,8 @@ class :classname implements ResolverInterface
      * @param  Illuminate\Support\Collection $groups
      * @return string
      */
-    public function set($model, $attribute, $groups)
+    public function set($model, string $attribute, $groups): string
     {
-        
+
     }
 }
