@@ -4,7 +4,6 @@ namespace NovaFlexibleContent\Layouts;
 
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -21,7 +20,7 @@ use NovaFlexibleContent\Http\ScopedRequest;
 
 class Layout implements JsonSerializable, ArrayAccess, Arrayable
 {
-    use HasAttributes;
+    use AttributesManipulation;
     use HidesAttributes;
     use HasFlexible;
     use Collapsable;
@@ -80,7 +79,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         $this->name                 = $name  ?? $this->name();
         $this->key                  = is_null($key) ? null : $this->getProcessedKey($key);
         $this->removeCallbackMethod = $removeCallbackMethod;
-        $this->setRawAttributes($this->cleanAttributes($attributes));
+        $this->setRawAttributes($this->setEmptyValuesToNull($attributes));
     }
 
     /**
@@ -433,147 +432,43 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     }
 
     /**
-     * Dynamically retrieve attributes on the layout.
-     *
-     * @param  string  $key
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->getAttribute($key);
-    }
-
-    /**
-     * Dynamically set attributes on the layout.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
-     */
-    public function __set($key, $value)
-    {
-        $this->setAttribute($key, $value);
-    }
-
-    /**
-     * Determine if the given attribute exists.
-     *
-     * @param  mixed  $offset
-     * @return bool
-     */
-    public function offsetExists($offset)
-    {
-        return !is_null($this->getAttribute($offset));
-    }
-
-    /**
-     * Get the value for a given offset.
-     *
-     * @param  mixed  $offset
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-        return $this->getAttribute($offset);
-    }
-
-    /**
-     * Set the value for a given offset.
-     *
-     * @param  mixed  $offset
-     * @param  mixed  $value
-     * @return void
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->setAttribute($offset, $value);
-    }
-
-    /**
-     * Unset the value for a given offset.
-     *
-     * @param  mixed  $offset
-     * @return void
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->attributes[$offset]);
-    }
-
-    /**
-     * Determine if an attribute or relation exists on the model.
-     *
-     * @param  string  $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return $this->offsetExists($key);
-    }
-
-    /**
-     * Unset an attribute on the model.
-     *
-     * @param  string  $key
-     * @return void
-     */
-    public function __unset($key)
-    {
-        $this->offsetUnset($key);
-    }
-
-    /**
      * Transform empty attribute values to null
-     *
-     * @param  array  $attributes
-     * @return array
      */
-    protected function cleanAttributes($attributes)
+    protected function setEmptyValuesToNull(array $dataArray = []): array
     {
-        foreach ($attributes as $key => $value) {
+        foreach ($dataArray as $key => $value) {
             if (!is_string($value) || strlen($value)) {
                 continue;
             }
-            $attributes[$key] = null;
+            $dataArray[$key] = null;
         }
 
-        return $attributes;
+        return $dataArray;
     }
 
     /**
-     * Get the attributes that should be converted to dates.
+     * Check if relation exists.
+     * Layouts do not have relations.
      */
-    protected function getDates(): array
+    protected function relationLoaded($key): bool
     {
-        return $this->dates ?? [];
+        return false;
     }
 
     /**
-     * Get the format for database stored dates.
-     *
-     * @return string
+     * Get the value indicating whether the IDs are incrementing.
+     * Layouts do not have increment identifier.
      */
-    public function getDateFormat()
+    public function getIncrementing(): bool
     {
-        return $this->dateFormat ?: 'Y-m-d H:i:s';
+        return false;
     }
 
     /**
-     * Get the casts array.
-     *
-     * @return array
+     * Determine if the model uses timestamps.
+     * Layouts do not use timestamps.
      */
-    public function getCasts()
-    {
-        return $this->casts ?? [];
-    }
-
-    /**
-     * Check if relation exists. Layouts do not have relations.
-     *
-     * @return bool
-     */
-    protected function relationLoaded()
+    public function usesTimestamps(): bool
     {
         return false;
     }
