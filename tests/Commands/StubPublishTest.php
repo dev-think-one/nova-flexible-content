@@ -32,7 +32,7 @@ class StubPublishTest extends TestCase
         $this->assertFileExists($newStubPath.'layout.stub');
 
         $fi = new FilesystemIterator($newStubPath, FilesystemIterator::SKIP_DOTS);
-        $this->assertEquals(4, iterator_count($fi));
+        $this->assertEquals(3, iterator_count($fi));
 
         static::clearPublishedStubsFolder();
     }

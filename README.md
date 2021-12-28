@@ -303,6 +303,38 @@ Flexible::make('Content')
     ->preset(\App\Nova\Flexible\Presets\WysiwygPagePreset::class);
 ```
 
+### Display flexible content
+
+The field stores its values as a single JSON string, meaning this string needs to be parsed before it can be used in
+your application.
+
+```php
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use NovaFlexibleContent\Concerns\HasFlexible;
+
+class Post extends Model
+{
+    use HasFlexible;
+
+    // Collect basic `Layout` instances
+    public function getCollectedFlexibleContentAttribute()
+    {
+        return $this->flexible('flexible-content');
+    }
+    
+    // Cast to specified classes
+    public function getCastedFlexibleContentAttribute()
+    {
+        return $this->flexible('flexible-content', [
+            'wysiwyg' => \App\Nova\Flexible\Layouts\WysiwygLayout::class,
+            'video' => \App\Nova\Flexible\Layouts\VideoLayout::class,
+        ]);
+    }
+}
+```
+
 ## Tests
 
 When adding a new feature or fixing a bug, please add corresponding unit tests.
@@ -313,147 +345,3 @@ Run PHPUnit by calling `composer test`.
 
 - [Whitecube](https://whitecube.be/)
 - [![Think Studio](https://yaroslawww.github.io/images/sponsors/packages/logo-think-studio.png)](https://think.studio/)
-
-===========================
-
-===========================
-
-===========================
-
-===========================
-
-===========================
-
-### Display flexible content
-
-The field stores its values as a single JSON string, meaning this string needs to be parsed before it can be used in
-your application.
-
-### With casts
-
-This can be done trivially by using the `FlexibleCast` class in this package:
-
-```php
-namespace App;
-
-use Illuminate\Database\Eloquent\Model;
-use Whitecube\NovaFlexibleContent\Value\FlexibleCast;
-
-class MyModel extends Model
-{
-    protected $casts = [
-        'flexible-content' => FlexibleCast::class
-    ];
-}
-```
-
-#### Writing a custom flexible cast
-
-By default, the `FlexibleCast` class will collect basic `Layout` instances. If you want to map the layouts
-into [Custom Layout instances](#custom-layout-classes), it is also possible. First, create a custom flexible cast by
-running `php artisan flexible:cast MyFlexibleCast`. This will create the file in the `App\Casts` directory.
-
-Then easily map your custom layout classes to the proper keys:
-
-```php
-namespace App\Casts;
-
-class MyFlexibleCast extends FlexibleCast
-{
-    protected $layouts = [
-        'wysiwyg' => \App\Nova\Flexible\Layouts\WysiwygLayout::class,
-        'video' => \App\Nova\Flexible\Layouts\VideoLayout::class,
-    ];
-}
-```
-
-#### Having more control over the layout mappings
-
-If you need to do complex things with your mappings instead of having a static array as shown above, you can override
-the `getLayoutMappings` method on your cast.
-
-```php
-namespace App\Casts;
-
-class MyFlexibleCast extends FlexibleCast
-{
-    protected function getLayoutMappings()
-    {
-        $mappings = [];
-        
-        // Conditionally add mappings however you want
-        
-        return $mappings;
-    }
-}
-```
-
-### With the `HasFlexible` trait
-
-By implementing the `HasFlexible` trait on your models, you can call the `flexible($attribute)` method, which will
-automatically transform the attribute's value into a fully parsed `Whitecube\NovaFlexibleContent\Layouts\Collection`.
-Feel free to apply this `flexible()` call directly in your blade views or to extract it into an attribute's mutator
-method as shown below:
-
-```php
-namespace App;
-
-use Illuminate\Database\Eloquent\Model;
-use Whitecube\NovaFlexibleContent\Concerns\HasFlexible;
-
-class MyModel extends Model
-{
-    use HasFlexible;
-
-    public function getFlexibleContentAttribute()
-    {
-        return $this->flexible('flexible-content');
-    }
-}
-```
-
-By default, the `HasFlexible` trait will collect basic `Layout` instances. If you want to map the layouts
-into [Custom Layout instances](#custom-layout-classes), it is also possible to specify the mapping rules as follows:
-
-```php
-public function getFlexibleContentAttribute()
-{
-    return $this->flexible('flexible-content', [
-        'wysiwyg' => \App\Nova\Flexible\Layouts\WysiwygLayout::class,
-        'video' => \App\Nova\Flexible\Layouts\VideoLayout::class,
-    ]);
-}
-```
-
-## Layouts
-
-### The Layouts Collection
-
-Collections returned by `FlexibleCast` or the `HasFlexible` trait extend the original `Illuminate\Support\Collection`.
-These custom layout collections expose a `find(string $name)` method which returns the first layout having the given
-layout `$name`.
-
-### The Layout instance
-
-Layouts are some kind of _fake models_. They use Laravel's `HasAttributes` trait, which means you can define accessors &
-mutators for the layout's attributes.
-
-Each Layout (or custom layout extending the base Layout) already implements the `HasFlexible` trait, meaning you can
-directly use the `$layout->flexible('my-sub-layout')` method to parse nested flexible content values.
-
-Furthermore, it's also possible to access the Layout's properties using the following methods:
-
-##### `name()`
-
-Returns the layout's name.
-
-##### `title()`
-
-Returns the layout's title (as shown in Nova).
-
-##### `key()`
-
-Returns the layout's unique key (the layout's unique identifier).
-
-
-

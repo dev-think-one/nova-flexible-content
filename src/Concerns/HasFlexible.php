@@ -3,10 +3,8 @@
 namespace NovaFlexibleContent\Concerns;
 
 use Illuminate\Support\Collection as BaseCollection;
-use Laravel\Nova\NovaServiceProvider;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\LayoutsCollection;
-use NovaFlexibleContent\Value\FlexibleCast;
 
 trait HasFlexible
 {
@@ -16,28 +14,15 @@ trait HasFlexible
      */
     public function flexible(string $attribute, array $layoutMapping = []): LayoutsCollection
     {
-        $flexible = data_get($this->attributes, $attribute);
+        $value = data_get($this->attributes, $attribute);
 
-        return $this->cast($flexible, $layoutMapping);
-    }
-
-    /**
-     * Cast a Flexible Content value.
-     */
-    public function cast($value, array $layoutMapping = [])
-    {
-        // Ad-hoc solution, return error in nova admin if cast
-        if (app()->getProvider(NovaServiceProvider::class)) {
-            return $value;
-        }
-
-        return $this->toFlexible($value ?: null, $layoutMapping);
+        return $this->toFlexibleCollection($value ?: null, $layoutMapping);
     }
 
     /**
      * Parse a Flexible Content from value.
      */
-    public function toFlexible(mixed $value, array $layoutMapping = []): LayoutsCollection
+    public function toFlexibleCollection(mixed $value, array $layoutMapping = []): LayoutsCollection
     {
         $flexible = $this->getFlexibleArrayFromValue($value);
 
@@ -45,9 +30,7 @@ trait HasFlexible
             return new LayoutsCollection();
         }
 
-        return new LayoutsCollection(
-            array_filter($this->getMappedFlexibleLayouts($flexible, $layoutMapping))
-        );
+        return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter();
     }
 
     /**
@@ -127,11 +110,7 @@ trait HasFlexible
 
         $layout = new $classname($name, $name, [], $key, $attributes);
 
-        $model = is_a($this, FlexibleCast::class)
-            ? $this->model
-            : $this;
-
-        $layout->setModel($model);
+        $layout->setModel($this);
 
         return $layout;
     }

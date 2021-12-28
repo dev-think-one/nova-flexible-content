@@ -4,7 +4,6 @@ namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use NovaFlexibleContent\Commands\Generators\MakeCastCommand;
 use NovaFlexibleContent\Commands\Generators\MakeLayoutCommand;
 use NovaFlexibleContent\Commands\Generators\MakePresetCommand;
 use NovaFlexibleContent\Commands\Generators\MakeResolverCommand;
@@ -33,7 +32,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'config');
 
             $this->commands([
-                MakeCastCommand::class,
                 MakeLayoutCommand::class,
                 MakePresetCommand::class,
                 MakeResolverCommand::class,
