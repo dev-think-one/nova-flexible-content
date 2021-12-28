@@ -9,6 +9,14 @@ trait AttributesManipulation
     use HasAttributes;
 
     /**
+     * Convert the model instance to an array.
+     */
+    public function toArray(): array
+    {
+        return $this->attributesToArray();
+    }
+
+    /**
      * Determine if the given attribute exists.
      */
     public function offsetExists(mixed $offset): bool

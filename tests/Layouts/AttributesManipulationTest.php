@@ -87,4 +87,19 @@ class AttributesManipulationTest extends TestCase
         $this->assertTrue(empty($layout->fake_key));
         $this->assertTrue(empty($layout->bar));
     }
+
+    /** @test */
+    public function to_array_only_attributes()
+    {
+        $initialData = [
+            'foo' => 'FOO value',
+            'bar' => 'BAR value',
+            'baz' => 'BAZ value',
+        ];
+
+        $layout = (new Layout())->setRawAttributes($initialData, true);
+
+        $this->assertCount(3, $layout->toArray());
+        $this->assertEquals('foo|bar|baz', implode('|', array_keys($layout->toArray())));
+    }
 }
