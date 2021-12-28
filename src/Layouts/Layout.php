@@ -27,9 +27,14 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     use Collapsable;
 
     /**
-     * The layout's name.
+     * The layout's unique identifier.
      */
-    protected string $name;
+    protected string $name = '';
+
+    /**
+     * The layout's human-readable title.
+     */
+    protected string $title = '';
 
     /**
      * The layout's unique identifier.
@@ -40,11 +45,6 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      * The layout's temporary identifier.
      */
     protected ?string $_key = null;
-
-    /**
-     * The layout's human-readable title.
-     */
-    protected string $title;
 
     /**
      * The layout's registered fields.
@@ -230,8 +230,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         });
 
         $clone = new static(
-            $this->title,
-            $this->name,
+            $this->title(),
+            $this->name(),
             $fields,
             $key,
             $attributes,
@@ -309,7 +309,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     public function getResolvedValue(): array
     {
         return [
-            'layout' => $this->name,
+            'layout' => $this->name(),
 
             'collapsed' => $this->isCollapsed(),
 
@@ -589,8 +589,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         $this->resolve(true);
 
         return [
-            'name'   => $this->name,
-            'title'  => $this->title,
+            'name'   => $this->name(),
+            'title'  => $this->title(),
             'fields' => $this->fields->jsonSerialize(),
             'limit'  => $this->limit,
         ];

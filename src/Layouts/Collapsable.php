@@ -6,7 +6,7 @@ trait Collapsable
 {
     protected bool $collapsed = false;
 
-    public function setCollapsed(bool $collapsed): static
+    public function setCollapsed(bool $collapsed = true): static
     {
         $this->collapsed = $collapsed;
 

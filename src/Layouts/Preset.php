@@ -9,13 +9,11 @@ class Preset
     /**
      * @var array[string]string
      */
-    protected array $_layoutMapping = [];
-
-    /**
-     * @var string[]|\NovaFlexibleContent\Layouts\Layout[]
-     */
     protected array $layouts = [];
 
+    /**
+     * Initialise new instance using layouts set.
+     */
     public static function withLayouts(array $usedLayouts = []): static
     {
         return (new static())->setLayouts($usedLayouts);
@@ -23,7 +21,16 @@ class Preset
 
     public function setLayouts(array $usedLayouts = []): static
     {
-        $this->layouts = $usedLayouts;
+        $this->layouts = [];
+
+        foreach ($usedLayouts as $key => $layout) {
+            if (is_a($layout, Layout::class, true)) {
+                if (is_string($layout)) {
+                    $layout = new $layout;
+                }
+                $this->layouts[(is_numeric($key) || !$key) ? $layout->name() : $key] = $layout::class;
+            }
+        }
 
         return $this;
     }
@@ -33,26 +40,9 @@ class Preset
         return $this->layouts;
     }
 
-    public function layoutMapping(): array
-    {
-        if (!empty($this->_layoutMapping)) {
-            return $this->_layoutMapping;
-        }
-        foreach ($this->layouts() as $layout) {
-            if (is_a($layout, Layout::class, true)) {
-                if (is_string($layout)) {
-                    $layout = new $layout;
-                }
-                $this->_layoutMapping[$layout->name()] = $layout::class;
-            }
-        }
-
-        return $this->_layoutMapping;
-    }
-
     public function handle(Flexible $field)
     {
-        foreach ($this->layoutMapping() as $layout) {
+        foreach ($this->layouts() as $layout) {
             $field->useLayout($layout);
         }
     }

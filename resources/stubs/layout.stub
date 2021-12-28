@@ -7,14 +7,12 @@ use NovaFlexibleContent\Layouts\Layout;
 class ___CLASSNAME___ extends Layout
 {
     /**
-     * The layout's unique identifier
-     *
-     * @var string
+     * The layout's unique identifier.
      */
     protected string $name = '___NAME___';
 
     /**
-     * The displayed title
+     * The layout's human-readable title.
      *
      * @var string
      */
@@ -31,5 +29,4 @@ class ___CLASSNAME___ extends Layout
             // Define the layout's fields.
         ];
     }
-
 }

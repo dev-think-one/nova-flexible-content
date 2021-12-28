@@ -1,9 +1,10 @@
 <?php
 
-namespace NovaFlexibleContent\Tests;
+namespace NovaFlexibleContent\Tests\Layouts;
 
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\LayoutsCollection;
+use NovaFlexibleContent\Tests\TestCase;
 
 class LayoutsCollectionTest extends TestCase
 {
