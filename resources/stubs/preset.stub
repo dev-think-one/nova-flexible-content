@@ -2,23 +2,12 @@
 
 namespace App\Nova\Flexible\Presets;
 
-use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Layouts\Preset;
 
 class ___CLASSNAME___ extends Preset
 {
     /**
-     * Execute the preset configuration
-     *
-     * @return void
+     * @var array
      */
-    public function handle(Flexible $field)
-    {
-        // You can call all available methods on the Flexible field.
-        // $field->addLayout(...)
-        // $field->button(...)
-        // $field->resolver(...)
-        // ... and so on.
-    }
-
+    protected array $usedLayouts = [];
 }

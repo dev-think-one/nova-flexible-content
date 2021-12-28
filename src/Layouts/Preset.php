@@ -7,9 +7,19 @@ use NovaFlexibleContent\Flexible;
 class Preset
 {
     /**
+     * @var array
+     */
+    protected array $usedLayouts = [];
+
+    /**
      * @var array[string]string
      */
     protected array $layouts = [];
+
+    public function __construct()
+    {
+        $this->setLayouts($this->usedLayouts);
+    }
 
     /**
      * Initialise new instance using layouts set.

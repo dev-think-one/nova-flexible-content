@@ -12,13 +12,9 @@ trait HasFlexible
 {
 
     /**
-     * Parse a Flexible Content attribute
-     *
-     * @param  string  $attribute
-     * @param  array  $layoutMapping
-     * @return \NovaFlexibleContent\Layouts\LayoutsCollection
+     * Parse a Flexible Content attribute.
      */
-    public function flexible(string $attribute, array $layoutMapping = [])
+    public function flexible(string $attribute, array $layoutMapping = []): LayoutsCollection
     {
         $flexible = data_get($this->attributes, $attribute);
 
@@ -30,10 +26,8 @@ trait HasFlexible
      */
     public function cast($value, array $layoutMapping = [])
     {
-        // TODO: strange condition, SHOULD be reworked.
-        if (app()->getProvider(NovaServiceProvider::class)
-            && !app()->runningInConsole()
-            && !app()->environment('testing')) {
+        // Ad-hoc solution, return error in nova admin if cast
+        if (app()->getProvider(NovaServiceProvider::class)) {
             return $value;
         }
 
@@ -98,17 +92,17 @@ trait HasFlexible
         $attributes = [];
 
         if (is_string($item)) {
-            $item = json_decode($item);
+            $item = json_decode($item, true);
+        }
+
+        if (is_a($item, \stdClass::class)) {
+            $item = json_decode(json_encode($item), true);
         }
 
         if (is_array($item)) {
             $name       = $item['layout']             ?? null;
             $key        = $item['key']                ?? null;
             $attributes = (array) $item['attributes'] ?? [];
-        } elseif (is_a($item, \stdClass::class)) {
-            $name       = $item->layout ?? null;
-            $key        = $item->key    ?? null;
-            $attributes = (array) ($item->attributes ?? []);
         } elseif (is_a($item, Layout::class)) {
             $name       = $item->name();
             $key        = $item->key();

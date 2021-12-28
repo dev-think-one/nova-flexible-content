@@ -2,8 +2,13 @@
 
 namespace NovaFlexibleContent\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orchestra\Testbench\Database\MigrateProcessor;
+
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use RefreshDatabase;
+
     protected function getPackageProviders($app)
     {
         return [
@@ -14,12 +19,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function defineDatabaseMigrations()
     {
         $this->loadLaravelMigrations();
+
+        $migrator = new MigrateProcessor($this, [
+            '--path'     => __DIR__.'/Fixtures/migrations',
+            '--realpath' => true,
+        ]);
+        $migrator->up();
     }
 
     /**
      * Define environment setup.
      *
-     * @param \Illuminate\Foundation\Application $app
+     * @param  \Illuminate\Foundation\Application  $app
      *
      * @return void
      */

@@ -14,9 +14,9 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function set(mixed $model, string $attribute, GroupsCollection $groups): string
+    public function set(mixed $resource, string $attribute, GroupsCollection $groups): string
     {
-        return $model->$attribute = $groups->map(function (Layout $group) {
+        return $resource->$attribute = $groups->map(function (Layout $group) {
             return [
                 'layout'     => $group->name(),
                 'key'        => $group->key(),
@@ -29,10 +29,10 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function get(mixed $model, string $attribute, LayoutsCollection $groups): GroupsCollection
+    public function get(mixed $resource, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
         return GroupsCollection::make(
-            $this->extractValueFromResource($model, $attribute)
+            $this->extractValueFromResource($resource, $attribute)
         )->map(function ($item) use ($groups) {
             if ($layout = $groups->find($item->layout)) {
                 return $layout->duplicate($item->key, (array) $item->attributes)
