@@ -1,9 +1,12 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Value;
+namespace NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 class Resolver implements ResolverInterface
 {
@@ -11,9 +14,9 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function set($model, $attribute, $groups)
+    public function set(mixed $resource, string $attribute, GroupsCollection $groups): string
     {
-        return $model->$attribute = $groups->map(function (Layout $group) {
+        return $resource->$attribute = $groups->map(function (Layout $group) {
             return [
                 'layout'     => $group->name(),
                 'key'        => $group->key(),
@@ -26,13 +29,13 @@ class Resolver implements ResolverInterface
     /**
      * @inerhitDoc
      */
-    public function get($model, $attribute, $groups)
+    public function get(mixed $resource, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
-        return collect(
-            $this->extractValueFromResource($model, $attribute)
+        return GroupsCollection::make(
+            $this->extractValueFromResource($resource, $attribute)
         )->map(function ($item) use ($groups) {
             if ($layout = $groups->find($item->layout)) {
-                return $layout->duplicateAndHydrate($item->key, (array) $item->attributes)
+                return $layout->duplicate($item->key, (array) $item->attributes)
                               ->setCollapsed($item->collapsed ?? false);
             }
 

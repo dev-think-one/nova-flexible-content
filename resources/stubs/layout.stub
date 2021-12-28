@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Nova\Flexible\Layouts;
+
+use NovaFlexibleContent\Layouts\Layout;
+
+class ___CLASSNAME___ extends Layout
+{
+    /**
+     * The layout's unique identifier.
+     */
+    protected string $name = '___NAME___';
+
+    /**
+     * The layout's human-readable title.
+     *
+     * @var string
+     */
+    protected string $title = '___CLASSNAME___';
+
+    /**
+     * Get the fields displayed by the layout.
+     *
+     * @return array
+     */
+    public function fields(): array
+    {
+        return [
+            // Define the layout's fields.
+        ];
+    }
+}

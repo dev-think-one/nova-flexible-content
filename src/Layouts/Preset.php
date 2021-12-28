@@ -1,56 +1,59 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts;
 
-use Whitecube\NovaFlexibleContent\Flexible;
+use NovaFlexibleContent\Flexible;
 
 class Preset
 {
-    protected array $layoutMapping = [];
-
     /**
-     * @var string[]|\Whitecube\NovaFlexibleContent\Layouts\Layout[]
+     * @var array
      */
     protected array $usedLayouts = [];
 
+    /**
+     * @var array[string]string
+     */
+    protected array $layouts = [];
+
+    public function __construct()
+    {
+        $this->setLayouts($this->usedLayouts);
+    }
+
+    /**
+     * Initialise new instance using layouts set.
+     */
     public static function withLayouts(array $usedLayouts = []): static
     {
-        return (new static())->useLayouts($usedLayouts);
+        return (new static())->setLayouts($usedLayouts);
     }
 
-    public function useLayouts(array $usedLayouts = []): static
+    public function setLayouts(array $usedLayouts = []): static
     {
-        $this->usedLayouts = $usedLayouts;
+        $this->layouts = [];
 
-        return $this;
-    }
-
-    public function usedLayouts(): array
-    {
-        return $this->usedLayouts;
-    }
-
-    public function layoutMapping(): array
-    {
-        if (!empty($this->layoutMapping)) {
-            return $this->layoutMapping;
-        }
-        foreach ($this->usedLayouts() as $layout) {
+        foreach ($usedLayouts as $key => $layout) {
             if (is_a($layout, Layout::class, true)) {
                 if (is_string($layout)) {
                     $layout = new $layout;
                 }
-                $this->layoutMapping[$layout->name()] = $layout::class;
+                $this->layouts[(is_numeric($key) || !$key) ? $layout->name() : $key] = $layout::class;
             }
         }
 
-        return $this->layoutMapping;
+        return $this;
+    }
+
+    public function layouts(): array
+    {
+        return $this->layouts;
     }
 
     public function handle(Flexible $field)
     {
-        foreach ($this->layoutMapping() as $layout) {
-            $field->addLayout($layout);
+        foreach ($this->layouts() as $layout) {
+            $field->useLayout($layout);
         }
     }
 }

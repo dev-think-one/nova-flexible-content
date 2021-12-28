@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Nova\Flexible\Presets;
+
+use NovaFlexibleContent\Layouts\Preset;
+
+class ___CLASSNAME___ extends Preset
+{
+    /**
+     * @var array
+     */
+    protected array $usedLayouts = [];
+}

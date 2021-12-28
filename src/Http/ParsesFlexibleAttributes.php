@@ -1,6 +1,6 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Http;
+namespace NovaFlexibleContent\Http;
 
 use Illuminate\Http\Request;
 
@@ -124,7 +124,7 @@ trait ParsesFlexibleAttributes
      *
      * @param string $attribute
      * @param string $group
-     * @return \Whitecube\NovaFlexibleContent\Http\FlexibleAttribute
+     * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
     protected function parseAttribute($attribute, $group)
     {
@@ -192,7 +192,7 @@ trait ParsesFlexibleAttributes
      * Retrieve a registered flexible attribute
      *
      * @param string $attribute
-     * @return \Whitecube\NovaFlexibleContent\Http\FlexibleAttribute
+     * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
     protected function getFlexibleAttribute($attribute)
     {

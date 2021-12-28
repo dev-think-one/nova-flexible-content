@@ -1,56 +1,28 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Concerns;
+namespace NovaFlexibleContent\Concerns;
 
 use Illuminate\Support\Collection as BaseCollection;
-use Laravel\Nova\NovaServiceProvider;
-use Whitecube\NovaFlexibleContent\Layouts\Layout;
-use Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection;
-use Whitecube\NovaFlexibleContent\Value\FlexibleCast;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 trait HasFlexible
 {
 
     /**
-     * Parse a Flexible Content attribute
-     *
-     * @param string $attribute
-     * @param array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * Parse a Flexible Content attribute.
      */
-    public function flexible($attribute, $layoutMapping = [])
+    public function flexible(string $attribute, array $layoutMapping = []): LayoutsCollection
     {
-        $flexible = data_get($this->attributes, $attribute);
+        $value = data_get($this->attributes, $attribute);
 
-        return $this->cast($flexible, $layoutMapping);
+        return $this->toFlexibleCollection($value ?: null, $layoutMapping);
     }
 
     /**
-     * Cast a Flexible Content value
-     *
-     * @param array $value
-     * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
+     * Parse a Flexible Content from value.
      */
-    public function cast($value, $layoutMapping = [])
-    {
-        if (app()->getProvider(NovaServiceProvider::class)
-            && !app()->runningInConsole()
-            && !app()->environment('testing')) {
-            return $value;
-        }
-
-        return $this->toFlexible($value ?: null, $layoutMapping);
-    }
-
-    /**
-     * Parse a Flexible Content from value
-     *
-     * @param mixed $value
-     * @param array $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutsCollection
-     */
-    public function toFlexible($value, $layoutMapping = [])
+    public function toFlexibleCollection(mixed $value, array $layoutMapping = []): LayoutsCollection
     {
         $flexible = $this->getFlexibleArrayFromValue($value);
 
@@ -58,18 +30,13 @@ trait HasFlexible
             return new LayoutsCollection();
         }
 
-        return new LayoutsCollection(
-            array_filter($this->getMappedFlexibleLayouts($flexible, $layoutMapping))
-        );
+        return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter();
     }
 
     /**
-     * Transform incoming value into an array of usable layouts
-     *
-     * @param mixed $value
-     * @return array|null
+     * Transform incoming value into an array of usable layouts.
      */
-    protected function getFlexibleArrayFromValue($value)
+    protected function getFlexibleArrayFromValue(mixed $value): ?array
     {
         if (is_string($value)) {
             $value = json_decode($value);
@@ -89,13 +56,9 @@ trait HasFlexible
     }
 
     /**
-     * Map array with Flexible Content Layouts
-     *
-     * @param array $flexible
-     * @param array $layoutMapping
-     * @return array
+     * Map array with Flexible Content Layouts.
      */
-    protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping)
+    protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping): array
     {
         return array_map(function ($item) use ($layoutMapping) {
             return $this->getMappedLayout($item, $layoutMapping);
@@ -103,30 +66,26 @@ trait HasFlexible
     }
 
     /**
-     * Transform given layout value into a usable Layout instance
-     *
-     * @param mixed $item
-     * @param array $layoutMapping
-     * @return null|\Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
+     * Transform given layout value into a usable Layout instance.
      */
-    protected function getMappedLayout($item, array $layoutMapping)
+    protected function getMappedLayout(mixed $item, array $layoutMapping): ?Layout
     {
         $name       = null;
         $key        = null;
         $attributes = [];
 
         if (is_string($item)) {
-            $item = json_decode($item);
+            $item = json_decode($item, true);
+        }
+
+        if (is_a($item, \stdClass::class)) {
+            $item = json_decode(json_encode($item), true);
         }
 
         if (is_array($item)) {
             $name       = $item['layout']             ?? null;
             $key        = $item['key']                ?? null;
             $attributes = (array) $item['attributes'] ?? [];
-        } elseif (is_a($item, \stdClass::class)) {
-            $name       = $item->layout ?? null;
-            $key        = $item->key    ?? null;
-            $attributes = (array) ($item->attributes ?? []);
         } elseif (is_a($item, Layout::class)) {
             $name       = $item->name();
             $key        = $item->key();
@@ -134,22 +93,16 @@ trait HasFlexible
         }
 
         if (is_null($name)) {
-            return;
+            return null;
         }
 
         return $this->createMappedLayout($name, $key, $attributes, $layoutMapping);
     }
 
     /**
-     * Transform given layout value into a usable Layout instance
-     *
-     * @param string $name
-     * @param string $key
-     * @param array  $attributes
-     * @param array  $layoutMapping
-     * @return \Whitecube\NovaFlexibleContent\Contracts\LayoutInterface
+     * Transform given layout value into a usable Layout instance.
      */
-    protected function createMappedLayout($name, $key, $attributes, array $layoutMapping)
+    protected function createMappedLayout(string $name, string $key, array $attributes, array $layoutMapping): Layout
     {
         $classname = array_key_exists($name, $layoutMapping)
             ? $layoutMapping[$name]
@@ -157,11 +110,7 @@ trait HasFlexible
 
         $layout = new $classname($name, $name, [], $key, $attributes);
 
-        $model = is_a($this, FlexibleCast::class)
-            ? $this->model
-            : $this;
-
-        $layout->setModel($model);
+        $layout->setModel($this);
 
         return $layout;
     }

@@ -1,14 +1,14 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent;
+namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use Whitecube\NovaFlexibleContent\Commands\CreateCast;
-use Whitecube\NovaFlexibleContent\Commands\CreateLayout;
-use Whitecube\NovaFlexibleContent\Commands\CreatePreset;
-use Whitecube\NovaFlexibleContent\Commands\CreateResolver;
-use Whitecube\NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
+use NovaFlexibleContent\Commands\Generators\MakeLayoutCommand;
+use NovaFlexibleContent\Commands\Generators\MakePresetCommand;
+use NovaFlexibleContent\Commands\Generators\MakeResolverCommand;
+use NovaFlexibleContent\Commands\Generators\StubPublishCommand;
+use NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -27,11 +27,15 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/nova-flexible-content.php' => config_path('nova-flexible-content.php'),
+            ], 'config');
+
             $this->commands([
-                CreateCast::class,
-                CreateLayout::class,
-                CreatePreset::class,
-                CreateResolver::class,
+                MakeLayoutCommand::class,
+                MakePresetCommand::class,
+                MakeResolverCommand::class,
+                StubPublishCommand::class,
             ]);
         }
     }
@@ -43,7 +47,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(__DIR__ . '/../config/nova-flexible-content.php', 'nova-flexible-content');
     }
 
     /**

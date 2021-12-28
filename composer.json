@@ -5,11 +5,8 @@
     "keywords": [
         "laravel",
         "nova",
-        "field",
         "flexible",
-        "repeat",
-        "group",
-        "layout"
+        "repeater"
     ],
     "authors": [
         {
@@ -31,20 +28,20 @@
         "laravel/framework": "^8.0|^9.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.3",
+        "friendsofphp/php-cs-fixer": "^3.4",
         "orchestra/testbench": "^6.23",
         "phpunit/phpunit": "^9.5",
         "psalm/plugin-laravel": "^1.5",
-        "vimeo/psalm": "^4.13"
+        "vimeo/psalm": "^4.16"
     },
     "autoload": {
         "psr-4": {
-            "Whitecube\\NovaFlexibleContent\\": "src/"
+            "NovaFlexibleContent\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "NovaFlexibleContent\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -56,7 +53,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Whitecube\\NovaFlexibleContent\\ServiceProvider"
+                "NovaFlexibleContent\\ServiceProvider"
             ]
         }
     },

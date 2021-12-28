@@ -1,9 +1,9 @@
 <?php
 
-namespace Whitecube\NovaFlexibleContent\Nova\Resources;
+namespace NovaFlexibleContent\Nova\Resources;
 
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Whitecube\NovaFlexibleContent\Nova\Collections\FieldsCollection;
+use NovaFlexibleContent\Nova\Collections\FieldsCollection;
 
 /**
  * Trait related to nova resource.
