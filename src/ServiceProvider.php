@@ -4,10 +4,11 @@ namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use NovaFlexibleContent\Commands\CreateCast;
-use NovaFlexibleContent\Commands\CreateLayout;
-use NovaFlexibleContent\Commands\CreatePreset;
-use NovaFlexibleContent\Commands\CreateResolver;
+use NovaFlexibleContent\Commands\Generators\MakeCastCommand;
+use NovaFlexibleContent\Commands\Generators\MakeLayoutCommand;
+use NovaFlexibleContent\Commands\Generators\MakePresetCommand;
+use NovaFlexibleContent\Commands\Generators\MakeResolverCommand;
+use NovaFlexibleContent\Commands\Generators\StubPublishCommand;
 use NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -32,10 +33,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'config');
 
             $this->commands([
-                CreateCast::class,
-                CreateLayout::class,
-                CreatePreset::class,
-                CreateResolver::class,
+                MakeCastCommand::class,
+                MakeLayoutCommand::class,
+                MakePresetCommand::class,
+                MakeResolverCommand::class,
+                StubPublishCommand::class,
             ]);
         }
     }

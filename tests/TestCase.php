@@ -4,6 +4,13 @@ namespace NovaFlexibleContent\Tests;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    protected function getPackageProviders($app)
+    {
+        return [
+            \NovaFlexibleContent\ServiceProvider::class,
+        ];
+    }
+
     protected function defineDatabaseMigrations()
     {
         $this->loadLaravelMigrations();
