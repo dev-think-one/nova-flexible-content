@@ -66,8 +66,8 @@ class FlexibleAttribute
     /**
      * Create a new attribute instance
      *
-     * @param  string $original
-     * @param  mixed $group
+     * @param  string  $original
+     * @param  mixed  $group
      * @return void
      */
     public function __construct($original, $group = null)
@@ -82,10 +82,10 @@ class FlexibleAttribute
     /**
      * Build an attribute from its components
      *
-     * @param  string $name
-     * @param  string $group
-     * @param  mixed $key
-     * @param  bool $upload
+     * @param  string  $name
+     * @param  string  $group
+     * @param  mixed  $key
+     * @param  bool  $upload
      * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
     public static function make($name, $group = null, $key = null, $upload = false)
@@ -93,7 +93,7 @@ class FlexibleAttribute
         $original = $upload ? static::FILE_INDICATOR : '';
         $original .= static::formatGroupPrefix($group) ?? '';
         $original .= $name;
-        $original .= $key ? '[' . ($key !== true ? $key : '') . ']' : '';
+        $original .= $key ? '['.($key !== true ? $key : '').']' : '';
 
         return new static($original, $group);
     }
@@ -111,7 +111,7 @@ class FlexibleAttribute
     /**
      * Check if attribute or given value match a probable file
      *
-     * @param mixed $value
+     * @param  mixed  $value
      * @return bool
      */
     public function isFlexibleFile($value = null)
@@ -128,7 +128,7 @@ class FlexibleAttribute
     /**
      * Return a FlexibleAttribute instance matching the target upload field
      *
-     * @param mixed $value
+     * @param  mixed  $value
      * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
     public function getFlexibleFileAttribute($value)
@@ -164,36 +164,26 @@ class FlexibleAttribute
     }
 
     /**
-     * Get the group prefix string
-     *
-     * @param string $group
-     * @return null|string
+     * Get the group prefix string.
      */
-    public function groupPrefix($group = null)
+    public function groupPrefix(?string $group = null): ?string
     {
         return static::formatGroupPrefix($group ?? $this->group);
     }
 
     /**
-     * Get a group prefix string
-     *
-     * @param string $group
-     * @return null|string
+     * Get a group prefix string.
      */
-    public static function formatGroupPrefix($group)
+    public static function formatGroupPrefix(?string $group = null): ?string
     {
-        if (!$group) {
-            return;
-        }
-
-        return $group . static::GROUP_SEPARATOR;
+        return $group ? $group.static::GROUP_SEPARATOR : null;
     }
 
     /**
      * Set given value in given using the current attribute definition
      *
-     * @param  array $attributes
-     * @param  string $value
+     * @param  array  $attributes
+     * @param  string  $value
      * @return array
      */
     public function setDataIn(&$attributes, $value)
@@ -224,7 +214,7 @@ class FlexibleAttribute
     /**
      * Remove current attribute from given array
      *
-     * @param  array $attributes
+     * @param  array  $attributes
      * @return array
      */
     public function unsetDataIn(&$attributes)
@@ -247,22 +237,22 @@ class FlexibleAttribute
     /**
      * Return a new instance with appended key
      *
-     * @param string $key
+     * @param  string  $key
      * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
     public function nest($key)
     {
         $append = implode('', array_map(function ($segment) {
-            return '[' . $segment . ']';
+            return '['.$segment.']';
         }, explode('.', $key)));
 
-        return new static($this->original . $append, $this->group);
+        return new static($this->original.$append, $this->group);
     }
 
     /**
      * Check attribute is an "upload" attribute and define it on the object
      *
-     * @param  mixed $group
+     * @param  mixed  $group
      * @return void
      */
     protected function setUpload()
@@ -274,7 +264,7 @@ class FlexibleAttribute
      * Check if given group identifier is included in original
      * attribute. If so, set it as the group property.
      *
-     * @param  mixed $group
+     * @param  mixed  $group
      * @return void
      */
     protected function setGroup($group = null)
@@ -317,7 +307,7 @@ class FlexibleAttribute
      * Formats a key segment (removes unwanted characters, removes
      * group references from).
      *
-     * @param string $segment
+     * @param  string  $segment
      * @return string
      */
     protected function getCleanKeySegment($segment)

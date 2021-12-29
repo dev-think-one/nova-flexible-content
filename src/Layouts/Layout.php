@@ -323,13 +323,13 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
 
         $rules = call_user_func([$field, $method], $request);
 
-        return collect($rules)->mapWithKeys(function ($validatorRules, $attribute) use ($key, $field) {
-            $key = $key.'.attributes.'.$attribute;
-
-            return [$key => $this->wrapScopedFieldRules($field, $validatorRules)];
-        })
-                              ->filter()
-                              ->all();
+        return collect($rules)
+            ->mapWithKeys(fn ($validatorRules, $attribute) => [
+                "{$key}.attributes.{$attribute}"
+                => $this->wrapScopedFieldRules($field, $validatorRules),
+            ])
+            ->filter()
+            ->all();
     }
 
     /**
@@ -383,7 +383,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     }
 
     /**
-     * Wrap the rules in an array containing field information for later use
+     * Wrap the rules in an array containing field information for later use.
      */
     protected function wrapScopedFieldRules(Field $field, array $rules = []): array
     {
@@ -398,7 +398,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     }
 
     /**
-     * Transform empty attribute values to null
+     * Transform empty attribute values to null.
      */
     protected function setEmptyValuesToNull(array $dataArray = []): array
     {
@@ -413,7 +413,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     }
 
     /**
-     * Transform layout for serialization
+     * Transform layout for serialization.
      *
      * @return array
      */
