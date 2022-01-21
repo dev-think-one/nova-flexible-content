@@ -10,7 +10,7 @@ trait ModelEmulates
      * Check if relation exists.
      * Layouts do not have relations.
      */
-    protected function relationLoaded($key): bool
+    public function relationLoaded($key): bool
     {
         return false;
     }
