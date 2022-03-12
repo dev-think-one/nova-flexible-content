@@ -31,5 +31,6 @@ module.exports = {
   },
   globals: {
     Nova: true,
+    __: true,
   },
 };

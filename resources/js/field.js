@@ -11,4 +11,8 @@ Nova.booting((Vue, router, store) => {
   Vue.component('IconArrowUp', require('./components/icons/ArrowUp.vue').default);
   Vue.component('IconPlusSquare', require('./components/icons/PlusSquare.vue').default);
   Vue.component('IconMinusSquare', require('./components/icons/MinusSquare.vue').default);
+
+  Vue.component('IndexVideoField', require('./components/video-field/IndexField.vue').default);
+  Vue.component('DetailVideoField', require('./components/video-field/DetailField.vue').default);
+  Vue.component('FormVideoField', require('./components/video-field/FormField.vue').default);
 });
