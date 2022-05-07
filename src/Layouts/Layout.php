@@ -417,7 +417,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         // Calling an empty "resolve" first in order to empty all fields
         $this->resolve(true);
