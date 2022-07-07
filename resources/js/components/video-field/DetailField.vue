@@ -1,6 +1,9 @@
 <template>
-  <panel-item :field="field">
-    <div slot="value">
+  <PanelItem
+    :index="index"
+    :field="field"
+  >
+    <template #value>
       <template v-if="shouldShowVideo">
         <video
           controls
@@ -34,13 +37,13 @@
           <span class="class mt-1">{{ __('Download') }}</span>
         </a>
       </p>
-    </div>
-  </panel-item>
+    </template>
+  </PanelItem>
 </template>
 
 <script>
 export default {
-  props: ['resource', 'resourceName', 'resourceId', 'field'],
+  props: ['index', 'resource', 'resourceName', 'resourceId', 'field'],
   data() {
     return {
       src: this.field.previewUrl,

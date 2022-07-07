@@ -1,4 +1,4 @@
-import { random as randomString } from '@/utils/str';
+import { random as randomString } from './utils/str';
 
 export default class Group {
   constructor(name, title, fields, field, key, collapsed = true) {

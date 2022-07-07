@@ -1,18 +1,26 @@
-Nova.booting((Vue, router, store) => {
-  // Vue.component('index-nova-flexible-content', require('./components/IndexField').default)
-  Vue.component('DetailNovaFlexibleContent', require('./components/DetailField.vue').default);
-  Vue.component('DetailNovaFlexibleContentGroup', require('./components/DetailGroup.vue').default);
-  Vue.component('FormNovaFlexibleContent', require('./components/FormField.vue').default);
-  Vue.component('FormNovaFlexibleContentGroup', require('./components/FormGroup.vue').default);
-  Vue.component('FlexibleDropMenu', require('./components/OriginalDropMenu.vue').default);
-  Vue.component('FlexibleSearchMenu', require('./components/SearchMenu.vue').default);
-  Vue.component('DeleteFlexibleContentGroupModal', require('./components/DeleteGroupModal.vue').default);
-  Vue.component('IconArrowDown', require('./components/icons/ArrowDown.vue').default);
-  Vue.component('IconArrowUp', require('./components/icons/ArrowUp.vue').default);
-  Vue.component('IconPlusSquare', require('./components/icons/PlusSquare.vue').default);
-  Vue.component('IconMinusSquare', require('./components/icons/MinusSquare.vue').default);
+import FlexibleIndexField from './components/IndexField';
+import FlexibleFormField from './components/FormField';
+import FlexibleFormGroup from './components/FormGroup';
+import FlexibleDeleteGroupModal from './components/DeleteGroupModal';
+import FlexibleOriginalDropMenu from './components/OriginalDropMenu';
+import FlexibleSearchMenu from './components/SearchMenu';
+import FlexibleDetailField from './components/DetailField';
+import FlexibleDetailGroup from './components/DetailGroup';
+import VideoIndexField from './components/video-field/IndexField';
+import VideoDetailGroup from './components/video-field/DetailField';
+import VideoFormField from './components/video-field/FormField';
 
-  Vue.component('IndexVideoField', require('./components/video-field/IndexField.vue').default);
-  Vue.component('DetailVideoField', require('./components/video-field/DetailField.vue').default);
-  Vue.component('FormVideoField', require('./components/video-field/FormField.vue').default);
+Nova.booting((app, store) => {
+  app.component('IndexNovaFlexibleContent', FlexibleIndexField);
+  app.component('FormNovaFlexibleContent', FlexibleFormField);
+  app.component('FormNovaFlexibleContentGroup', FlexibleFormGroup);
+  app.component('DeleteFlexibleContentGroupModal', FlexibleDeleteGroupModal);
+  app.component('FlexibleDropMenu', FlexibleOriginalDropMenu);
+  app.component('FlexibleSearchMenu', FlexibleSearchMenu);
+  app.component('DetailNovaFlexibleContent', FlexibleDetailField);
+  app.component('DetailNovaFlexibleContentGroup', FlexibleDetailGroup);
+
+  app.component('IndexVideoField', VideoIndexField);
+  app.component('DetailVideoField', VideoDetailGroup);
+  app.component('FormVideoField', VideoFormField);
 });

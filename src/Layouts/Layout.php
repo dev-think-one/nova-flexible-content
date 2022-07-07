@@ -66,8 +66,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         callable              $removeCallbackMethod = null
     ) {
         $this->fields               = FieldCollection::make($fields ?? $this->fields());
-        $this->title                = $title ?? $this->title();
-        $this->name                 = $name  ?? $this->name();
+        $this->title                = $title                        ?? $this->title();
+        $this->name                 = $name                         ?? $this->name();
         $this->key                  = is_null($key) ? null : $this->generateValidLayoutKey($key);
         $this->removeCallbackMethod = $removeCallbackMethod;
         $this->setRawAttributes($this->setEmptyValuesToNull($attributes));

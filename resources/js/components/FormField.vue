@@ -7,7 +7,7 @@
     full-width-content
     :show-help-text="showHelpText"
   >
-    <template slot="field">
+    <template #field>
       <div
         v-if="order.length > 0"
       >
@@ -105,18 +105,11 @@ export default {
   },
 
   methods: {
-    /*
-         * Set the initial, internal value for the field.
-         */
     setInitialValue() {
       this.value = this.field.value || [];
       this.files = {};
       this.populateGroups();
     },
-
-    /**
-     * Fill the given FormData object with the field's internal value.
-     */
     fill(formData) {
       let key;
       let
@@ -145,10 +138,6 @@ export default {
         formData.append(file, this.files[file]);
       }
     },
-
-    /**
-     * Register given field attribute into the parsable flexible fields register
-     */
     appendFieldAttribute(formData, attribute) {
       let registered = [];
 
@@ -160,20 +149,12 @@ export default {
 
       formData.set('___nova_flexible_content_fields', JSON.stringify(registered));
     },
-
-    /**
-     * Update the field's internal value.
-     */
     handleChange(value) {
       this.value = value || [];
       this.files = {};
 
       this.populateGroups();
     },
-
-    /**
-     * Set the displayed layouts from the field's current value
-     */
     populateGroups() {
       this.order.splice(0, this.order.length);
       this.groups = {};
@@ -195,10 +176,6 @@ export default {
       if (!this.layouts) return;
       return this.layouts.find((layout) => layout.name == name);
     },
-
-    /**
-     * Append the given layout to flexible content's list
-     */
     addGroup(layout, attributes, key, collapsed) {
       if (!layout) return;
 
@@ -207,13 +184,9 @@ export default {
       const fields = attributes || JSON.parse(JSON.stringify(layout.fields));
       const group = new Group(layout.name, layout.title, fields, this.field, key, collapsed);
 
-      this.$set(this.groups, group.key, group);
+      this.groups[group.key] = group;
       this.order.push(group.key);
     },
-
-    /**
-     * Move a group up
-     */
     moveUp(key) {
       const index = this.order.indexOf(key);
 
@@ -221,10 +194,6 @@ export default {
 
       this.order.splice(index - 1, 0, this.order.splice(index, 1)[0]);
     },
-
-    /**
-     * Move a group down
-     */
     moveDown(key) {
       const index = this.order.indexOf(key);
 
@@ -232,17 +201,13 @@ export default {
 
       this.order.splice(index + 1, 0, this.order.splice(index, 1)[0]);
     },
-
-    /**
-     * Remove a group
-     */
     remove(key) {
       const index = this.order.indexOf(key);
-
-      if (index < 0) return;
-
+      if (index < 0) {
+        return;
+      }
       this.order.splice(index, 1);
-      this.$delete(this.groups, key);
+      delete this.groups[key];
     },
   },
 };

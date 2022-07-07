@@ -3,7 +3,7 @@
 namespace NovaFlexibleContent;
 
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Nova\Fields\Downloadable;
+use Laravel\Nova\Contracts\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Contracts\ResolverInterface;
@@ -322,14 +322,14 @@ class Flexible extends Field implements Downloadable
 
         $callbacks = [];
         $newGroups = GroupsCollection::make($raw)->map(function ($item, $key) use ($request, &$callbacks) {
-            $layout = $item['layout'];
-            $key = $item['key'];
+            $layout     = $item['layout'];
+            $key        = $item['key'];
             $attributes = $item['attributes'];
 
             $group = $this->findGroup($key) ?? $this->newGroup($layout, $key);
 
             $group->setCollapsed((bool) ($item['collapsed'] ?? false));
-            $scope = ScopedRequest::scopeFrom($request, $attributes, $key);
+            $scope     = ScopedRequest::scopeFrom($request, $attributes, $key);
             $callbacks = array_merge($callbacks, $group->fill($scope));
 
             return $group;

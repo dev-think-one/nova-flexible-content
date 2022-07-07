@@ -1,5 +1,5 @@
 <template>
-  <default-field
+  <DefaultField
     :field="field"
     :errors="errors"
     :full-width-content="true"
@@ -123,7 +123,7 @@
         </div>
       </div>
     </template>
-  </default-field>
+  </DefaultField>
 </template>
 
 <script>

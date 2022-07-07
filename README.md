@@ -14,6 +14,11 @@ An easy & complete Flexible Field for Laravel Nova, perfect for repeated and fle
 
 ![Laravel Nova Flexible Content in action](docs/assets/presentation.gif)
 
+| Nova | Package |
+|------|---------|
+| V1   | V1 V2   |
+| V4   | V3      |
+
 ## Installation
 
 ```

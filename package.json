@@ -2,35 +2,33 @@
     "private": true,
     "scripts": {
         "eslint": "./node_modules/.bin/eslint resources/js/ --ext .js,.ts,.vue --fix",
+        "dev": "npm run development",
         "development": "mix",
-        "dev": "yarn development",
         "watch": "mix watch",
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
+        "prod": "npm run production",
         "production": "mix --production",
-        "prod": "yarn production"
+        "nova:install": "npm --prefix='./vendor/laravel/nova' ci"
     },
     "dependencies": {
-        "axios": "^0.21.1",
-        "cross-env": "^5.0.0",
-        "laravel-mix": "^6.0",
-        "laravel-nova": "^1.0",
-        "postcss": "^8.2",
-        "resolve-url-loader": "^3.1.2",
-        "sass": "^1.32.8",
-        "sass-loader": "10.*",
-        "vue": "^2.5.0",
-        "vue-loader": "^15.9.5",
-        "vue-multiselect": "^2.1.6",
-        "vue-template-compiler": "^2.5.0",
-        "webpack-dev-server": "^3.1.11"
+        "@vue/compiler-sfc": "^3.2.22",
+        "@vueform/multiselect": "^2.4.2",
+        "form-backend-validation": "^2.3.3",
+        "laravel-mix": "^6.0.41",
+        "laravel-vapor": "^0.5.1",
+        "lodash": "^4.17.21",
+        "postcss": "^8.3.11",
+        "resolve-url-loader": "^5.0.0",
+        "sass": "^1.53.0",
+        "sass-loader": "^12.1.0",
+        "vue-loader": "^16.8.3"
     },
     "devDependencies": {
         "eslint": "^7.31.0",
         "eslint-config-airbnb-base": "^14.2.1",
         "eslint-import-resolver-webpack": "^0.13.1",
         "eslint-plugin-import": "^2.23.4",
-        "eslint-plugin-vue": "^7.14.0",
-        "laravel-vapor": "^0.5.1"
+        "eslint-plugin-vue": "^7.14.0"
     }
 }

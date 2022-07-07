@@ -9,7 +9,7 @@
     >
       <div
         v-if="isLayoutsDropdownOpen"
-        class="absolute rounded-lg shadow-lg max-w-full mb-3 pin-b max-h-search overflow-y-auto border border-40"
+        class="z-20 absolute rounded-lg shadow-lg max-w-full top-full mt-3 pin-b max-h-search overflow-y-auto border border-gray-100 dark:border-gray-700"
       >
         <div>
           <ul class="list-reset">
@@ -20,7 +20,7 @@
             >
               <a
                 :dusk="'add-' + layout.name"
-                class="cursor-pointer flex items-center hover:bg-30 block py-2 px-3 no-underline font-normal bg-20"
+                class="cursor-pointer flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 block py-2 px-3 no-underline font-normal bg-white dark:bg-gray-800"
                 @click="addGroup(layout)"
               >
                 <div><p class="text-90">{{ layout.title }}</p></div>
@@ -30,16 +30,15 @@
         </div>
       </div>
     </div>
-    <button
+    <default-button
       v-if="allowAddGroup"
       dusk="toggle-layouts-dropdown-or-add-default"
       type="button"
       tabindex="0"
-      class="btn btn-default btn-primary inline-flex items-center relative"
       @click="toggleLayoutsDropdownOrAddDefault"
     >
       <span>{{ field.button }}</span>
-    </button>
+    </default-button>
   </div>
 </template>
 
@@ -62,10 +61,6 @@ export default {
 
       this.isLayoutsDropdownOpen = !this.isLayoutsDropdownOpen;
     },
-
-    /**
-             * Append the given layout to flexible content's list
-             */
     addGroup(layout) {
       if (!layout) return;
 
