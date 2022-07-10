@@ -9,23 +9,26 @@
     >
       <div
         v-if="isLayoutsDropdownOpen"
-        class="z-20 absolute rounded-lg shadow-lg max-w-full top-full mt-3 pin-b max-h-search overflow-y-auto border border-gray-100 dark:border-gray-700"
+        class="z-20 absolute bottom-0 mb-2 rounded-lg shadow-lg max-w-full top-full pin-b max-h-search overflow-y-auto border border-gray-200 dark:border-gray-700"
       >
         <div>
-          <ul class="list-reset">
-            <li
-              v-for="layout in layouts"
-              v-if="!allowAddGroupsMap.hasOwnProperty(layout.name) || allowAddGroupsMap[layout.name]"
-              class="border-b border-40"
+          <ul class="list-reset divide-y divide-gray-200">
+            <template
+              v-for="(layout, key) in layouts"
+              :key="key"
             >
-              <a
-                :dusk="'add-' + layout.name"
-                class="cursor-pointer flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 block py-2 px-3 no-underline font-normal bg-white dark:bg-gray-800"
-                @click="addGroup(layout)"
+              <li
+                v-if="layout && (!allowAddGroupsMap.hasOwnProperty(layout.name) || allowAddGroupsMap[layout.name])"
               >
-                <div><p class="text-90">{{ layout.title }}</p></div>
-              </a>
-            </li>
+                <a
+                  :dusk="'add-' + layout.name"
+                  class="cursor-pointer flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 block py-2 px-3 no-underline font-normal bg-white dark:bg-gray-800"
+                  @click="addGroup(layout)"
+                >
+                  <div><p class="text-90">{{ layout.title }}</p></div>
+                </a>
+              </li>
+            </template>
           </ul>
         </div>
       </div>

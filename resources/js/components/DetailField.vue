@@ -37,6 +37,7 @@ export default {
      */
     getLayout(name) {
       if (!this.field.layouts) return;
+      console.log(this.field.layouts);
       return this.field.layouts.find((layout) => layout.name == name);
     },
     /**

@@ -5,7 +5,7 @@
     :full-width-content="true"
     :show-help-text="!isReadonly"
   >
-    <template slot="field">
+    <template #field>
       <div
         v-if="hasValue"
         :class="{ 'mb-6': !isReadonly }"
@@ -23,22 +23,27 @@
           v-if="videoUrl && !isReadonly"
           class="mt-3 flex items-center text-sm"
         >
-          <DeleteButton
+          <button
             v-if="shouldShowRemoveButton"
             :dusk="field.attribute + '-delete-link'"
+            type="button"
+            class="group-control btn w-8 h-8 block"
+            :title="__('Delete')"
             @click="confirmRemoval"
           >
-            <span class="class ml-2 mt-1"> {{ __('Delete') }}</span>
-          </DeleteButton>
+            <icon
+              type="trash"
+              width="16"
+              height="16"
+            />
+          </button>
         </p>
 
-        <portal to="modals">
-          <confirm-upload-removal-modal
-            v-if="removeModalOpen"
-            @confirm="removeFile"
-            @close="closeRemoveModal"
-          />
-        </portal>
+        <ConfirmUploadRemovalModal
+          :show="removeModalOpen"
+          @confirm="removeFile"
+          @close="closeRemoveModal"
+        />
       </div>
 
       <p
@@ -68,15 +73,17 @@
 
           <label
             :for="labelFor"
-            class="form-file-btn btn btn-default btn-primary select-none"
+            class="cursor-pointer focus:outline-none focus:ring rounded border-2 border-primary-300 dark:border-gray-500 hover:border-primary-500 active:border-primary-400 dark:hover:border-gray-400 dark:active:border-gray-300 bg-white dark:bg-transparent text-primary-500 dark:text-gray-400 px-3 h-9 inline-flex items-center font-bold flex-shrink-0"
           >
-            <span v-if="uploading">{{ __('Uploading') }} ({{ uploadProgress }}%)</span>
+            <span
+              v-if="uploading"
+            >{{ __('Uploading') }} ({{ uploadProgress }}%)</span>
             <span v-else>{{ __('Choose File') }}</span>
           </label>
 
           <span
             v-if="shouldShowField"
-            class="text-90 text-sm select-none"
+            class="ml-2 text-sm select-none"
           >{{ currentLabel }}</span>
           <p
             v-if="hasError"
@@ -129,10 +136,8 @@
 <script>
 import Vapor from 'laravel-vapor';
 import { FormField, HandlesValidationErrors, Errors } from 'laravel-nova';
-import DeleteButton from '../../../../vendor/laravel/nova/resources/js/components/DeleteButton';
 
 export default {
-  components: { DeleteButton },
   mixins: [HandlesValidationErrors, FormField],
   props: ['resourceId', 'relatedResourceName', 'relatedResourceId', 'viaRelationship'],
   data: () => ({
