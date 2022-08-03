@@ -118,7 +118,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         return $this->fields ?? FieldCollection::make();
     }
 
-    public function findFlexibleGroupRecursive(string $groupKey): ?static
+    public function findFlexibleGroupRecursive(string $groupKey): ?Layout
     {
         foreach ($this->fields as $field) {
             if ($field instanceof Flexible) {
