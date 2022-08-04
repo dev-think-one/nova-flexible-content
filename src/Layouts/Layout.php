@@ -145,6 +145,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     {
         foreach ($array as $key => $value) {
             if (is_object($value)
+                && property_exists($value, 'key')
+                && property_exists($value, 'attributes')
                 && $value->key === $groupKey
                 && is_object($value->attributes)) {
                 foreach ($value->attributes as $attribute => $attrValue) {
