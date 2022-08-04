@@ -27,7 +27,9 @@ class ImageForFlexible extends Image
                     $this->flexibleSetAttribute($request, $model, null);
                 }
 
-                Storage::disk($disk)->delete($value);
+                if ($value) {
+                    Storage::disk($disk)->delete($value);
+                }
 
                 return true;
             });
