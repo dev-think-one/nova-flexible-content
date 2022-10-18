@@ -57,6 +57,20 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      */
     protected Model|Layout|null $model = null;
 
+    /**
+     * Define that Layout is a model, when in fact it is not.
+     *
+     * @var bool
+     */
+    protected bool $exists = false;
+
+    /**
+     * Define that Layout is a model, when in fact it is not.
+     *
+     * @var bool
+     */
+    protected bool $wasRecentlyCreated = false;
+
     public function __construct(
         ?string               $title = null,
         ?string               $name = null,
