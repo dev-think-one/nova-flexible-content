@@ -71,6 +71,20 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      */
     protected bool $wasRecentlyCreated = false;
 
+    /**
+     * The relation resolver callbacks for the Layout.
+     *
+     * @var array
+     */
+    protected array $relationResolvers = [];
+
+    /**
+     * The loaded relationships for the Layout.
+     *
+     * @var array
+     */
+    protected $relations = [];
+
     public function __construct(
         ?string               $title = null,
         ?string               $name = null,
@@ -426,6 +440,20 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         }
 
         return $dataArray;
+    }
+
+    /**
+     * Get the dynamic relation resolver if defined or inherited, or return null.
+     * Since it is not possible to define a relation on a layout, this method
+     * returns null
+     *
+     * @param  string  $class
+     * @param  string  $key
+     * @return mixed
+     */
+    public function relationResolver($class, $key)
+    {
+        return null;
     }
 
     /**
