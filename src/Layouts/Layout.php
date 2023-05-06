@@ -18,6 +18,10 @@ use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Http\FlexibleAttribute;
 use NovaFlexibleContent\Http\ScopedRequest;
 
+/**
+ * @template-implements ArrayAccess<string, mixed>
+ * @template-implements Arrayable<string, mixed>
+ */
 class Layout implements JsonSerializable, ArrayAccess, Arrayable
 {
     use HidesAttributes;
@@ -328,7 +332,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      */
     public function fill(ScopedRequest $request): array
     {
-        return $this->fields->map(fn ($field)       => $field->fill($request, $this))
+        return $this->fields->map(fn ($field) => $field->fill($request, $this))
                             ->filter(fn ($callback) => is_callable($callback))
                             ->values()
                             ->all();

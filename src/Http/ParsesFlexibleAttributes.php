@@ -77,8 +77,8 @@ trait ParsesFlexibleAttributes
     protected function getParsedFlexibleGroup(array $group): array
     {
         $clean = [
-            'layout'     => $group['layout'] ?? null,
-            'key'        => $group['key'] ?? null,
+            'layout'     => $group['layout']    ?? null,
+            'key'        => $group['key']       ?? null,
             'collapsed'  => $group['collapsed'] ?? false,
             'attributes' => [],
         ];

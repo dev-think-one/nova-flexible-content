@@ -20,8 +20,8 @@ class StubPublishCommand extends Command
         }
 
         $files = [
-            static::stubPath('layout.stub', true) => $stubsPath.'/layout.stub',
-            static::stubPath('preset.stub', true) => $stubsPath.'/preset.stub',
+            static::stubPath('layout.stub', true)   => $stubsPath.'/layout.stub',
+            static::stubPath('preset.stub', true)   => $stubsPath.'/preset.stub',
             static::stubPath('resolver.stub', true) => $stubsPath.'/resolver.stub',
         ];
 

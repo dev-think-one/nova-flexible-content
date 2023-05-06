@@ -8,6 +8,9 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Http\FlexibleAttribute;
 
+/**
+ * @extends  \Laravel\Nova\Fields\FieldCollection<int, \Laravel\Nova\Fields\Field>
+ */
 class FieldsCollection extends NovaFieldCollection
 {
     /**
