@@ -17,10 +17,10 @@ class ImageForFlexible extends Image
 
         $this
             ->preview(function ($value, ?string $disk, $model) {
-                return Storage::disk($disk)->url($value);
+                return $value ? Storage::disk($disk)->url($value) : null;
             })
             ->download(function (NovaRequest $request, Model $model, ?string $disk, $value) {
-                return Storage::disk($disk)->download($value);
+                return $value ? Storage::disk($disk)->download($value) : null;
             })
             ->delete(function (NovaRequest $request, $model, ?string $disk, $value) {
                 if ($model instanceof Model) {

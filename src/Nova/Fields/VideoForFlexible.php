@@ -14,7 +14,8 @@ class VideoForFlexible extends FileForFlexible
 
         $this
             ->preview(function ($value, ?string $disk, $model) {
-                return Storage::disk($disk)->url($value);
+                return $value ? Storage::disk($disk)->url($value) : null;
             });
     }
 }
+
