@@ -6,7 +6,9 @@ use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use JsonSerializable;
 use Laravel\Nova\Contracts\Deletable;
 use Laravel\Nova\Contracts\Storable;
@@ -336,6 +338,21 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
                             ->filter(fn ($callback) => is_callable($callback))
                             ->values()
                             ->all();
+    }
+
+
+
+    /**
+     * Force Fill the layout with an array of attributes.
+     */
+    public function forceFill(array $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            $attribute = Str::replace('->', '.', $key);
+            Arr::set($this->attributes, $attribute, $value);
+        }
+
+        return $this;
     }
 
     /**
