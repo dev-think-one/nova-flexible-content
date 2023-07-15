@@ -5,6 +5,7 @@ namespace NovaFlexibleContent\Nova\Collections;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection as NovaFieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Resource;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Http\FlexibleAttribute;
 
@@ -29,6 +30,7 @@ class FieldsCollection extends NovaFieldCollection
     {
         $request = resolve(NovaRequest::class);
 
+        /** @var Resource $resource */
         $resource = $request->findResourceOrFail();
 
         [$groupKey, $fieldKey] = explode(FlexibleAttribute::GROUP_SEPARATOR, $attribute, 2);
@@ -38,6 +40,7 @@ class FieldsCollection extends NovaFieldCollection
                 if ($group = $field->findGroupRecursive($groupKey)) {
                     $foundField = $group->fieldsCollection()
                                            ->first(fn (Field $groupField) => $groupField->attribute == $fieldKey);
+
                     if ($foundField) {
                         return $foundField;
                     }

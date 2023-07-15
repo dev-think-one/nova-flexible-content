@@ -117,7 +117,7 @@ class Flexible extends Field implements Downloadable
     /**
      * Set removing confirmable.
      */
-    public function confirmRemove($label = '', $yes = 'Delete', $no = 'Cancel'): static
+    public function confirmRemove(?string $label = null, ?string $yes = null, ?string $no = null): static
     {
         return $this->withMeta([
             'confirmRemove'        => true,

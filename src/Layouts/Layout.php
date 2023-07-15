@@ -100,8 +100,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         callable              $removeCallbackMethod = null
     ) {
         $this->fields               = FieldCollection::make($fields ?? $this->fields());
-        $this->title                = $title                        ?? $this->title();
-        $this->name                 = $name                         ?? $this->name();
+        $this->title                = $title ?? $this->title();
+        $this->name                 = $name  ?? $this->name();
         $this->key                  = is_null($key) ? null : $this->generateValidLayoutKey($key);
         $this->removeCallbackMethod = $removeCallbackMethod;
         $this->setRawAttributes($this->setEmptyValuesToNull($attributes));
@@ -110,7 +110,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     /**
      * Set the parent model instance
      *
-     * @param  Model  $model
+     * @param Model $model
      * @return $this
      */
     public function setModel($model)
@@ -172,10 +172,10 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     {
         $data = $this->getAttributes();
 
-        return (bool) $this->setAttributeInternalCallback($data, $groupKey, $fieldKey, $newValue);
+        return $this->setAttributeInternalCallback($data, $groupKey, $fieldKey, $newValue);
     }
 
-    public function setAttributeInternalCallback(&$array, $groupKey, $fieldKey, $newValue)
+    public function setAttributeInternalCallback(array &$array, string $groupKey, string $fieldKey, mixed $newValue): bool
     {
         foreach ($array as $key => $value) {
             if (is_object($value)
@@ -187,16 +187,18 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
                     if ($attribute === $fieldKey) {
                         $value->attributes->$attribute = $newValue;
 
-                        return $array;
+                        return true;
                     }
                 }
             }
             if (is_array($value)) {
-                $this->setAttributeInternalCallback($array[$key], $groupKey, $fieldKey, $newValue);
+                if($this->setAttributeInternalCallback($array[$key], $groupKey, $fieldKey, $newValue)) {
+                    return true;
+                }
             }
         }
 
-        return null;
+        return false;
     }
 
     /**
@@ -249,7 +251,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     /**
      * Create a working field clone instance
      *
-     * @param  \Laravel\Nova\Fields\Field  $original
+     * @param \Laravel\Nova\Fields\Field $original
      * @return \Laravel\Nova\Fields\Field
      */
     protected function cloneField(Field $original)
@@ -271,7 +273,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     /**
      * Resolve fields using given attributes.
      *
-     * @param  bool  $empty
+     * @param bool $empty
      * @return void
      */
     public function resolve($empty = false)
@@ -335,11 +337,10 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     public function fill(ScopedRequest $request): array
     {
         return $this->fields->map(fn ($field) => $field->fill($request, $this))
-                            ->filter(fn ($callback) => is_callable($callback))
-                            ->values()
-                            ->all();
+            ->filter(fn ($callback) => is_callable($callback))
+            ->values()
+            ->all();
     }
-
 
 
     /**
@@ -361,8 +362,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     public function generateRules(ScopedRequest $request, ?string $specificty, string $key): array
     {
         return $this->fields->map(fn ($field) => $this->getScopedFieldRules($field, $request, $specificty, $key))
-                            ->collapse()
-                            ->all();
+            ->collapse()
+            ->all();
     }
 
     /**
@@ -370,15 +371,18 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      */
     protected function getScopedFieldRules(Field $field, ScopedRequest $request, ?string $specificty, string $key): array
     {
-        $method = 'get'.ucfirst($specificty).'Rules';
+        $method = 'get' . ucfirst($specificty) . 'Rules';
 
         $rules = call_user_func([$field, $method], $request);
 
         return collect($rules)
-            ->mapWithKeys(fn ($validatorRules, $attribute) => [
-                "{$key}.attributes.{$attribute}"
-                => $this->wrapScopedFieldRules($field, $validatorRules),
-            ])
+            ->mapWithKeys(function ($validatorRules, $attribute) use ($key, $field, $request) {
+                $key = $request->isFileAttribute($attribute)
+                    ? $request->getFileAttribute($attribute)
+                    : "{$key}.attributes.{$attribute}";
+
+                return [$key => $this->wrapScopedFieldRules($field, $validatorRules)];
+            })
             ->filter()
             ->all();
     }
@@ -404,29 +408,29 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     protected function defaultRemoveCallback(Flexible $flexible, Layout $layout, NovaRequest $request, $model)
     {
         $layout->fieldsCollection()
-               ->each(function (Field $field) use ($layout, $request, $model) {
-                   if ($field instanceof Flexible) {
-                       $field->resolve($layout);
-                       $this->callRemoveCallbackToFlexible($field, $request, $model);
-                   } elseif ($field instanceof Storable
-                             && $field instanceof Deletable
-                             && property_exists($field, 'deleteCallback')
-                   ) {
-                       if ($field->isPrunable()) {
-                           $field->value = $layout->getAttribute($field->attribute);
-                           call_user_func(
-                               $field->deleteCallback,
-                               $request,
-                               $model,
-                               $field->getStorageDisk(),
-                               $field->getStoragePath()
-                           );
-                       }
-                   }
-               });
+            ->each(function (Field $field) use ($layout, $request, $model) {
+                if ($field instanceof Flexible) {
+                    $field->resolve($layout);
+                    $this->callRemoveCallbackToFlexible($field, $request, $model);
+                } elseif ($field instanceof Storable
+                    && $field instanceof Deletable
+                    && property_exists($field, 'deleteCallback')
+                ) {
+                    if ($field->isPrunable()) {
+                        $field->value = $layout->getAttribute($field->attribute);
+                        call_user_func(
+                            $field->deleteCallback,
+                            $request,
+                            $model,
+                            $field->getStorageDisk(),
+                            $field->getStoragePath()
+                        );
+                    }
+                }
+            });
     }
 
-    public function callRemoveCallbackToFlexible(Flexible $field, NovaRequest $request, $model)
+    public function callRemoveCallbackToFlexible(Flexible $field, NovaRequest $request, $model): void
     {
         $field->groups()->each(function (Layout $layout) use ($field, $request, $model) {
             $layout->fireRemoveCallback($field, $request, $model);
@@ -468,8 +472,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      * Since it is not possible to define a relation on a layout, this method
      * returns null
      *
-     * @param  string  $class
-     * @param  string  $key
+     * @param string $class
+     * @param string $key
      * @return mixed
      */
     public function relationResolver($class, $key)

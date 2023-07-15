@@ -5,6 +5,9 @@ namespace NovaFlexibleContent\Tests\Fixtures\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
 
+/**
+ * @extends Factory<Post>
+ */
 class PostFactory extends Factory
 {
     /**

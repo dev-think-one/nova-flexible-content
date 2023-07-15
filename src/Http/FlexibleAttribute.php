@@ -141,7 +141,7 @@ class FlexibleAttribute
      *
      * @return bool
      */
-    public function isAggregate()
+    public function isAggregate(): bool
     {
         return !is_null($this->key);
     }
@@ -151,7 +151,7 @@ class FlexibleAttribute
      *
      * @return bool
      */
-    public function hasGroupInName()
+    public function hasGroupInName(): bool
     {
         if (is_null($this->group)) {
             return false;
@@ -160,7 +160,7 @@ class FlexibleAttribute
         $position = strpos($this->original, $this->groupPrefix());
         $index    = $this->isFlexibleFile() ? strlen(static::FILE_INDICATOR) : 0;
 
-        return ($position === $index);
+        return $position === $index;
     }
 
     /**
@@ -186,7 +186,7 @@ class FlexibleAttribute
      * @param  string  $value
      * @return array
      */
-    public function setDataIn(&$attributes, $value)
+    public function setDataIn(&$attributes, $value): array
     {
         $value = is_string($value) && $value === '' ? null : $value;
 

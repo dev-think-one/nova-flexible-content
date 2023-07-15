@@ -6,9 +6,8 @@
           :index="index"
           :last="(index === groups.length - 1)"
           :group="group"
-          :resource="resource"
-          :resource-name="resourceName"
-          :resource-id="resourceId"
+          :resourceName="resourceName"
+          :resourceId="resourceId"
           :attribute="field.attribute"
         />
       </div>
@@ -20,40 +19,46 @@
 import Group from '../group';
 
 export default {
+
   props: ['resource', 'resourceName', 'resourceId', 'field'],
+
   computed: {
     groups() {
       let group;
       return this.field.value.reduce((groups, item) => {
-        if (!(group = this.getGroup(item))) return groups;
+        if(!(group = this.getGroup(item))) return groups;
         groups.push(group);
         return groups;
       }, []);
-    },
+    }
   },
+
   methods: {
     /**
      * Retrieve layout definition from its name
      */
     getLayout(name) {
-      if (!this.field.layouts) return;
-      console.log(this.field.layouts);
-      return this.field.layouts.find((layout) => layout.name == name);
+      if(!this.field.layouts) return;
+      return this.field.layouts.find(layout => layout.name == name);
     },
+
     /**
      * create group instance from raw field value
      */
     getGroup(item) {
-      const layout = this.getLayout(item.layout);
-      if (!layout) return;
+
+      let layout = this.getLayout(item.layout);
+
+      if(!layout) return;
+
       return new Group(
         layout.name,
         layout.title,
         item.attributes,
         this.field,
-        item.key,
+        item.key
       );
     },
-  },
-};
+  }
+}
 </script>

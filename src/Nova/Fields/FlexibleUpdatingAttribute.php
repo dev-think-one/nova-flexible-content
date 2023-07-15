@@ -3,6 +3,7 @@
 namespace NovaFlexibleContent\Nova\Fields;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Flexible;
@@ -10,6 +11,40 @@ use NovaFlexibleContent\Http\FlexibleAttribute;
 
 trait FlexibleUpdatingAttribute
 {
+
+    protected function defaultPreviewCallback(): \Closure
+    {
+        return function ($value, ?string $disk, $model) {
+            return $value ? Storage::disk($disk)->url($value) : null;
+        };
+    }
+
+    protected function defaultDownloadCallback(): \Closure
+    {
+        return function (NovaRequest $request, Model $model, ?string $disk, $value) {
+            return $value ? Storage::disk($disk)->download($value) : null;
+        };
+    }
+
+    protected function defaultDeleteCallback(): \Closure
+    {
+        return function (NovaRequest $request, $model, ?string $disk, $value) {
+            if ($model instanceof Model) {
+                $this->flexibleSetAttribute($request, $model, null);
+
+                if ($request->isMethod('DELETE')) {
+                    // Prevent trafficCop error.
+                    $model->timestamps = false;
+                }
+            }
+
+            if ($value) {
+                Storage::disk($disk)->delete($value);
+            }
+
+            return true;
+        };
+    }
 
     /**
      * Currently this is bad bad bad solution.
@@ -31,6 +66,7 @@ trait FlexibleUpdatingAttribute
                     ->availableFields($request)
                     ->each(function (Field $field) use ($model, $groupKey, $fieldKey, $newValue) {
                         if ($field instanceof Flexible) {
+                            /** @var Flexible $field */
                             $field->resolve($model);
                             if ($field->setAttributeRecursive($groupKey, $fieldKey, $newValue)) {
                                 $field->reFillValue($model);

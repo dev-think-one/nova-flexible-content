@@ -2,8 +2,6 @@
 
 namespace NovaFlexibleContent\Nova\Fields;
 
-use Illuminate\Support\Facades\Storage;
-
 class VideoForFlexible extends FileForFlexible
 {
     public $component = 'video-field';
@@ -12,10 +10,6 @@ class VideoForFlexible extends FileForFlexible
     {
         parent::__construct(...func_get_args());
 
-        $this
-            ->preview(function ($value, ?string $disk, $model) {
-                return $value ? Storage::disk($disk)->url($value) : null;
-            });
+        $this->preview($this->defaultPreviewCallback());
     }
 }
-

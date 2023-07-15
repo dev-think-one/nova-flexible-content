@@ -2,20 +2,32 @@
 
 namespace NovaFlexibleContent\Http;
 
+use Illuminate\Support\Collection;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ScopedRequest extends NovaRequest
 {
+    /**
+     * The group's key.
+     *
+     * @var string|null
+     */
+    public ?string $group = null;
+
+    /**
+     * The original file input attributes.
+     */
+    protected ?Collection $fileAttributes = null;
 
     /**
      * Create a copy of the given request, only containing the group's input
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $from
+     * @param NovaRequest $from
      * @param  array  $attributes
      * @param  string  $group
-     * @return \NovaFlexibleContent\Http\ScopedRequest
+     * @return static
      */
-    public static function scopeFrom(NovaRequest $from, $attributes, $group)
+    public static function scopeFrom(NovaRequest $from, array $attributes, string $group): static
     {
         return parent::createFrom($from)->scopeInto($group, $attributes);
     }
@@ -25,9 +37,9 @@ class ScopedRequest extends NovaRequest
      *
      * @param  string  $group
      * @param  array  $attributes
-     * @return $this
+     * @return static
      */
-    public function scopeInto($group, $attributes)
+    public function scopeInto(string $group, array $attributes): static
     {
         [$input, $files] = $this->getScopeState($group, $attributes);
 
@@ -49,7 +61,7 @@ class ScopedRequest extends NovaRequest
      * @param  array  $attributes
      * @return array
      */
-    protected function getScopeState($group, $attributes)
+    protected function getScopeState(string $group, array $attributes = []): array
     {
         $input = [];
         $files = [];
@@ -86,7 +98,7 @@ class ScopedRequest extends NovaRequest
      * @param  null|string  $group
      * @return array
      */
-    protected function getNestedFiles($iterable, $group = null)
+    protected function getNestedFiles(array $iterable, ?string $group = null): array
     {
         $files = [];
         $key   = $this->isFlexibleStructure($iterable) ? $iterable['key'] : $group;
@@ -118,10 +130,15 @@ class ScopedRequest extends NovaRequest
      * @param  string  $group
      * @return void
      */
-    protected function handleScopeFiles(&$files, &$input, $group)
+    protected function handleScopeFiles(&$files, &$input, $group): void
     {
         $attributes = collect($files)->keyBy('original');
-        $scope      = [];
+
+        $this->fileAttributes = $attributes->mapWithKeys(function ($attribute, $key) {
+            return [$attribute->name => $key];
+        });
+
+        $scope = [];
 
         foreach ($this->getFlattenedFiles() as $attribute => $file) {
             if (!($target = $attributes->get($attribute))) {
@@ -144,9 +161,11 @@ class ScopedRequest extends NovaRequest
     /**
      * Get the request's files as a "flat" (1 dimension) array
      *
+     * @param null $iterable
+     * @param FlexibleAttribute|null $original
      * @return array
      */
-    protected function getFlattenedFiles($iterable = null, FlexibleAttribute $original = null)
+    protected function getFlattenedFiles($iterable = null, FlexibleAttribute $original = null): array
     {
         $files = [];
 
@@ -171,7 +190,7 @@ class ScopedRequest extends NovaRequest
      * @param  array  $iterable
      * @return bool
      */
-    protected function isFlexibleStructure($iterable)
+    protected function isFlexibleStructure(array $iterable): bool
     {
         $keys = array_keys($iterable);
 
@@ -180,7 +199,17 @@ class ScopedRequest extends NovaRequest
         }
 
         return  in_array('layout', $keys, true)
-                && in_array('key', $keys, true)
-                && in_array('attributes', $keys, true);
+            && in_array('key', $keys, true)
+            && in_array('attributes', $keys, true);
+    }
+
+    public function isFileAttribute($name): bool
+    {
+        return (bool) $this->fileAttributes?->has($name);
+    }
+
+    public function getFileAttribute($name): mixed
+    {
+        return $this->fileAttributes?->get($name);
     }
 }

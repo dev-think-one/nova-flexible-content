@@ -1,24 +1,15 @@
 <template>
   <field-wrapper>
     <div class="py-6 px-8 w-full">
-      <div
-        v-if="fieldLabel"
-        class="mb-6"
-      >
-        <form-label
-          :for="field.attribute"
-          :class="{
-            'mb-2': field.helpText && showHelpText
-          }"
-        >
+      <div class="mb-6" v-if="fieldLabel">
+        <form-label :for="field.attribute" :class="{
+                      'mb-2': field.helpText && showHelpText
+                  }">
           {{ fieldLabel }}
 
-          <span
-            v-if="field.required"
-            class="text-danger text-sm"
-          >{{
-            __('*')
-          }}</span>
+          <span v-if="field.required" class="text-danger text-sm">{{
+              __('*')
+            }}</span>
         </form-label>
 
         <help-text v-if="showHelpText">
@@ -26,11 +17,11 @@
         </help-text>
       </div>
 
-      <slot name="field" />
+      <slot name="field"/>
 
       <help-text
-        v-if="showErrors && hasError"
         class="error-text mt-2 text-danger"
+        v-if="showErrors && hasError"
       >
         {{ firstError }}
       </help-text>
@@ -39,7 +30,7 @@
 </template>
 
 <script>
-import { mapProps, HandlesValidationErrors, Errors } from 'laravel-nova';
+import { HandlesValidationErrors, mapProps } from 'laravel-nova'
 
 export default {
   mixins: [HandlesValidationErrors],
@@ -58,7 +49,7 @@ export default {
         return false;
       }
 
-      return this.fieldName || this.field.singularLabel || this.field.name;
+      return this.fieldName || this.field.singularLabel || this.field.name
     },
   },
 };
