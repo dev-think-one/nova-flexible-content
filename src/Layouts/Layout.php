@@ -58,6 +58,8 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
      */
     protected int $limit = 0;
 
+    protected ?string $tagInfoFrom = null;
+
     /**
      * The parent model instance
      */
@@ -192,7 +194,7 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
                 }
             }
             if (is_array($value)) {
-                if($this->setAttributeInternalCallback($array[$key], $groupKey, $fieldKey, $newValue)) {
+                if ($this->setAttributeInternalCallback($array[$key], $groupKey, $fieldKey, $newValue)) {
                     return true;
                 }
             }
@@ -492,10 +494,13 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
         $this->resolve(true);
 
         return [
-            'name'   => $this->name(),
-            'title'  => $this->title(),
-            'fields' => $this->fields->jsonSerialize(),
-            'limit'  => $this->limit,
+            'name'    => $this->name(),
+            'title'   => $this->title(),
+            'fields'  => $this->fields->jsonSerialize(),
+            'limit'   => $this->limit,
+            'configs' => [
+                'tagInfoFrom' => $this->tagInfoFrom,
+            ],
         ];
     }
 }

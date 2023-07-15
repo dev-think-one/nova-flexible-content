@@ -98,15 +98,6 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Make the flexible content take up the full width
-     * of the form. Labels will sit above.
-     */
-    public function fullWidth(): static
-    {
-        return $this->withMeta(['fullWidth' => true]);
-    }
-
-    /**
      *  Set max limit of groups in field.
      */
     public function limit(int $limit = 1): static

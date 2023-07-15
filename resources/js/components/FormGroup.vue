@@ -29,9 +29,16 @@
             <Icon type="minus" class="align-top" width="16" height="16"/>
           </button>
 
-          <p class="text-80 grow px-4">
+          <p class="text-80 grow px-4 flex items-center overflow-hidden whitespace-nowrap truncate">
             <span class="mr-3 font-semibold">#{{ index + 1 }}</span>
             {{ group.title }}
+            <template v-if="descriptionText">
+              <Badge
+                class="ml-3 bg-primary-50 dark:bg-primary-500 text-primary-600 dark:text-gray-900 space-x-1 truncate"
+              >
+                {{ descriptionText }}
+              </Badge>
+            </template>
           </p>
 
           <div class="flex" v-if="!readonly">
@@ -98,6 +105,7 @@
 </template>
 
 <script>
+import {find} from 'lodash'
 import BehavesAsPanel from 'nova-mixins/BehavesAsPanel';
 import {mapProps} from 'laravel-nova';
 
@@ -128,6 +136,23 @@ export default {
 
     collapsed() {
       return this.group.collapsed || this.disabledExpand;
+    },
+
+    descriptionText() {
+      if (this.group.configs.tagInfoFrom) {
+        const field = find(this.group.fields, {attribute: `${this.group.key}__${this.group.configs.tagInfoFrom}`});
+        if (field) {
+          if (Array.isArray(field.options)) {
+            const text = find(field.options, (option) => (('' + option?.value) === '' + field.value))?.label;
+            if (text !== undefined) {
+              return text;
+            }
+          }
+          return field?.value;
+        }
+      }
+
+      return null;
     },
 
     titleStyle() {

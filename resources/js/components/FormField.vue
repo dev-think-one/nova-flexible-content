@@ -191,7 +191,7 @@ export default {
           this.getLayout(this.value[i].layout),
           this.value[i].attributes,
           this.value[i].key,
-          this.value[i].collapsed
+          this.value[i].collapsed,
         );
       }
     },
@@ -213,7 +213,7 @@ export default {
       collapsed = collapsed || false;
 
       const fields = attributes || JSON.parse(JSON.stringify(layout.fields));
-      const group = new Group(layout.name, layout.title, fields, this.currentField, key, collapsed);
+      const group = new Group(layout.name, layout.title, fields, this.currentField, key, collapsed, layout.configs);
 
       this.groups[group.key] = group;
       this.order.push(group.key);

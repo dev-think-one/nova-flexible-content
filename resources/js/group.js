@@ -1,13 +1,14 @@
 import { random as randomString } from './utils/str';
 
 export default class Group {
-  constructor(name, title, fields, field, key, collapsed = true) {
+  constructor(name, title, fields, field, key, collapsed = true, configs = {}) {
     this.name = name;
     this.title = title;
     this.fields = fields;
     this.key = key || this.getTemporaryUniqueKey(field.attribute);
     this.collapsed = collapsed;
     this.readonly = field.readonly;
+    this.configs = configs;
 
     this.renameFields();
   }
