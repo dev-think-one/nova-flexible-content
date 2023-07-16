@@ -27,7 +27,7 @@ trait HasFlexible
         $flexible = $this->getFlexibleArrayFromValue($value);
 
         if (is_null($flexible)) {
-            return new LayoutsCollection();
+            return LayoutsCollection::make();
         }
 
         return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter();
