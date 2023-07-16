@@ -78,6 +78,7 @@ trait HasFlexible
             $item = json_decode($item, true);
         }
 
+        // Check about is_a($item, Fluent::class)
         if (is_a($item, \stdClass::class)) {
             $item = json_decode(json_encode($item), true);
         }

@@ -69,6 +69,6 @@ trait HasLayoutKey
             $bytes = Str::random();
         }
 
-        return substr(bin2hex($bytes), 0, $keyLen);
+        return 'c' . substr(bin2hex($bytes), 0, ($keyLen - 1));
     }
 }

@@ -8,7 +8,7 @@
       <ul class="list-reset">
         <li v-for="layout in filteredLayouts" class="border-b border-gray-100 dark:border-gray-700" :key="'add-'+layout.name">
           <a
-            :dusk="'add-' + layout.name"
+            :dusk="`add-${layout.name}`"
             @click="addGroup(layout)"
             class="cursor-pointer flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 block py-2 px-3 no-underline font-normal bg-white dark:bg-gray-800">
             <div><p class="text-90">{{ layout.title }}</p></div>
@@ -16,7 +16,7 @@
         </li>
       </ul>
     </div>
-    <default-button
+    <DefaultButton
       dusk="toggle-layouts-dropdown-or-add-default"
       type="button"
       tabindex="0"
@@ -25,7 +25,7 @@
       v-if="isBelowLayoutLimits"
     >
       <span>{{ field.button }}</span>
-    </default-button>
+    </DefaultButton>
   </div>
 </template>
 

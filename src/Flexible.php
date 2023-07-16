@@ -5,6 +5,7 @@ namespace NovaFlexibleContent;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Contracts\Downloadable;
 use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Fields\SupportsDependentFields;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Contracts\ResolverInterface;
 use NovaFlexibleContent\Http\ScopedRequest;
@@ -16,6 +17,8 @@ use NovaFlexibleContent\Value\Resolver;
 
 class Flexible extends Field implements Downloadable
 {
+    use SupportsDependentFields;
+
     /**
      * The field's component.
      *
