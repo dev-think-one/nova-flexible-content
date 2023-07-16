@@ -32,6 +32,7 @@
         "orchestra/testbench": "^8.5",
         "phpunit/phpunit": "^10.1",
         "psalm/plugin-laravel": "^2.8",
+        "think.studio/nova-video-field": "^1.0",
         "vimeo/psalm": "^5.11"
     },
     "autoload": {
