@@ -4,10 +4,6 @@ namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use NovaFlexibleContent\Commands\Generators\MakeLayoutCommand;
-use NovaFlexibleContent\Commands\Generators\MakePresetCommand;
-use NovaFlexibleContent\Commands\Generators\MakeResolverCommand;
-use NovaFlexibleContent\Commands\Generators\StubPublishCommand;
 use NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -17,13 +13,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->addMiddleware();
 
         Nova::serving(function (ServingNova $event) {
-            Nova::script('nova-flexible-content', __DIR__ . '/../dist/js/field.js');
-            Nova::style('nova-flexible-content', __DIR__ . '/../dist/css/field.css');
+            Nova::script('flexible-content-field', __DIR__ . '/../dist/js/field.js');
+            Nova::style('flexible-content-field', __DIR__ . '/../dist/css/field.css');
         });
 
         if ($this->app->runningInConsole()) {
@@ -32,10 +28,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'config');
 
             $this->commands([
-                MakeLayoutCommand::class,
-                MakePresetCommand::class,
-                MakeResolverCommand::class,
-                StubPublishCommand::class,
+                //
             ]);
         }
     }
@@ -45,7 +38,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/nova-flexible-content.php', 'nova-flexible-content');
     }
@@ -55,7 +48,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      *
      * @return void
      */
-    public function addMiddleware()
+    public function addMiddleware(): void
     {
         $router = $this->app['router'];
 

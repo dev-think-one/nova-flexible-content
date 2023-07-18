@@ -1,22 +1,21 @@
 <template>
   <PanelItem :field="field">
     <template #value>
-      <div v-for="(group, index) in groups">
-        <detail-nova-flexible-content-group
-          :index="index"
-          :last="(index === groups.length - 1)"
-          :group="group"
-          :resourceName="resourceName"
-          :resourceId="resourceId"
-          :attribute="field.attribute"
-        />
-      </div>
+      <DetailFlexibleContentGroup
+        v-for="(group, index) in groups"
+        :index="index"
+        :last="(index === groups.length - 1)"
+        :group="group"
+        :resourceName="resourceName"
+        :resourceId="resourceId"
+        :attribute="field.attribute"
+      />
     </template>
   </PanelItem>
 </template>
 
 <script>
-import Group from '../group';
+import Group from '@/group';
 
 export default {
 
@@ -26,7 +25,7 @@ export default {
     groups() {
       let group;
       return this.field.value.reduce((groups, item) => {
-        if(!(group = this.getGroup(item))) return groups;
+        if (!(group = this.getGroup(item))) return groups;
         groups.push(group);
         return groups;
       }, []);
@@ -38,7 +37,7 @@ export default {
      * Retrieve layout definition from its name
      */
     getLayout(name) {
-      if(!this.field.layouts) return;
+      if (!this.field.layouts) return;
       return this.field.layouts.find(layout => layout.name == name);
     },
 
@@ -49,7 +48,7 @@ export default {
 
       let layout = this.getLayout(item.layout);
 
-      if(!layout) return;
+      if (!layout) return;
 
       return new Group(
         layout.name,

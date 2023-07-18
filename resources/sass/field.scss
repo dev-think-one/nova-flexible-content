@@ -1,10 +1,15 @@
-// Nova Tool CSS
-$multiselect-primary-color: var(--primary);
-$multiselect-primary-color-dark: var(--primary-dark);
-$mulitselect-secondary-hover-color: #bacad6;
-$mulitselect-secondary-hover-color-10: #b3b9bf;
-$mulitselect-secondary-hover-color-25: #3c4b5f;
-$multiselect-radius: .5rem;
-$multiselect-placeholder-color: #7c858e;
+// Change full width field styling.
+.flexibleFieldFullWidth {
+  @media (min-width: 768px) {
+    flex-direction: column !important;
 
-@import "./multiselect";
+    & > .md\:w-1\/5 {
+      width: 100% !important;
+      margin-top: 0 !important;
+      margin-bottom: 1rem !important;
+    }
+    & > .md\:w-4\/5 {
+      width: 100% !important;
+    }
+  }
+}

@@ -1,16 +1,17 @@
 <template>
-  <component
+  <DefaultField
     :dusk="currentField.attribute"
-    :is="currentField.fullWidth ? 'FullWidthField' : 'DefaultField'"
     :field="currentField"
     :errors="errors"
     :show-help-text="showHelpText"
+    :class="{'flexibleFieldFullWidth': currentField.fullWidth}"
     full-width-content
   >
+
     <template #field>
 
       <div ref="flexibleFieldContainer">
-        <FormNovaFlexibleContentGroup
+        <FormFlexibleContentGroup
           v-for="(group, index) in orderedGroups"
           :dusk="currentField.attribute + '-' + index"
           :key="group.key"
@@ -40,14 +41,14 @@
       />
 
     </template>
-  </component>
+
+  </DefaultField>
 </template>
 
 <script>
-import FullWidthField from './FullWidthField';
 import Sortable from 'sortablejs'
 import {DependentFormField, HandlesValidationErrors, mapProps} from 'laravel-nova';
-import Group from '../group';
+import Group from '@/group';
 
 export default {
   mixins: [HandlesValidationErrors, DependentFormField],
@@ -56,7 +57,7 @@ export default {
     ...mapProps(['mode']),
   },
 
-  components: {FullWidthField},
+  components: {},
 
   data() {
     return {
@@ -111,15 +112,25 @@ export default {
   },
 
   methods: {
-    /*
-    * Set the initial, internal value for the field.
-    */
+    /**
+     * Set the initial, internal value for the field.
+     */
     setInitialValue() {
       this.value = this.currentField.value || [];
       this.files = {};
 
       this.populateGroups();
       this.$nextTick(this.initSortable.bind(this));
+    },
+
+    /**
+     * Update the field's internal value.
+     */
+    handleChange(value) {
+      this.value = value || [];
+      this.files = {};
+
+      this.populateGroups();
     },
 
     /**
@@ -167,16 +178,6 @@ export default {
       registered.push(attribute);
 
       formData.set('___nova_flexible_content_fields', JSON.stringify(registered));
-    },
-
-    /**
-     * Update the field's internal value.
-     */
-    handleChange(value) {
-      this.value = value || [];
-      this.files = {};
-
-      this.populateGroups();
     },
 
     /**
@@ -268,7 +269,6 @@ export default {
       delete this.groups[key];
     },
 
-
     initSortable() {
       const containerRef = this.$refs['flexibleFieldContainer']
 
@@ -289,6 +289,7 @@ export default {
         }
       });
     },
+
   },
 };
 </script>

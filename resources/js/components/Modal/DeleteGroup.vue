@@ -1,7 +1,28 @@
+<script setup>
+
+const props = defineProps({
+  message: {
+    type: String,
+    default: null,
+  },
+  yes: {
+    type: String,
+    default: null,
+  },
+  no: {
+    type: String,
+    default: null,
+  },
+});
+
+const emit = defineEmits(['close', 'confirm']);
+
+</script>
+
 <template>
   <Modal :show="true">
     <form
-      @submit.prevent="$emit('confirm')"
+      @submit.prevent="emit('confirm')"
       class="mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
     >
       <slot>
@@ -15,44 +36,23 @@
 
       <ModalFooter>
         <div class="ml-auto">
-          <link-button
+          <CancelButton
             type="button"
-            data-testid="cancel-button"
             dusk="cancel-delete-button"
-            @click.prevent="this.$emit('close')"
+            @click.prevent="emit('close')"
             class="mr-3"
           >
             {{ no || __('Cancel') }}
-          </link-button>
+          </CancelButton>
 
-          <danger-button
-            ref="confirmButton"
+          <DangerButton
             dusk="confirm-delete-button"
-            :processing="working"
-            :disabled="working"
             type="submit"
           >
             {{ yes || __('Delete') }}
-          </danger-button>
+          </DangerButton>
         </div>
       </ModalFooter>
     </form>
   </Modal>
 </template>
-
-<script>
-export default {
-  props: ['message', 'yes', 'no'],
-
-  emits: ['close', 'confirm'],
-
-  /**
-   * Mount the component.
-   */
-  mounted() {
-    this.$nextTick(() => {
-      // this.$refs.confirmButton.button.focus()
-    })
-  },
-}
-</script>

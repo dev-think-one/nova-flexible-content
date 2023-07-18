@@ -1,105 +1,86 @@
 <template>
-  <div class="relative mb-4 pb-1" :id="group.key">
-    <div class="w-full shrink">
-      <div :class="titleStyle" v-if="group.title">
-        <div class="h-8 leading-normal h-full flex items-center box-content"
-             :class="{'border-b border-gray-200 dark:border-gray-700 ': !collapsed}">
-
-          <button
-            dusk="expand-group"
-            type="button"
-            class="shrink-0 group-control btn border-r border-gray-200 dark:border-gray-700 w-8 h-8 block"
-            :title="__('Expand')"
-            @click.prevent="expand"
-            v-if="collapsed || disabledExpand"
-            :disabled="disabledExpand"
-          >
-            <Icon
-              type="plus" class="align-top opacity" width="16" height="16"
-              :class="{'opacity-50': disabledExpand}"
-            />
-          </button>
-          <button
-            dusk="collapse-group"
-            type="button"
-            class="group-control btn border-r border-gray-200 dark:border-gray-700 w-8 h-8 block"
-            :title="__('Collapse')"
-            @click.prevent="collapse"
-            v-else>
-            <Icon type="minus" class="align-top" width="16" height="16"/>
-          </button>
-
-          <p class="text-80 grow px-4 flex items-center overflow-hidden whitespace-nowrap truncate">
-            <span class="mr-3 font-semibold">#{{ index + 1 }}</span>
-            {{ group.title }}
-            <template v-if="descriptionText">
-              <Badge
-                class="ml-3 bg-primary-50 dark:bg-primary-500 text-primary-600 dark:text-gray-900 space-x-1 truncate"
-              >
-                {{ descriptionText }}
-              </Badge>
-            </template>
-          </p>
-
-          <div class="flex" v-if="!readonly">
-            <button
-              dusk="drag-group"
-              type="button"
-              class="group-control btn border-l border-gray-200 dark:border-gray-700 w-8 h-8 block nova-flexible-content-drag-button"
-              :title="__('Drag')"
-            >
-              <Icon type="selector" class="align-top" width="16" height="16"/>
-            </button>
-            <button
-              dusk="move-up-group"
-              type="button"
-              class="group-control btn border-l border-gray-200 dark:border-gray-700 w-8 h-8 block"
-              :title="__('Move up')"
-              @click.prevent="moveUp">
-              <Icon type="arrow-up" class="align-top" width="16" height="16"/>
-            </button>
-            <button
-              dusk="move-down-group"
-              type="button"
-              class="group-control btn border-l border-gray-200 dark:border-gray-700 w-8 h-8 block"
-              :title="__('Move down')"
-              @click.prevent="moveDown">
-              <Icon type="arrow-down" class="align-top" width="16" height="16"/>
-            </button>
-            <button
-              dusk="delete-group"
-              type="button"
-              class="group-control btn border-l border-gray-200 dark:border-gray-700 w-8 h-8 block"
-              :title="__('Delete')"
-              @click.prevent="confirmRemove">
-              <Icon type="trash" width="16" height="16"/>
-            </button>
-            <DeleteFlexibleContentGroupModal
-              v-if="removeMessage"
-              @confirm="remove"
-              @close="removeMessage=false"
-              :message="field.confirmRemoveMessage"
-              :yes="field.confirmRemoveYes"
-              :no="field.confirmRemoveNo"
-            />
-          </div>
-
-        </div>
-      </div>
-      <div :class="containerStyle">
-        <component
-          v-for="(item, index) in group.fields"
-          :key="index"
-          :is="'form-' + item.component"
-          :resource-name="resourceName"
-          :resource-id="resourceId"
-          :field="item"
-          :errors="errors"
-          :mode="mode"
-          :show-help-text="item.helpText != null"
-          :class="{ 'remove-bottom-border': index == group.fields.length - 1 }"
+  <div
+    :id="group.key"
+    class="mb-4 w-full"
+  >
+    <div
+      v-if="group.title"
+      class="border border-gray-200 dark:border-gray-700 rounded-t-lg h-8 leading-normal flex items-center box-content"
+      :class="{ ' rounded-b-lg': collapsed }"
+    >
+      <BlockIconButton
+        :icon="(collapsed || disabledExpand)?'plus':'minus'"
+        :dusk="(collapsed || disabledExpand)?'expand-group':'collapse-group'"
+        dusk=""
+        class="border-r"
+        :title="(collapsed || disabledExpand)?__('Expand'):__('Collapse')"
+        @click.prevent="(collapsed || disabledExpand)?expand():collapse()"
+        :disabled="disabledExpand"
+        :iconClass="{'opacity-50': disabledExpand}"
+      />
+      <p class="flex-grow px-4 flex items-center overflow-hidden whitespace-nowrap truncate">
+        <BlockIdText class="inline" :number="index + 1" :title="group.title"/>
+        <Badge
+          v-if="descriptionText"
+          class="ml-3 bg-primary-50 dark:bg-primary-500 text-primary-600 dark:text-gray-900 space-x-1 truncate"
+        >
+          {{ descriptionText }}
+        </Badge>
+      </p>
+      <div v-if="!readonly" class="flex">
+        <BlockIconButton
+          icon="selector"
+          dusk="drag-group"
+          class="border-l nova-flexible-content-drag-button"
+          :title="__('Drag')"
+        />
+        <BlockIconButton
+          icon="arrow-up"
+          dusk="move-up-group"
+          class="border-l"
+          :title="__('Move up')"
+          @click.prevent="moveUp"
+        />
+        <BlockIconButton
+          icon="arrow-down"
+          dusk="move-down-group"
+          class="border-l"
+          :title="__('Move down')"
+          @click.prevent="moveDown"
+        />
+        <BlockIconButton
+          icon="trash"
+          dusk="delete-group"
+          class="border-l"
+          :title="__('Delete')"
+          @click.prevent="confirmRemovingGroup"
+        />
+        <DeleteGroupModal
+          v-if="displayRemoveConfirmation"
+          @confirm="remove"
+          @close="displayRemoveConfirmation=false"
+          :message="field.confirmRemoveMessage"
+          :yes="field.confirmRemoveYes"
+          :no="field.confirmRemoveNo"
         />
       </div>
+    </div>
+    <div
+      class="flex-grow border-b border-r border-l border-gray-200 dark:border-gray-700 rounded-b-lg"
+      :class="{ 'hidden': collapsed }"
+    >
+      <component
+        v-for="(item, index) in group.fields"
+        :key="index"
+        :is="'form-' + item.component"
+        :resource-name="resourceName"
+        :resource-id="resourceId"
+        :field="item"
+        :errors="errors"
+        :mode="mode"
+        :show-help-text="item.helpText != null"
+        :class="{ 'remove-bottom-border': index == group.fields.length - 1 }"
+      />
     </div>
   </div>
 </template>
@@ -108,9 +89,14 @@
 import {find} from 'lodash'
 import BehavesAsPanel from 'nova-mixins/BehavesAsPanel';
 import {mapProps} from 'laravel-nova';
+import DeleteGroupModal from '@/components/Modal/DeleteGroup.vue'
+import BlockIconButton from '@/components/Block/IconButton.vue'
+import BlockIdText from '@/components/Block/IdText.vue'
 
 export default {
   mixins: [BehavesAsPanel],
+
+  components: {DeleteGroupModal, BlockIconButton, BlockIdText},
 
   props: {
     errors: {},
@@ -124,7 +110,7 @@ export default {
 
   data() {
     return {
-      removeMessage: false,
+      displayRemoveConfirmation: false,
       readonly: this.group.readonly,
     };
   },
@@ -154,30 +140,6 @@ export default {
 
       return null;
     },
-
-    titleStyle() {
-      let classes = ['border-t', 'border-r', 'border-l', 'border-gray-200', 'dark:border-gray-700', 'rounded-t-lg'];
-
-      if (this.collapsed) {
-        classes.push('border-b rounded-b-lg');
-      }
-
-      return classes;
-    },
-    containerStyle() {
-      let classes = ['grow', 'border-b', 'border-r', 'border-l', 'border-gray-200', 'dark:border-gray-700', 'rounded-b-lg'];
-
-      if (!this.group.title) {
-        classes.push('border-t');
-        classes.push('rounded-tr-lg');
-      }
-
-      if (this.collapsed) {
-        classes.push('hidden');
-      }
-
-      return classes;
-    }
   },
 
   methods: {
@@ -205,9 +167,9 @@ export default {
     /**
      * Confirm remove message
      */
-    confirmRemove() {
+    confirmRemovingGroup() {
       if (this.field.confirmRemove) {
-        this.removeMessage = true;
+        this.displayRemoveConfirmation = true;
       } else {
         this.remove()
       }
@@ -226,74 +188,6 @@ export default {
     collapse() {
       this.group.collapsed = true;
     },
-
   },
 }
 </script>
-
-<style>
-.group-control:focus {
-  outline: none;
-}
-
-.group-control:hover {
-  color: rgb(var(--colors-primary-400));
-}
-
-.confirm-message {
-  position: absolute;
-  overflow: visible;
-  right: 38px;
-  bottom: 0;
-  width: auto;
-  border-radius: 4px;
-  padding: 6px 7px;
-  border: 1px solid #B7CAD6;
-  background-color: var(--20);
-  white-space: nowrap;
-}
-
-[dir=rtl] .confirm-message {
-  right: auto;
-  left: 35px;
-}
-
-.confirm-message .text-danger {
-  color: #ee3f22;
-}
-
-.rounded-l {
-  border-top-left-radius: 0.25rem; /* 4px */
-  border-bottom-left-radius: 0.25rem; /* 4px */
-}
-
-.rounded-t-lg {
-  border-top-right-radius: 0.5rem; /* 8px */
-  border-top-left-radius: 0.5rem; /* 8px */
-}
-
-.rounded-b-lg {
-  border-bottom-left-radius: 0.5rem; /* 8px */
-  border-bottom-right-radius: 0.5rem; /* 8px */
-}
-
-.box-content {
-  box-sizing: content-box;
-}
-
-.grow {
-  flex-grow: 1;
-}
-
-.grow-0 {
-  flex-grow: 0;
-}
-
-.shrink {
-  flex-shrink: 1;
-}
-
-.shrink-0 {
-  flex-shrink: 0;
-}
-</style>

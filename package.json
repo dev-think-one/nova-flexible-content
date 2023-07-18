@@ -12,8 +12,8 @@
         "nova:install": "npm --prefix='./vendor/laravel/nova' ci"
     },
     "dependencies": {
-        "@vue/compiler-sfc": "^3.2.22",
-        "@vueform/multiselect": "^2.4.2",
+        "@inertiajs/inertia": "^0.11.0",
+        "@vue/babel-plugin-jsx": "^1.1.1",
         "form-backend-validation": "^2.3.3",
         "laravel-mix": "^6.0.41",
         "laravel-vapor": "^0.5.1",
@@ -22,10 +22,9 @@
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.53.0",
         "sass-loader": "^12.1.0",
-        "vue-loader": "^16.8.3",
         "sortablejs": "^1.15.0",
-        "@inertiajs/inertia": "^0.11.0",
-        "@vue/babel-plugin-jsx": "^1.1.1"
+        "vue": "^3.3.4",
+        "vue-loader": "^16.8.3"
     },
     "devDependencies": {
         "eslint": "^7.31.0",

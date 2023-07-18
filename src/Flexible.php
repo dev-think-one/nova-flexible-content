@@ -13,18 +13,25 @@ use NovaFlexibleContent\Layouts\GroupsCollection;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
 use NovaFlexibleContent\Layouts\Preset;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasLayoutsMenu;
 use NovaFlexibleContent\Value\Resolver;
 
 class Flexible extends Field implements Downloadable
 {
     use SupportsDependentFields;
+    use HasLayoutsMenu;
 
     /**
      * The field's component.
      *
      * @var string
      */
-    public $component = 'nova-flexible-content';
+    public $component = 'flexible-content';
+
+    /**
+     * @inerhitDoc
+     */
+    public $showOnIndex = false;
 
     /**
      * The available layouts as collection.
@@ -63,9 +70,14 @@ class Flexible extends Field implements Downloadable
 
         parent::__construct($name, $attribute, $resolveCallback);
 
+        foreach (class_uses_recursive($this) as $trait) {
+
+            if (method_exists($this, $method = 'initialize'.class_basename($trait))) {
+                $this->{$method}();
+            }
+        }
+
         $this->button(__('Add layout'));
-        $this->menu('flexible-drop-menu');
-        $this->hideFromIndex();
     }
 
     /**
@@ -82,22 +94,6 @@ class Flexible extends Field implements Downloadable
     public function groups(): GroupsCollection
     {
         return $this->groups;
-    }
-
-    /**
-     * Set custom dropdown menu component.
-     */
-    public function menu(string $component, array $data = []): static
-    {
-        return $this->withMeta(['menu' => compact('component', 'data')]);
-    }
-
-    /**
-     * Set the button's label.
-     */
-    public function button(string $label): static
-    {
-        return $this->withMeta(['button' => $label]);
     }
 
     /**
