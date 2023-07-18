@@ -7,19 +7,23 @@ use Laravel\Nova\Contracts\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\SupportsDependentFields;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use NovaFlexibleContent\Contracts\ResolverInterface;
 use NovaFlexibleContent\Http\ScopedRequest;
 use NovaFlexibleContent\Layouts\GroupsCollection;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
 use NovaFlexibleContent\Layouts\Preset;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupRemovingConfirmation;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupsLimits;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasLayoutsMenu;
-use NovaFlexibleContent\Value\Resolver;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasResolver;
 
 class Flexible extends Field implements Downloadable
 {
     use SupportsDependentFields;
+    use HasResolver;
     use HasLayoutsMenu;
+    use HasGroupsLimits;
+    use HasGroupRemovingConfirmation;
 
     /**
      * The field's component.
@@ -44,11 +48,6 @@ class Flexible extends Field implements Downloadable
     protected GroupsCollection $groups;
 
     /**
-     * The field's value setter & getter
-     */
-    protected ResolverInterface|null $resolver = null;
-
-    /**
      * All the validated attributes
      */
     protected static array $validatedKeys = [];
@@ -58,9 +57,9 @@ class Flexible extends Field implements Downloadable
     /**
      * Create a fresh flexible field instance
      *
-     * @param  string  $name
-     * @param  string|null  $attribute
-     * @param  mixed|null  $resolveCallback
+     * @param string $name
+     * @param string|null $attribute
+     * @param mixed|null $resolveCallback
      * @return void
      */
     public function __construct($name, $attribute = null, $resolveCallback = null)
@@ -72,12 +71,10 @@ class Flexible extends Field implements Downloadable
 
         foreach (class_uses_recursive($this) as $trait) {
 
-            if (method_exists($this, $method = 'initialize'.class_basename($trait))) {
+            if (method_exists($this, $method = 'initialize' . class_basename($trait))) {
                 $this->{$method}();
             }
         }
-
-        $this->button(__('Add layout'));
     }
 
     /**
@@ -94,54 +91,6 @@ class Flexible extends Field implements Downloadable
     public function groups(): GroupsCollection
     {
         return $this->groups;
-    }
-
-    /**
-     *  Set max limit of groups in field.
-     */
-    public function limit(int $limit = 1): static
-    {
-        return $this->withMeta(['limit' => $limit]);
-    }
-
-    /**
-     * Set removing confirmable.
-     */
-    public function confirmRemove(?string $label = null, ?string $yes = null, ?string $no = null): static
-    {
-        return $this->withMeta([
-            'confirmRemove'        => true,
-            'confirmRemoveMessage' => $label,
-            'confirmRemoveYes'     => $yes,
-            'confirmRemoveNo'      => $no,
-        ]);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function resolver(ResolverInterface|string $resolver): static
-    {
-        return $this->setResolver($resolver);
-    }
-
-    /**
-     * Set the field's resolver
-     */
-    public function setResolver(ResolverInterface|string $resolver): static
-    {
-        if (is_string($resolver)
-            && is_a($resolver, ResolverInterface::class, true)) {
-            $resolver = new $resolver();
-        }
-
-        if (!($resolver instanceof ResolverInterface)) {
-            throw new \Exception('Resolver Class does not implement ResolverInterface.');
-        }
-
-        $this->resolver = $resolver;
-
-        return $this;
     }
 
     /**
@@ -209,8 +158,8 @@ class Flexible extends Field implements Downloadable
     /**
      * Resolve the field's value.
      *
-     * @param  mixed  $resource
-     * @param  string|null  $attribute
+     * @param mixed $resource
+     * @param string|null $attribute
      * @return void
      */
     public function resolve($resource, $attribute = null)
@@ -227,8 +176,8 @@ class Flexible extends Field implements Downloadable
     /**
      * Resolve the field's value for display on index and detail views.
      *
-     * @param  mixed  $resource
-     * @param  string|null  $attribute
+     * @param mixed $resource
+     * @param string|null $attribute
      * @return void
      */
     public function resolveForDisplay($resource, $attribute = null)
@@ -245,7 +194,7 @@ class Flexible extends Field implements Downloadable
     /**
      * Check showing on detail.
      *
-     * @param  NovaRequest  $request
+     * @param NovaRequest $request
      * @param             $resource
      * @return bool
      */
@@ -261,10 +210,10 @@ class Flexible extends Field implements Downloadable
     /**
      * Hydrate the given attribute on the model based on the incoming request.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  string  $requestAttribute
-     * @param  object  $model
-     * @param  string  $attribute
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param string $requestAttribute
+     * @param object $model
+     * @param string $attribute
      * @return null|\Closure
      */
     protected function fillAttribute(NovaRequest $request, $requestAttribute, $model, $attribute)
@@ -292,10 +241,12 @@ class Flexible extends Field implements Downloadable
         };
     }
 
-    public function reFillValue($model, ?string $attribute = null)
+    public function reFillValue($model, ?string $attribute = null): static
     {
         $attribute   = $attribute ?? $this->attribute;
         $this->value = $this->resolver->set($model, $attribute, $this->groups);
+
+        return $this;
     }
 
     /**
@@ -318,7 +269,7 @@ class Flexible extends Field implements Downloadable
 
             $group = $this->findGroup($key) ?? $this->newGroup($layout, $key);
 
-            $group->setCollapsed((bool) ($item['collapsed'] ?? false));
+            $group->setCollapsed((bool)($item['collapsed'] ?? false));
             $scope     = ScopedRequest::scopeFrom($request, $attributes, $key);
             $callbacks = array_merge($callbacks, $group->fill($scope));
 
@@ -399,17 +350,12 @@ class Flexible extends Field implements Downloadable
      * Define the field's actual layout groups (as "base models") based
      * on the field's current model & attribute
      *
-     * @param  mixed  $resource
-     * @param  string  $attribute
-     * @return \Illuminate\Support\Collection
-     * @throws \Exception
+     * @param mixed $resource
+     * @param string $attribute
+     * @return GroupsCollection
      */
-    protected function buildGroups($resource, string $attribute)
+    protected function buildGroups($resource, string $attribute): GroupsCollection
     {
-        if (!$this->resolver) {
-            $this->setResolver(Resolver::class);
-        }
-
         return $this->groups = $this->resolver->get($resource, $attribute, $this->layouts);
     }
 
@@ -470,23 +416,12 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Get the validation rules for this field & its contained fields.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
-     */
-    public function getRules(NovaRequest $request)
-    {
-        return parent::getRules($request);
-    }
-
-    /**
      * Get the creation rules for this field & its contained fields.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array|string
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @return array
      */
-    public function getCreationRules(NovaRequest $request)
+    public function getCreationRules(NovaRequest $request): array
     {
         return array_merge_recursive(
             parent::getCreationRules($request),
@@ -497,10 +432,10 @@ class Flexible extends Field implements Downloadable
     /**
      * Get the update rules for this field & its contained fields.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
      */
-    public function getUpdateRules(NovaRequest $request)
+    public function getUpdateRules(NovaRequest $request): array
     {
         return array_merge_recursive(
             parent::getUpdateRules($request),
@@ -511,11 +446,11 @@ class Flexible extends Field implements Downloadable
     /**
      * Retrieve contained fields rules and assign them to nested array attributes
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  string  $specificty
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param string $specificty
      * @return array
      */
-    protected function getFlexibleRules(NovaRequest $request, $specificty)
+    protected function getFlexibleRules(NovaRequest $request, $specificty): array
     {
         if (!($value = $this->extractValue($request, $this->attribute))) {
             return [];
@@ -542,12 +477,12 @@ class Flexible extends Field implements Downloadable
     /**
      * Format all contained fields rules and return them.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  array  $value
-     * @param  string  $specificty
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param array $value
+     * @param string $specificty
      * @return array
      */
-    protected function generateRules(NovaRequest $request, $value, $specificty)
+    protected function generateRules(NovaRequest $request, $value, $specificty): array
     {
         return GroupsCollection::make($value)->map(function ($item, $key) use ($request, $specificty) {
             $group = $this->newGroup($item['layout'], $item['key']);
@@ -558,19 +493,19 @@ class Flexible extends Field implements Downloadable
 
             $scope = ScopedRequest::scopeFrom($request, $item['attributes'], $item['key']);
 
-            return $group->generateRules($scope, $specificty, $this->attribute.'.'.$key);
+            return $group->generateRules($scope, $specificty, $this->attribute . '.' . $key);
         })
-                               ->collapse()
-                               ->all();
+            ->collapse()
+            ->all();
     }
 
     /**
      * Transform Flexible rules array into an actual validator rules array
      *
-     * @param  array  $rules
+     * @param array $rules
      * @return array
      */
-    protected function getCleanedRules(array $rules)
+    protected function getCleanedRules(array $rules): array
     {
         return array_map(function ($field) {
             return $field['rules'];
@@ -581,10 +516,10 @@ class Flexible extends Field implements Downloadable
      * Add validation keys to the valdiatedKeys register, which will be
      * used for transforming validation errors later in the request cycle.
      *
-     * @param  array  $rules
+     * @param array $rules
      * @return void
      */
-    protected static function registerValidationKeys(array $rules)
+    protected static function registerValidationKeys(array $rules): void
     {
         $validatedKeys = array_map(function ($field) {
             return $field['attribute'];
@@ -599,10 +534,10 @@ class Flexible extends Field implements Downloadable
     /**
      * Return a previously registered validation key
      *
-     * @param  string  $key
+     * @param string $key
      * @return null|\NovaFlexibleContent\Http\FlexibleAttribute
      */
-    public static function getValidationKey($key)
+    public static function getValidationKey(string $key): ?Http\FlexibleAttribute
     {
         return static::$validatedKeys[$key] ?? null;
     }
