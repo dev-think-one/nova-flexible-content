@@ -14,7 +14,7 @@ const props = defineProps({
 <template>
   <div>
     <span
-      class="font-semibold"
+      class="font-bold"
       :class="{'mr-2': !!title}"
     >
       #{{ number }}

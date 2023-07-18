@@ -4,7 +4,6 @@
     class="mb-4 w-full"
   >
     <div
-      v-if="group.title"
       class="border border-gray-200 dark:border-gray-700 rounded-t-lg h-8 leading-normal flex items-center box-content"
       :class="{ ' rounded-b-lg': collapsed }"
     >

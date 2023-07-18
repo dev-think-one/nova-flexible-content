@@ -8,7 +8,23 @@
       margin-top: 0 !important;
       margin-bottom: 1rem !important;
     }
+
     & > .md\:w-4\/5 {
+      width: 100% !important;
+    }
+  }
+}
+
+.flexibleDetailFieldFullWidth {
+  @media (min-width: 768px) {
+    flex-direction: column !important;
+
+    & > .md\:w-1\/4 {
+      width: 100% !important;
+      margin-top: 0 !important;
+    }
+
+    & > .md\:w-3\/4 {
       width: 100% !important;
     }
   }

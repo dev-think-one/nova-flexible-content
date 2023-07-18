@@ -1,10 +1,13 @@
 <template>
-  <PanelItem :field="field">
+  <PanelItem
+    :field="field"
+    :class="{'flexibleDetailFieldFullWidth': field.fullWidth}"
+  >
     <template #value>
       <DetailFlexibleContentGroup
         v-for="(group, index) in groups"
         :index="index"
-        :last="(index === groups.length - 1)"
+        :dusk="`detail-${field.attribute}-${index}`"
         :group="group"
         :resourceName="resourceName"
         :resourceId="resourceId"
@@ -21,42 +24,56 @@ export default {
 
   props: ['resource', 'resourceName', 'resourceId', 'field'],
 
-  computed: {
-    groups() {
-      let group;
-      return this.field.value.reduce((groups, item) => {
-        if (!(group = this.getGroup(item))) return groups;
-        groups.push(group);
-        return groups;
-      }, []);
+  data() {
+    return {
+      groups: {},
     }
+  },
+
+  mounted() {
+    this.prefillGroups();
   },
 
   methods: {
     /**
      * Retrieve layout definition from its name
      */
-    getLayout(name) {
-      if (!this.field.layouts) return;
-      return this.field.layouts.find(layout => layout.name == name);
+    prefillGroups() {
+      this.groups = this.field.value.reduce((groups, item) => {
+        const layout = this.getLayout(item.layout);
+        if (!layout) {
+          return groups;
+        }
+
+        const group = new Group(
+          layout.name,
+          layout.title,
+          item.attributes,
+          this.field,
+          item.key,
+          item.collapsed,
+          layout.configs
+        );
+
+        if (!group) {
+          return groups;
+        }
+
+        groups.push(group);
+
+        return groups;
+      }, []);
     },
 
     /**
-     * create group instance from raw field value
+     * Retrieve layout definition from its name
      */
-    getGroup(item) {
+    getLayout(name) {
+      if (!this.field.layouts) {
+        return null;
+      }
 
-      let layout = this.getLayout(item.layout);
-
-      if (!layout) return;
-
-      return new Group(
-        layout.name,
-        layout.title,
-        item.attributes,
-        this.field,
-        item.key
-      );
+      return this.field.layouts.find(layout => layout.name === name);
     },
   }
 }
