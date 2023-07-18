@@ -2,7 +2,6 @@
 
 namespace NovaFlexibleContent;
 
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Contracts\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\SupportsDependentFields;
@@ -15,6 +14,7 @@ use NovaFlexibleContent\Layouts\Preset;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupRemovingConfirmation;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupsLimits;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasLayoutsMenu;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasOriginalModel;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasResolver;
 
 class Flexible extends Field implements Downloadable
@@ -24,6 +24,7 @@ class Flexible extends Field implements Downloadable
     use HasLayoutsMenu;
     use HasGroupsLimits;
     use HasGroupRemovingConfirmation;
+    use HasOriginalModel;
 
     /**
      * The field's component.
@@ -51,8 +52,6 @@ class Flexible extends Field implements Downloadable
      * All the validated attributes
      */
     protected static array $validatedKeys = [];
-
-    public static Model|null $model;
 
     /**
      * Create a fresh flexible field instance
@@ -542,32 +541,4 @@ class Flexible extends Field implements Downloadable
         return static::$validatedKeys[$key] ?? null;
     }
 
-    /**
-     * Registers a reference to the origin model for nested & contained fields.
-     */
-    protected function registerOriginModel($model): static
-    {
-        /** @psalm-suppress UndefinedClass */
-        $isPageTemplate = is_a($model, "\Whitecube\NovaPage\Pages\Template");
-        if (is_a($model, \Laravel\Nova\Resource::class)) {
-            $model = $model->model();
-        } elseif ($isPageTemplate) {
-            /** @psalm-suppress UndefinedClass */
-            $model = $model->getOriginal();
-        }
-
-        if (is_a($model, Model::class)) {
-            static::$model = $model;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Return the previously registered origin model.
-     */
-    public static function getOriginModel(): ?Model
-    {
-        return static::$model;
-    }
 }
