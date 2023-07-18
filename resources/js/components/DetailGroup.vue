@@ -1,7 +1,7 @@
 <script setup>
-import BlockIdText from '@/components/Block/IdText.vue'
-import BlockIconButton from '@/components/Block/IconButton.vue'
-import {computed} from "vue";
+import { computed } from 'vue';
+import BlockIdText from '@/components/Block/IdText.vue';
+import BlockIconButton from '@/components/Block/IconButton.vue';
 
 const props = defineProps({
   group: {
@@ -26,13 +26,9 @@ const props = defineProps({
   },
 });
 
-const disabledExpand = computed(() => {
-  return props.group.fields.length <= 0;
-});
+const disabledExpand = computed(() => props.group.fields.length <= 0);
 
-const collapsed = computed(() => {
-  return props.group.collapsed || disabledExpand.value;
-});
+const collapsed = computed(() => props.group.collapsed || disabledExpand.value);
 
 const expand = () => {
   props.group.collapsed = false;
@@ -53,15 +49,18 @@ const collapse = () => {
       <BlockIconButton
         :icon="(collapsed || disabledExpand)?'plus':'minus'"
         :dusk="(collapsed || disabledExpand)?'expand-group':'collapse-group'"
-        dusk=""
         class="border-r"
         :title="(collapsed || disabledExpand)?__('Expand'):__('Collapse')"
-        @click.prevent="(collapsed || disabledExpand)?expand():collapse()"
         :disabled="disabledExpand"
-        :iconClass="{'opacity-50': disabledExpand}"
+        :icon-class="{'opacity-50': disabledExpand}"
+        @click.prevent="(collapsed || disabledExpand)?expand():collapse()"
       />
       <p class="flex-grow px-4 flex items-center overflow-hidden whitespace-nowrap truncate">
-        <BlockIdText class="inline" :number="index + 1" :title="group.title"/>
+        <BlockIdText
+          class="inline"
+          :number="index + 1"
+          :title="group.title"
+        />
       </p>
     </header>
     <main
@@ -75,9 +74,9 @@ const collapse = () => {
       :class="{ 'hidden': collapsed }"
     >
       <component
+        :is="`detail-${item.component}`"
         v-for="(item, index) in group.fields"
         :key="index"
-        :is="`detail-${item.component}`"
         :resource-name="resourceName"
         :resource-id="resourceId"
         :field="item"
@@ -86,5 +85,3 @@ const collapse = () => {
     </main>
   </section>
 </template>
-
-

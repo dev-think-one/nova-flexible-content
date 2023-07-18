@@ -1,4 +1,4 @@
-import { random as randomString } from './utils/str';
+import { random as randomString } from '@/utils/str';
 
 export default class Group {
   constructor(name, title, fields, field, key, collapsed = true, configs = {}) {
@@ -72,12 +72,11 @@ export default class Group {
       this.fields[i].validationKey = this.fields[i].attribute;
 
       if (this.fields[i].dependsOn) {
-        Object.keys(this.fields[i].dependsOn).forEach(key => {
+        Object.keys(this.fields[i].dependsOn).forEach((key) => {
           this.fields[i].dependsOn[`${this.key}__${key}`] = this.fields[i].dependsOn[key];
           delete this.fields[i].dependsOn[key];
         });
       }
     }
   }
-
 }

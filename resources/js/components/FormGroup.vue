@@ -13,12 +13,16 @@
         dusk=""
         class="border-r"
         :title="(collapsed || disabledExpand)?__('Expand'):__('Collapse')"
-        @click.prevent="(collapsed || disabledExpand)?expand():collapse()"
         :disabled="disabledExpand"
-        :iconClass="{'opacity-50': disabledExpand}"
+        :icon-class="{'opacity-50': disabledExpand}"
+        @click.prevent="(collapsed || disabledExpand)?expand():collapse()"
       />
       <p class="flex-grow px-4 flex items-center overflow-hidden whitespace-nowrap truncate">
-        <BlockIdText class="inline" :number="index + 1" :title="group.title"/>
+        <BlockIdText
+          class="inline"
+          :number="index + 1"
+          :title="group.title"
+        />
         <Badge
           v-if="descriptionText"
           class="ml-3 bg-primary-50 dark:bg-primary-500 text-primary-600 dark:text-gray-900 space-x-1 truncate"
@@ -26,7 +30,10 @@
           {{ descriptionText }}
         </Badge>
       </p>
-      <div v-if="!readonly" class="flex">
+      <div
+        v-if="!readonly"
+        class="flex"
+      >
         <BlockIconButton
           icon="selector"
           dusk="drag-group"
@@ -56,11 +63,11 @@
         />
         <DeleteGroupModal
           v-if="displayRemoveConfirmation"
-          @confirm="remove"
-          @close="displayRemoveConfirmation=false"
           :message="field.confirmRemoveMessage"
           :yes="field.confirmRemoveYes"
           :no="field.confirmRemoveNo"
+          @confirm="remove"
+          @close="displayRemoveConfirmation=false"
         />
       </div>
     </div>
@@ -69,9 +76,9 @@
       :class="{ 'hidden': collapsed }"
     >
       <component
+        :is="'form-' + item.component"
         v-for="(item, index) in group.fields"
         :key="index"
-        :is="'form-' + item.component"
         :resource-name="resourceName"
         :resource-id="resourceId"
         :field="item"
@@ -85,24 +92,24 @@
 </template>
 
 <script>
-import {find} from 'lodash'
+import { find } from 'lodash';
 import BehavesAsPanel from 'nova-mixins/BehavesAsPanel';
-import {mapProps} from 'laravel-nova';
-import DeleteGroupModal from '@/components/Modal/DeleteGroup.vue'
-import BlockIconButton from '@/components/Block/IconButton.vue'
-import BlockIdText from '@/components/Block/IdText.vue'
+import { mapProps } from 'laravel-nova';
+import DeleteGroupModal from '@/components/Modal/DeleteGroup.vue';
+import BlockIconButton from '@/components/Block/IconButton.vue';
+import BlockIdText from '@/components/Block/IdText.vue';
 
 export default {
-  mixins: [BehavesAsPanel],
 
-  components: {DeleteGroupModal, BlockIconButton, BlockIdText},
+  components: { DeleteGroupModal, BlockIconButton, BlockIdText },
+  mixins: [BehavesAsPanel],
 
   props: {
     errors: {},
     group: {},
     index: {},
     field: {},
-    ...mapProps(['mode'])
+    ...mapProps(['mode']),
   },
 
   emits: ['move-up', 'move-down', 'remove'],
@@ -125,10 +132,10 @@ export default {
 
     descriptionText() {
       if (this.group.configs.tagInfoFrom) {
-        const field = find(this.group.fields, {attribute: `${this.group.key}__${this.group.configs.tagInfoFrom}`});
+        const field = find(this.group.fields, { attribute: `${this.group.key}__${this.group.configs.tagInfoFrom}` });
         if (field) {
           if (Array.isArray(field.options)) {
-            const text = find(field.options, (option) => (('' + option?.value) === '' + field.value))?.label;
+            const text = find(field.options, (option) => ((`${option?.value}`) === `${field.value}`))?.label;
             if (text !== undefined) {
               return text;
             }
@@ -170,7 +177,7 @@ export default {
       if (this.field.confirmRemove) {
         this.displayRemoveConfirmation = true;
       } else {
-        this.remove()
+        this.remove();
       }
     },
 
@@ -188,5 +195,5 @@ export default {
       this.group.collapsed = true;
     },
   },
-}
+};
 </script>

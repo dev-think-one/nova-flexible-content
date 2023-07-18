@@ -22,8 +22,8 @@ const emit = defineEmits(['close', 'confirm']);
 <template>
   <Modal :show="true">
     <form
-      @submit.prevent="emit('confirm')"
       class="mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+      @submit.prevent="emit('confirm')"
     >
       <slot>
         <ModalHeader v-text="__('Delete Group')" />
@@ -39,8 +39,8 @@ const emit = defineEmits(['close', 'confirm']);
           <CancelButton
             type="button"
             dusk="cancel-delete-button"
-            @click.prevent="emit('close')"
             class="mr-3"
+            @click.prevent="emit('close')"
           >
             {{ no || __('Cancel') }}
           </CancelButton>

@@ -1,6 +1,6 @@
 <script setup>
-import {computed} from "vue";
-import {round} from "lodash";
+import { computed } from 'vue';
+import { round } from 'lodash';
 
 const props = defineProps({
   icon: {
@@ -9,15 +9,15 @@ const props = defineProps({
   },
   size: {
     type: [String, Number],
-    default: 8
+    default: 8,
   },
   title: {
     type: String,
-    default: null
+    default: null,
   },
   iconClass: {
     type: [Array, Object, String],
-    default: null
+    default: null,
   },
 });
 

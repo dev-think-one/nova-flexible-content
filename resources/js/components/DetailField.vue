@@ -9,8 +9,8 @@
         :index="index"
         :dusk="`detail-${field.attribute}-${index}`"
         :group="group"
-        :resourceName="resourceName"
-        :resourceId="resourceId"
+        :resource-name="resourceName"
+        :resource-id="resourceId"
         :attribute="field.attribute"
       />
     </template>
@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       groups: {},
-    }
+    };
   },
 
   mounted() {
@@ -52,7 +52,7 @@ export default {
           this.field,
           item.key,
           item.collapsed,
-          layout.configs
+          layout.configs,
         );
 
         if (!group) {
@@ -73,8 +73,8 @@ export default {
         return null;
       }
 
-      return this.field.layouts.find(layout => layout.name === name);
+      return this.field.layouts.find((layout) => layout.name === name);
     },
-  }
-}
+  },
+};
 </script>

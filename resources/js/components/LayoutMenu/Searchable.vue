@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref} from "vue";
+import { computed, ref } from 'vue';
 
 const props = defineProps({
   layouts: {
@@ -41,7 +41,7 @@ const options = computed(() => {
     return [];
   }
 
-  const filteredLayouts = props.layouts.filter(layout => {
+  const filteredLayouts = props.layouts.filter((layout) => {
     if (searchText.value && searchText.value.length > 0) {
       if (!layout.title.toLowerCase().includes(searchText.value.toLowerCase())) {
         return false;
@@ -51,20 +51,20 @@ const options = computed(() => {
     const count = props.limitPerLayoutCounter[layout.name];
 
     return count === null || count > 0;
-  })
+  });
 
-  return filteredLayouts.map(layout => ({
+  return filteredLayouts.map((layout) => ({
     value: layout.name,
     display: layout.title,
-  }))
-})
+  }));
+});
 
 const selectLayout = (selectedOption) => {
-  const layout = props.layouts.find(layout => layout.name === selectedOption.value);
+  const layout = props.layouts.find((layout) => layout.name === selectedOption.value);
   if (layout) {
     emit('addGroup', layout);
   }
-}
+};
 
 </script>
 
@@ -72,15 +72,14 @@ const selectLayout = (selectedOption) => {
   <SearchInput
     v-if="options.length > 0"
     :dusk="`${field.attribute}--search-input`"
-    @input="searchText = $event"
-    @selected="selectLayout"
     :data="options"
     :clearable="false"
-    trackBy="value"
+    track-by="value"
     class="w-60"
     :mode="mode"
+    @input="searchText = $event"
+    @selected="selectLayout"
   >
-
     <span>{{ field.button || __('Add layout') }}</span>
 
     <template #option="{ selected, option }">

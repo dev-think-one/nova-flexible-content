@@ -7,14 +7,12 @@
     :class="{'flexibleFieldFullWidth': currentField.fullWidth}"
     full-width-content
   >
-
     <template #field>
-
       <div ref="flexibleFieldContainer">
         <FormFlexibleContentGroup
           v-for="(group, index) in orderedGroups"
-          :dusk="currentField.attribute + '-' + index"
           :key="group.key"
+          :dusk="currentField.attribute + '-' + index"
           :field="currentField"
           :group="group"
           :index="index"
@@ -29,8 +27,8 @@
       </div>
 
       <component
-        :layouts="layouts"
         :is="currentField.menu.component"
+        :layouts="layouts"
         :field="currentField"
         :limit-counter="limitCounter"
         :limit-per-layout-counter="limitPerLayoutCounter"
@@ -39,15 +37,13 @@
         :resource-id="resourceId"
         @addGroup="addGroup($event)"
       />
-
     </template>
-
   </DefaultField>
 </template>
 
 <script>
-import Sortable from 'sortablejs'
-import {DependentFormField, HandlesValidationErrors, mapProps} from 'laravel-nova';
+import Sortable from 'sortablejs';
+import { DependentFormField, HandlesValidationErrors, mapProps } from 'laravel-nova';
 import Group from '@/group';
 
 export default {
@@ -64,19 +60,13 @@ export default {
       order: [],
       groups: {},
       files: {},
-      sortableInstance: null
+      sortableInstance: null,
     };
-  },
-
-  beforeUnmount() {
-    if (this.sortableInstance) {
-      this.sortableInstance.destroy();
-    }
   },
 
   computed: {
     layouts() {
-      return this.currentField.layouts || false
+      return this.currentField.layouts || false;
     },
 
     orderedGroups() {
@@ -87,7 +77,7 @@ export default {
     },
 
     limitCounter() {
-      if (this.currentField.limit === null || typeof (this.currentField.limit) == "undefined") {
+      if (this.currentField.limit === null || typeof (this.currentField.limit) === 'undefined') {
         return null;
       }
 
@@ -102,13 +92,19 @@ export default {
           return layoutCounts;
         }
 
-        let count = Object.values(this.groups).filter(group => group.name === layout.name).length;
+        const count = Object.values(this.groups).filter((group) => group.name === layout.name).length;
 
         layoutCounts[layout.name] = layout.limit - count;
 
         return layoutCounts;
       }, {});
     },
+  },
+
+  beforeUnmount() {
+    if (this.sortableInstance) {
+      this.sortableInstance.destroy();
+    }
   },
 
   methods: {
@@ -137,7 +133,8 @@ export default {
      * Fill the given FormData object with the field's internal value.
      */
     fill(formData) {
-      let key, group;
+      let key; let
+        group;
 
       this.value = [];
       this.files = {};
@@ -147,7 +144,7 @@ export default {
         group = this.groups[key].serialize();
 
         // Attach the files for formData appending
-        this.files = {...this.files, ...group.files};
+        this.files = { ...this.files, ...group.files };
         delete group.files;
 
         // Only serialize the group's non-file attributes
@@ -158,7 +155,7 @@ export default {
       formData.append(this.currentField.attribute, this.value.length ? JSON.stringify(this.value) : '');
 
       // Append file uploads
-      for (let file in this.files) {
+      for (const file in this.files) {
         formData.append(file, this.files[file]);
       }
 
@@ -187,7 +184,7 @@ export default {
       this.order.splice(0, this.order.length);
       this.groups = {};
 
-      for (var i = 0; i < this.value.length; i++) {
+      for (let i = 0; i < this.value.length; i++) {
         this.addGroup(
           this.getLayout(this.value[i].layout),
           this.value[i].attributes,
@@ -202,7 +199,7 @@ export default {
      */
     getLayout(name) {
       if (!this.layouts) return;
-      return this.layouts.find(layout => layout.name == name);
+      return this.layouts.find((layout) => layout.name == name);
     },
 
     /**
@@ -261,7 +258,7 @@ export default {
      * Remove a group.
      */
     remove(key) {
-      let index = this.order.indexOf(key);
+      const index = this.order.indexOf(key);
 
       if (index < 0) return;
 
@@ -270,7 +267,7 @@ export default {
     },
 
     initSortable() {
-      const containerRef = this.$refs['flexibleFieldContainer']
+      const containerRef = this.$refs.flexibleFieldContainer;
 
       if (!containerRef || this.sortableInstance) {
         return;
@@ -285,8 +282,8 @@ export default {
         scrollSpeed: 5,
         animation: 500,
         onEnd: (evt) => {
-          this.moveToIndex(evt.item.id, evt.newIndex)
-        }
+          this.moveToIndex(evt.item.id, evt.newIndex);
+        },
       });
     },
 

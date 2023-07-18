@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, nextTick} from "vue";
+import { ref, computed, nextTick } from 'vue';
 
 const props = defineProps({
   layouts: {
@@ -38,13 +38,11 @@ const dropdownElement = ref(null);
 const isLayoutsDropdownOpen = ref(false);
 const dropdownOrientation = ref('bottom');
 
-const filteredLayouts = computed(() => {
-  return props.layouts.filter(layout => {
-    const count = props.limitPerLayoutCounter[layout.name];
+const filteredLayouts = computed(() => props.layouts.filter((layout) => {
+  const count = props.limitPerLayoutCounter[layout.name];
 
-    return count === null || count > 0;
-  });
-});
+  return count === null || count > 0;
+}));
 
 const dropdownClasses = computed(() => ({
   'pin-b mt-3': dropdownOrientation.value === 'bottom',
@@ -60,7 +58,7 @@ const addGroup = (layout) => {
 
   isLayoutsDropdownOpen.value = false;
   dropdownOrientation.value = 'bottom';
-}
+};
 
 const toggleLayoutsDropdownOrAddDefault = () => {
   if (filteredLayouts.value.length === 1) {
@@ -71,7 +69,7 @@ const toggleLayoutsDropdownOrAddDefault = () => {
 
   nextTick(() => {
     if (isLayoutsDropdownOpen.value) {
-      const {bottom: dropdownBottom} = dropdownElement.value.getBoundingClientRect();
+      const { bottom: dropdownBottom } = dropdownElement.value.getBoundingClientRect();
 
       // If the dropdown is popping out of the bottom of the window, pin it to the top of the button.
       if (dropdownBottom > window.innerHeight) {
@@ -82,32 +80,38 @@ const toggleLayoutsDropdownOrAddDefault = () => {
 
     // Reset the orientation.
     dropdownOrientation.value = 'bottom';
-  })
-}
+  });
+};
 
 </script>
 
 <template>
-  <div class="relative" v-if="filteredLayouts">
-    <div v-if="isLayoutsDropdownOpen && filteredLayouts.length > 1"
-         ref="dropdownElement"
-         class="
+  <div
+    v-if="filteredLayouts"
+    class="relative"
+  >
+    <div
+      v-if="isLayoutsDropdownOpen && filteredLayouts.length > 1"
+      ref="dropdownElement"
+      class="
          border border-gray-100 dark:border-gray-700
          rounded-lg shadow-lg max-w-xs
          z-20 absolute overflow-y-auto"
-         :class="dropdownClasses"
+      :class="dropdownClasses"
     >
       <ul class="list-reset">
-        <li v-for="layout in filteredLayouts"
-            :key="'add-'+layout.name"
-            class="border-b border-gray-100 dark:border-gray-700"
+        <li
+          v-for="layout in filteredLayouts"
+          :key="'add-'+layout.name"
+          class="border-b border-gray-100 dark:border-gray-700"
         >
           <a
             :dusk="`add-${layout.name}`"
-            @click="addGroup(layout)"
             class="cursor-pointer flex items-center py-2 px-3 no-underline font-normal
               bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900
-            ">
+            "
+            @click="addGroup(layout)"
+          >
             {{ layout.title }}
           </a>
         </li>
@@ -135,5 +139,3 @@ const toggleLayoutsDropdownOrAddDefault = () => {
   bottom: 100%;
 }
 </style>
-
-

@@ -1,14 +1,16 @@
 <script setup>
+
 const props = defineProps({
   title: {
     type: String,
-    default: null
+    default: null,
   },
   number: {
     type: [String, Number],
-    default: 8
+    default: 8,
   },
 });
+
 </script>
 
 <template>
@@ -22,4 +24,3 @@ const props = defineProps({
     {{ title }}
   </div>
 </template>
-
