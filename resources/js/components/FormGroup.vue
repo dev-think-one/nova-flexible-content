@@ -5,7 +5,10 @@
   >
     <div
       class="border border-gray-200 dark:border-gray-700 rounded-t-lg h-8 leading-normal flex items-center box-content"
-      :class="{ ' rounded-b-lg': collapsed }"
+      :class="{
+        'rounded-b-lg': collapsed,
+        'bg-red-100': groupHasErrors,
+      }"
     >
       <BlockIconButton
         :icon="(collapsed || disabledExpand)?'plus':'minus'"
@@ -92,16 +95,16 @@
 </template>
 
 <script>
-import { find } from 'lodash';
+import {find} from 'lodash';
 import BehavesAsPanel from 'nova-mixins/BehavesAsPanel';
-import { mapProps } from 'laravel-nova';
+import {mapProps} from 'laravel-nova';
 import DeleteGroupModal from '@/components/Modal/DeleteGroup.vue';
 import BlockIconButton from '@/components/Block/IconButton.vue';
 import BlockIdText from '@/components/Block/IdText.vue';
 
 export default {
 
-  components: { DeleteGroupModal, BlockIconButton, BlockIdText },
+  components: {DeleteGroupModal, BlockIconButton, BlockIdText},
   mixins: [BehavesAsPanel],
 
   props: {
@@ -132,7 +135,9 @@ export default {
 
     descriptionText() {
       if (this.group.configs.tagInfoFrom) {
-        const field = find(this.group.fields, { attribute: `${this.group.key}__${this.group.configs.tagInfoFrom}` });
+        const groupSeparator = Nova.config('flexible-content-field.group-separator');
+
+        const field = find(this.group.fields, {attribute: `${this.group.key}${groupSeparator}${this.group.configs.tagInfoFrom}`});
         if (field) {
           if (Array.isArray(field.options)) {
             const text = find(field.options, (option) => ((`${option?.value}`) === `${field.value}`))?.label;
@@ -146,11 +151,44 @@ export default {
 
       return null;
     },
+
+    groupHasErrors() {
+      const recursiveKeysList = this.groupsRecursiveKeys(this.group);
+      return !!Object.keys(this.errors.all()).find((key) => recursiveKeysList.some(groupKey => key.startsWith(groupKey)))
+    }
   },
 
   methods: {
     /**
-     * Move this group up
+     * MFind group key and all child groups recursively.
+     */
+    groupsRecursiveKeys(group) {
+      let keys = [group.key];
+
+      if (Array.isArray(group.fields)) {
+        group.fields.forEach(field => {
+          if (field.component === 'flexible-content' && Array.isArray(field.value)) {
+            field.value.forEach(value => {
+              keys = keys.concat(this.groupsRecursiveKeys(value));
+            });
+          }
+        })
+      }
+      if (Array.isArray(group.attributes)) {
+        group.attributes.forEach(attribute => {
+          if (attribute.component === 'flexible-content' && Array.isArray(attribute.value)) {
+            attribute.value.forEach(value => {
+              keys = keys.concat(this.groupsRecursiveKeys(value));
+            });
+          }
+        })
+      }
+
+      return keys;
+    },
+
+    /**
+     * Move this group up.
      */
     moveUp() {
       this.$emit('move-up');

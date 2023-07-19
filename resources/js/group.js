@@ -30,6 +30,8 @@ export default class Group {
      * Retrieve the layout's filled object
      */
   serialize() {
+    const prefix = Nova.config('flexible-content-field.file-indicator-prefix');
+
     const data = {
       layout: this.name,
       key: this.key,
@@ -39,7 +41,7 @@ export default class Group {
     };
 
     for (const item of this.values()) {
-      if (item[0].indexOf('___upload-') == 0) {
+      if (item[0].indexOf(prefix) == 0) {
         // Previously nested file attribute
         data.files[item[0]] = item[1];
         continue;
@@ -52,8 +54,8 @@ export default class Group {
       }
 
       // File object, attach its file for upload
-      data.attributes[item[0]] = `___upload-${item[0]}`;
-      data.files[`___upload-${item[0]}`] = item[1];
+      data.attributes[item[0]] = `${prefix}${item[0]}`;
+      data.files[`${prefix}${item[0]}`] = item[1];
     }
 
     return data;
@@ -67,13 +69,14 @@ export default class Group {
    * Assign a new unique field name to each field
    */
   renameFields() {
+    const groupSeparator = Nova.config('flexible-content-field.group-separator');
     for (let i = this.fields.length - 1; i >= 0; i--) {
-      this.fields[i].attribute = `${this.key}__${this.fields[i].attribute}`;
+      this.fields[i].attribute = `${this.key}${groupSeparator}${this.fields[i].attribute}`;
       this.fields[i].validationKey = this.fields[i].attribute;
 
       if (this.fields[i].dependsOn) {
         Object.keys(this.fields[i].dependsOn).forEach((key) => {
-          this.fields[i].dependsOn[`${this.key}__${key}`] = this.fields[i].dependsOn[key];
+          this.fields[i].dependsOn[`${this.key}${groupSeparator}${key}`] = this.fields[i].dependsOn[key];
           delete this.fields[i].dependsOn[key];
         });
       }

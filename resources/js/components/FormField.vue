@@ -166,15 +166,16 @@ export default {
      * Register given field attribute into the parsable flexible fields register
      */
     appendFieldAttribute(formData, attribute) {
+      const keyName = Nova.config('flexible-content-field.flexible-attribute-key-name');
       let registered = [];
 
-      if (formData.has('___nova_flexible_content_fields')) {
-        registered = JSON.parse(formData.get('___nova_flexible_content_fields'));
+      if (formData.has(keyName)) {
+        registered = JSON.parse(formData.get(keyName));
       }
 
       registered.push(attribute);
 
-      formData.set('___nova_flexible_content_fields', JSON.stringify(registered));
+      formData.set(keyName, JSON.stringify(registered));
     },
 
     /**

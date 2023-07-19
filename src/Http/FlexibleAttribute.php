@@ -7,11 +7,18 @@ use Illuminate\Support\Arr;
 class FlexibleAttribute
 {
     /**
-     * The Register attribute
+     * The attribute key name of all flexible field in request.
      *
      * @var string
      */
     const REGISTER = '___nova_flexible_content_fields';
+
+    /**
+     * The string that identifies an "upload" value.
+     *
+     * @var string
+     */
+    const FILE_INDICATOR = '___upload-';
 
     /**
      * The string between the group identifier
@@ -20,13 +27,6 @@ class FlexibleAttribute
      * @var string
      */
     const GROUP_SEPARATOR = '__';
-
-    /**
-     * The string that identifies an "upload" value
-     *
-     * @var string
-     */
-    const FILE_INDICATOR = '___upload-';
 
     /**
      * The original attribute name
@@ -100,10 +100,8 @@ class FlexibleAttribute
 
     /**
      * Check if attribute is a flexible fields register
-     *
-     * @return bool
      */
-    public function isFlexibleFieldsRegister()
+    public function isFlexibleFieldsRegister(): bool
     {
         return $this->name === static::REGISTER;
     }

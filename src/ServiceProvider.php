@@ -4,6 +4,7 @@ namespace NovaFlexibleContent;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
+use NovaFlexibleContent\Http\FlexibleAttribute;
 use NovaFlexibleContent\Http\Middleware\InterceptFlexibleAttributes;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -20,6 +21,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         Nova::serving(function (ServingNova $event) {
             Nova::script('flexible-content-field', __DIR__ . '/../dist/js/field.js');
             Nova::style('flexible-content-field', __DIR__ . '/../dist/css/field.css');
+
+            Nova::provideToScript([
+                'flexible-content-field.flexible-attribute-key-name' => FlexibleAttribute::REGISTER,
+                'flexible-content-field.file-indicator-prefix'       => FlexibleAttribute::FILE_INDICATOR,
+                'flexible-content-field.group-separator'             => FlexibleAttribute::GROUP_SEPARATOR,
+            ]);
         });
 
         if ($this->app->runningInConsole()) {

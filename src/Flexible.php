@@ -253,7 +253,7 @@ class Flexible extends Field implements Downloadable
      */
     protected function syncAndFillGroups(NovaRequest $request, string $requestAttribute, $model): array
     {
-        if (!($raw = $this->extractValue($request, $requestAttribute))) {
+        if (!($raw = $this->extractValueFromRequest($request, $requestAttribute))) {
             $this->fireRemoveCallbacks(GroupsCollection::make(), $request, $model);
             $this->groups = GroupsCollection::make();
 
@@ -309,7 +309,7 @@ class Flexible extends Field implements Downloadable
     /**
      * Find the flexible's value in given request.
      */
-    protected function extractValue(NovaRequest $request, string $attribute): ?array
+    protected function extractValueFromRequest(NovaRequest $request, string $attribute): ?array
     {
         $value = $request->input($attribute);
 
@@ -451,7 +451,8 @@ class Flexible extends Field implements Downloadable
      */
     protected function getFlexibleRules(NovaRequest $request, $specificty): array
     {
-        if (!($value = $this->extractValue($request, $this->attribute))) {
+
+        if (!($value = $this->extractValueFromRequest($request, $this->attribute))) {
             return [];
         }
 

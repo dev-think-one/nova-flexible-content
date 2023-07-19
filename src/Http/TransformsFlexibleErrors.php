@@ -61,7 +61,7 @@ trait TransformsFlexibleErrors
      * @param  array  $errors
      * @return array
      */
-    protected function getTransformedErrors($errors)
+    protected function getTransformedErrors($errors): array
     {
         $parsed = [];
 

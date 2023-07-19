@@ -7,31 +7,31 @@ use Illuminate\Http\Request;
 trait ParsesFlexibleAttributes
 {
     /**
-     * The registered flexible field attributes
-     *
-     * @var string
+     * The registered flexible field attributes.
      */
-    protected $registered = [];
+    protected array $registered = [];
 
     /**
-     * Check if given request should be handled by the middleware
+     * Check if given request should be handled by the middleware.
      *
      * @param \Illuminate\Http\Request $request
      * @return bool
      */
-    protected function requestHasParsableFlexibleInputs(Request $request)
+    protected function requestHasParsableFlexibleInputs(Request $request): bool
     {
-        return (in_array($request->method(), ['POST', 'PUT']) &&
-                is_string($request->input(FlexibleAttribute::REGISTER)));
+        return (
+            ($request->isMethod('POST') || $request->isMethod('PUT')) &&
+            $request->filled(FlexibleAttribute::REGISTER)
+        );
     }
 
     /**
-     * Transform the request's flexible values
+     * Transform the request's flexible values.
      *
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-    protected function getParsedFlexibleInputs(Request $request)
+    protected function getParsedFlexibleInputs(Request $request): array
     {
         $this->registerFlexibleFields($request->input(FlexibleAttribute::REGISTER));
 
@@ -100,7 +100,7 @@ trait ParsesFlexibleAttributes
     /**
      * Fill a flexible group's attributes with cleaned attributes & values
      *
-     * @param array  $attributes
+     * @param array $attributes
      * @param string $group
      * @param string $attribute
      * @param string $value
@@ -138,7 +138,7 @@ trait ParsesFlexibleAttributes
      * @param null|string $group
      * @return void
      */
-    protected function registerFlexibleFields($value, $group = null)
+    protected function registerFlexibleFields(?string $value, ? string $group = null)
     {
         if (!$value) {
             return;
@@ -156,7 +156,7 @@ trait ParsesFlexibleAttributes
     /**
      * Add an attribute to the register
      *
-     * @param mixed       $attribute
+     * @param mixed $attribute
      * @param null|string $group
      * @return void
      */
@@ -172,7 +172,7 @@ trait ParsesFlexibleAttributes
      * flexible attribute
      *
      * @param string $attribute
-     * @param mixed  $value
+     * @param mixed $value
      * @return bool
      */
     protected function isFlexibleAttribute($attribute, $value)
@@ -189,17 +189,16 @@ trait ParsesFlexibleAttributes
     }
 
     /**
-     * Retrieve a registered flexible attribute
-     *
-     * @param string $attribute
-     * @return \NovaFlexibleContent\Http\FlexibleAttribute
+     * Retrieve a registered flexible attribute.
      */
-    protected function getFlexibleAttribute($attribute)
+    protected function getFlexibleAttribute(string $attribute): ?FlexibleAttribute
     {
         foreach ($this->registered as $registered) {
             if ($registered->name === $attribute) {
                 return $registered;
             }
         }
+
+        return null;
     }
 }

@@ -23,6 +23,7 @@ class InterceptFlexibleAttributes
      */
     public function handle(Request $request, Closure $next) : Response
     {
+
         if (!$this->requestHasParsableFlexibleInputs($request)) {
             return $next($request);
         }
