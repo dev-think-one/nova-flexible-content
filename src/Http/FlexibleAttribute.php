@@ -47,7 +47,7 @@ class FlexibleAttribute
      *
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * The aggregate key (true = increment)
@@ -61,7 +61,7 @@ class FlexibleAttribute
      *
      * @var bool
      */
-    public $upload;
+    public bool $upload;
 
     /**
      * Create a new attribute instance
@@ -82,13 +82,13 @@ class FlexibleAttribute
     /**
      * Build an attribute from its components
      *
-     * @param  string  $name
-     * @param  string  $group
-     * @param  mixed  $key
-     * @param  bool  $upload
-     * @return \NovaFlexibleContent\Http\FlexibleAttribute
+     * @param string $name
+     * @param string|null $group
+     * @param mixed $key
+     * @param bool $upload
+     * @return FlexibleAttribute
      */
-    public static function make($name, $group = null, $key = null, $upload = false)
+    public static function make(string $name, ?string $group = null, ?string $key = null, bool $upload = false): static
     {
         $original = $upload ? static::FILE_INDICATOR : '';
         $original .= static::formatGroupPrefix($group) ?? '';
@@ -112,7 +112,7 @@ class FlexibleAttribute
      * @param  mixed  $value
      * @return bool
      */
-    public function isFlexibleFile($value = null)
+    public function isFlexibleFile($value = null): bool
     {
         if (!is_null($value) && !is_string($value)) {
             return false;
@@ -129,7 +129,7 @@ class FlexibleAttribute
      * @param  mixed  $value
      * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
-    public function getFlexibleFileAttribute($value)
+    public function getFlexibleFileAttribute($value): static
     {
         return new static($value, $this->group);
     }
@@ -265,7 +265,7 @@ class FlexibleAttribute
      * @param  mixed  $group
      * @return void
      */
-    protected function setGroup($group = null)
+    protected function setGroup($group = null): void
     {
         if (!$group) {
             return;
@@ -284,7 +284,7 @@ class FlexibleAttribute
      *
      * @return void
      */
-    protected function setKey()
+    protected function setKey(): void
     {
         preg_match('/^.+?(\[.*\])?$/', $this->original, $arrayMatches);
 
@@ -308,7 +308,7 @@ class FlexibleAttribute
      * @param  string  $segment
      * @return string
      */
-    protected function getCleanKeySegment($segment)
+    protected function getCleanKeySegment($segment): string
     {
         $segment = trim($segment, "'\" \t\n\r\0\x0B");
 
@@ -324,7 +324,7 @@ class FlexibleAttribute
      *
      * @return void
      */
-    protected function setName()
+    protected function setName(): void
     {
         $name = trim($this->original);
 

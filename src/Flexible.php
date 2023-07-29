@@ -469,7 +469,7 @@ class Flexible extends Field implements Downloadable
      * @param string|null $type
      * @return array
      */
-    protected function generateRules(NovaRequest $request, $value, ?string $type = null): array
+    protected function generateRules(NovaRequest $request, array $value = [], ?string $type = null): array
     {
         return GroupsCollection::make($value)->map(function ($item, $key) use ($request, $type) {
             $group = $this->newGroup($item['layout'], $item['key']);
@@ -495,11 +495,9 @@ class Flexible extends Field implements Downloadable
      */
     protected static function registerValidationKeys(array $rules): void
     {
-        $validatedKeys = array_map(fn ($field) => $field['attribute'], $rules);
-
         static::$validatedKeys = array_merge(
             static::$validatedKeys,
-            $validatedKeys
+            array_filter(array_map(fn ($field) => $field['attribute']??null, $rules))
         );
     }
 

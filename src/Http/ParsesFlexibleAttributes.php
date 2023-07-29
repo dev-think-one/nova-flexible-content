@@ -126,7 +126,7 @@ trait ParsesFlexibleAttributes
      * @param string $group
      * @return \NovaFlexibleContent\Http\FlexibleAttribute
      */
-    protected function parseAttribute($attribute, $group)
+    protected function parseAttribute($attribute, $group): FlexibleAttribute
     {
         return new FlexibleAttribute($attribute, $group);
     }
@@ -138,14 +138,18 @@ trait ParsesFlexibleAttributes
      * @param null|string $group
      * @return void
      */
-    protected function registerFlexibleFields(?string $value, ? string $group = null)
+    protected function registerFlexibleFields(?string $value, ? string $group = null): void
     {
         if (!$value) {
             return;
         }
 
         if (!is_array($value)) {
-            $value = json_decode($value);
+            $value = json_decode($value, true);
+        }
+
+        if (!is_array($value)) {
+            return;
         }
 
         foreach ($value as $attribute) {
