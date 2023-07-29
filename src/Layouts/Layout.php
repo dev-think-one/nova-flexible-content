@@ -361,9 +361,9 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     /**
      * Get validation rules for fields concerned by given request.
      */
-    public function generateRules(ScopedRequest $request, ?string $specificty, string $key): array
+    public function generateRules(ScopedRequest $request, string $key, ?string $type = null): array
     {
-        return $this->fields->map(fn ($field) => $this->getScopedFieldRules($field, $request, $specificty, $key))
+        return $this->fields->map(fn ($field) => $this->getScopedFieldRules($field, $request, $key, $type))
             ->collapse()
             ->all();
     }
@@ -371,9 +371,10 @@ class Layout implements JsonSerializable, ArrayAccess, Arrayable
     /**
      * Get validation rules for fields concerned by given request.
      */
-    protected function getScopedFieldRules(Field $field, ScopedRequest $request, ?string $specificty, string $key): array
+    protected function getScopedFieldRules(Field $field, ScopedRequest $request, string $key, ?string $type = null): array
     {
-        $method = 'get' . ucfirst($specificty) . 'Rules';
+        $type   = Str::ucfirst($type);
+        $method = "get{$type}Rules";
 
         $rules = call_user_func([$field, $method], $request);
 

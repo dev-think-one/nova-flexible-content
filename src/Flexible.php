@@ -10,11 +10,11 @@ use NovaFlexibleContent\Http\ScopedRequest;
 use NovaFlexibleContent\Layouts\GroupsCollection;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
-use NovaFlexibleContent\Layouts\Preset;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupRemovingConfirmation;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupsLimits;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasLayoutsMenu;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasOriginalModel;
+use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasPreset;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasResolver;
 
 class Flexible extends Field implements Downloadable
@@ -24,6 +24,7 @@ class Flexible extends Field implements Downloadable
     use HasLayoutsMenu;
     use HasGroupsLimits;
     use HasGroupRemovingConfirmation;
+    use HasPreset;
     use HasOriginalModel;
 
     /**
@@ -124,22 +125,6 @@ class Flexible extends Field implements Downloadable
         }
 
         $this->registerLayout($layout);
-
-        return $this;
-    }
-
-    /**
-     * Apply a field configuration preset
-     */
-    public function preset(Preset|string|array $preset): static
-    {
-        if (is_string($preset)) {
-            $preset = new $preset;
-        } elseif (is_array($preset)) {
-            $preset = Preset::withLayouts($preset);
-        }
-
-        $preset->handle($this);
 
         return $this;
     }
@@ -433,6 +418,7 @@ class Flexible extends Field implements Downloadable
      *
      * @param \Laravel\Nova\Http\Requests\NovaRequest $request
      * @return array
+     * @throws \Exception
      */
     public function getUpdateRules(NovaRequest $request): array
     {
@@ -443,20 +429,21 @@ class Flexible extends Field implements Downloadable
     }
 
     /**
-     * Retrieve contained fields rules and assign them to nested array attributes
+     * Retrieve contained fields rules and assign them to nested array attributes.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
-     * @param string $specificty
+     * @param NovaRequest $request
+     * @param string|null $type
      * @return array
+     * @throws \Exception
      */
-    protected function getFlexibleRules(NovaRequest $request, $specificty): array
+    protected function getFlexibleRules(NovaRequest $request, ?string $type = null): array
     {
 
         if (!($value = $this->extractValueFromRequest($request, $this->attribute))) {
             return [];
         }
 
-        $rules = $this->generateRules($request, $value, $specificty);
+        $rules = $this->generateRules($request, $value, $type);
 
         if (!is_a($request, ScopedRequest::class)) {
             // We're not in a nested flexible, meaning we're
@@ -468,7 +455,7 @@ class Flexible extends Field implements Downloadable
 
             // Then, transform the rules into an array that's actually
             // usable by Laravel's Validator.
-            $rules = $this->getCleanedRules($rules);
+            $rules = array_map(fn ($field) => $field['rules'], $rules);
         }
 
         return $rules;
@@ -477,14 +464,14 @@ class Flexible extends Field implements Downloadable
     /**
      * Format all contained fields rules and return them.
      *
-     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param NovaRequest $request
      * @param array $value
-     * @param string $specificty
+     * @param string|null $type
      * @return array
      */
-    protected function generateRules(NovaRequest $request, $value, $specificty): array
+    protected function generateRules(NovaRequest $request, $value, ?string $type = null): array
     {
-        return GroupsCollection::make($value)->map(function ($item, $key) use ($request, $specificty) {
+        return GroupsCollection::make($value)->map(function ($item, $key) use ($request, $type) {
             $group = $this->newGroup($item['layout'], $item['key']);
 
             if (!$group) {
@@ -493,23 +480,10 @@ class Flexible extends Field implements Downloadable
 
             $scope = ScopedRequest::scopeFrom($request, $item['attributes'], $item['key']);
 
-            return $group->generateRules($scope, $specificty, $this->attribute . '.' . $key);
+            return $group->generateRules($scope, "{$this->attribute}.{$key}", $type);
         })
             ->collapse()
             ->all();
-    }
-
-    /**
-     * Transform Flexible rules array into an actual validator rules array
-     *
-     * @param array $rules
-     * @return array
-     */
-    protected function getCleanedRules(array $rules): array
-    {
-        return array_map(function ($field) {
-            return $field['rules'];
-        }, $rules);
     }
 
     /**
@@ -521,9 +495,7 @@ class Flexible extends Field implements Downloadable
      */
     protected static function registerValidationKeys(array $rules): void
     {
-        $validatedKeys = array_map(function ($field) {
-            return $field['attribute'];
-        }, $rules);
+        $validatedKeys = array_map(fn ($field) => $field['attribute'], $rules);
 
         static::$validatedKeys = array_merge(
             static::$validatedKeys,
