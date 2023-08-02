@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts\LayoutTraits;
 
 use Illuminate\Support\Str;
 
@@ -59,16 +59,6 @@ trait HasLayoutKey
         // in order to keep it usable in a Flexible::findGroup($key) search.
         $this->_key = $key;
 
-        // Hmm, I am really not sure why these code need, but until full understanding
-        // this code should be im place to back compatibility
-        if (function_exists('random_bytes')) {
-            $bytes = random_bytes(ceil(16 / 2));
-        } elseif (function_exists('openssl_random_pseudo_bytes')) {
-            $bytes = openssl_random_pseudo_bytes(ceil(16 / 2));
-        } else {
-            $bytes = Str::random();
-        }
-
-        return 'c' . substr(bin2hex($bytes), 0, ($keyLen - 1));
+        return 'c' . Str::random($keyLen-7) . date('ymd');
     }
 }

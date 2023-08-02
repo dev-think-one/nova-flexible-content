@@ -2,8 +2,8 @@
 
 namespace NovaFlexibleContent\Contracts;
 
-use NovaFlexibleContent\Layouts\GroupsCollection;
-use NovaFlexibleContent\Layouts\LayoutsCollection;
+use NovaFlexibleContent\Layouts\Collections\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 
 interface ResolverInterface
 {

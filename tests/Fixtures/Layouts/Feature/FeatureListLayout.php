@@ -32,7 +32,7 @@ class FeatureListLayout extends Layout
                             ->deletable(),
             Flexible::make('Links', 'links')
                     ->preset($this->linksPreset())
-                    ->button('Add link'),
+                    ->layoutsMenuButton('Add link'),
         ];
     }
 

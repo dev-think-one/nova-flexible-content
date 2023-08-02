@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Layouts;
+namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Tests\TestCase;

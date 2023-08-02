@@ -222,14 +222,15 @@ export default {
      * Move group to specific index.
      */
     moveToIndex(key, newIndex) {
-      if (newIndex < 0 || newIndex >= this.order.length - 1) {
+      console.log(this.order)
+      if (newIndex < 0 || newIndex > this.order.length - 1) {
         console.error(`Incorrect newIndex [${newIndex}]`);
         return;
       }
 
       const currentIndex = this.order.indexOf(key);
 
-      if (currentIndex < 0 || currentIndex >= this.order.length - 1) {
+      if (currentIndex < 0 || currentIndex > this.order.length - 1) {
         console.error(`Incorrect currentIndex [${newIndex}]`);
         return;
       }

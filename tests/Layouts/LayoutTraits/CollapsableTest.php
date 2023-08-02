@@ -1,11 +1,11 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Layouts;
+namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Tests\TestCase;
 
-class CollapsableTraitTest extends TestCase
+class CollapsableTest extends TestCase
 {
     /** @test */
     public function manipulate_states()

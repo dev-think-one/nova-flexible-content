@@ -4,9 +4,9 @@ namespace NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
 use NovaFlexibleContent\Contracts\ResolverInterface;
-use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 class Resolver implements ResolverInterface
 {
@@ -35,8 +35,8 @@ class Resolver implements ResolverInterface
             $this->extractValueFromResource($resource, $attribute)
         )->map(function ($item) use ($groups) {
             if ($layout = $groups->find($item->layout)) {
-                return $layout->duplicate($item->key, (array) $item->attributes)
-                              ->setCollapsed($item->collapsed ?? false);
+                return $layout->duplicate($item->key, (array)$item->attributes)
+                    ->setCollapsed((bool)($item->collapsed ?? false));
             }
 
             return null;
@@ -46,7 +46,7 @@ class Resolver implements ResolverInterface
     /**
      * Find the attribute's value in the given resource
      *
-     * @param mixed  $resource
+     * @param mixed $resource
      * @param string $attribute
      * @return array
      */
@@ -60,13 +60,14 @@ class Resolver implements ResolverInterface
             $value = json_decode($value) ?? [];
         }
 
+
         // Fail silently in case data is invalid
         if (!is_array($value)) {
             return [];
         }
 
         return array_map(function ($item) {
-            return is_array($item) ? (object) $item : $item;
+            return is_array($item) ? (object)$item : $item;
         }, $value);
     }
 }

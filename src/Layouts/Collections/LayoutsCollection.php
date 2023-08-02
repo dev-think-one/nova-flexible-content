@@ -1,8 +1,9 @@
 <?php
 
-namespace NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts\Collections;
 
 use Illuminate\Support\Collection as BaseCollection;
+use NovaFlexibleContent\Layouts\Layout;
 
 /**
  * @extends  \Illuminate\Support\Collection<int, \NovaFlexibleContent\Layouts\Layout>

@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts\LayoutTraits;
 
 trait Collapsable
 {

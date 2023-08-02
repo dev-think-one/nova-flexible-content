@@ -2,8 +2,8 @@
 
 namespace NovaFlexibleContent\Tests\Models;
 
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Layouts\LayoutsCollection;
 use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\FeatureListLayout;
 use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;

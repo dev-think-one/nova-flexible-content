@@ -41,12 +41,31 @@ class PresetTest extends TestCase
             'baz' => new SimpleTextLayout(),
         ]);
 
+        $field = Flexible::make('FooBar');
+
+        $this->assertEmpty($field->layouts());
+
+        $preset->handle($field);
+
+        $this->assertNotEmpty($field->layouts());
+        $this->assertCount(3, $field->layouts());
+    }
+
+    /** @test */
+    public function handle_preset_calling_useLayout()
+    {
+        $preset = Preset::withLayouts([
+            'foo' => Layout::class,
+            SimpleTextLayout::class,
+            'baz' => new SimpleTextLayout(),
+        ]);
+
         $mock = $this->mock(Flexible::class, function (MockInterface $mock) {
             $mock->shouldReceive('useLayout')->with(Layout::class)->andReturnSelf();
             $mock->shouldReceive('useLayout')->with(SimpleTextLayout::class)->andReturnSelf();
             $mock->shouldReceive('useLayout')->with(SimpleTextLayout::class)->andReturnSelf();
         });
 
-        $preset->handle($mock);
+        $this->assertInstanceOf(Preset::class, $preset->handle($mock));
     }
 }

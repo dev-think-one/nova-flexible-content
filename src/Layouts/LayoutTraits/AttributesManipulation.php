@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Layouts;
+namespace NovaFlexibleContent\Layouts\LayoutTraits;
 
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 
@@ -14,6 +14,11 @@ trait AttributesManipulation
     public function toArray(): array
     {
         return $this->attributesToArray();
+    }
+
+    public function get($key, $default = null)
+    {
+        return $this->getAttribute($key);
     }
 
     /**
@@ -46,37 +51,5 @@ trait AttributesManipulation
     public function offsetUnset(mixed $offset): void
     {
         unset($this->attributes[$offset]);
-    }
-
-    /**
-     * Determine if an attribute or relation exists on the model.
-     */
-    public function __isset(string $key): bool
-    {
-        return $this->offsetExists($key);
-    }
-
-    /**
-     * Dynamically retrieve attributes on the layout.
-     */
-    public function __get(string $key): mixed
-    {
-        return $this->getAttribute($key);
-    }
-
-    /**
-     * Dynamically set attributes on the layout.
-     */
-    public function __set(string $key, mixed $value): void
-    {
-        $this->offsetSet($key, $value);
-    }
-
-    /**
-     * Unset an attribute on the model.
-     */
-    public function __unset(string $key): void
-    {
-        $this->offsetUnset($key);
     }
 }

@@ -200,9 +200,7 @@ two methods: `set` and `get`.
 ```php
 namespace App\Nova\Flexible\Resolvers;
 
-use NovaFlexibleContent\Contracts\ResolverInterface;
-use NovaFlexibleContent\Layouts\GroupsCollection;
-use NovaFlexibleContent\Layouts\LayoutsCollection;
+use NovaFlexibleContent\Contracts\ResolverInterface;use NovaFlexibleContent\Layouts\Collections\GroupsCollection;use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 
 class WysiwygPageResolver implements ResolverInterface
 {

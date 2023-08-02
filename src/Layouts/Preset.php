@@ -50,10 +50,12 @@ class Preset
         return $this->layouts;
     }
 
-    public function handle(Flexible $field)
+    public function handle(Flexible $field): static
     {
         foreach ($this->layouts() as $layout) {
             $field->useLayout($layout);
         }
+
+        return $this;
     }
 }

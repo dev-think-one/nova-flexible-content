@@ -7,9 +7,9 @@ use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\SupportsDependentFields;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Http\ScopedRequest;
-use NovaFlexibleContent\Layouts\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection as LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Layouts\LayoutsCollection as LayoutsCollection;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupRemovingConfirmation;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasGroupsLimits;
 use NovaFlexibleContent\Nova\Fields\TraitsForFlexible\HasLayoutsMenu;
@@ -146,7 +146,7 @@ class Flexible extends Field implements Downloadable
      * @param string|null $attribute
      * @return void
      */
-    public function resolve($resource, $attribute = null)
+    public function resolve($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -184,7 +184,7 @@ class Flexible extends Field implements Downloadable
      */
     public function isShownOnDetail(NovaRequest $request, $resource): bool
     {
-        $this->layouts = $this->layouts->each(function ($layout) use ($request, $resource) {
+        $this->layouts = $this->layouts->each(function (Layout $layout) use ($request, $resource) {
             $layout->filterForDetail($request, $resource);
         });
 
@@ -255,7 +255,7 @@ class Flexible extends Field implements Downloadable
 
             $group->setCollapsed((bool)($item['collapsed'] ?? false));
             $scope     = ScopedRequest::scopeFrom($request, $attributes, $key);
-            $callbacks = array_merge($callbacks, $group->fill($scope));
+            $callbacks = array_merge($callbacks, $group->fillFromRequest($scope));
 
             return $group;
         })->filter();
@@ -279,14 +279,10 @@ class Flexible extends Field implements Downloadable
             return $item->inUseKey();
         });
 
-        $this->groups->filter(function ($item) use ($newGroupKeys) {
+        $this->groups()->filter(function ($item) use ($newGroupKeys) {
             // Return only removed groups.
             return !$newGroupKeys->contains($item->inUseKey());
-        })->each(function (Layout $group) use ($request, $model) {
-            if (method_exists($group, 'fireRemoveCallback')) {
-                $group->fireRemoveCallback($this, $request, $model);
-            }
-        });
+        })->fireRemoveCallback($this, $request, $model);
 
         return $this;
     }
@@ -314,7 +310,7 @@ class Flexible extends Field implements Downloadable
      */
     protected function resolveGroups(GroupsCollection $groups): GroupsCollection
     {
-        return $groups->map(function ($group) {
+        return $groups->map(function (Layout $group) {
             return $group->getResolved();
         });
     }

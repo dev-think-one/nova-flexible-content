@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Layouts;
+namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use Illuminate\Support\Str;
 use NovaFlexibleContent\Layouts\Layout;
@@ -21,6 +21,7 @@ class HasLayoutKeyTest extends TestCase
         $layout           = new Layout(key: $randomInvalidKey);
 
         $this->assertNotNull($layout->key());
+        $this->assertEquals(16, strlen($layout->key()));
         $this->assertNotEquals($randomInvalidKey, $layout->key());
         $this->assertNotNull($layout->inUseKey());
         $this->assertEquals($randomInvalidKey, $layout->inUseKey());

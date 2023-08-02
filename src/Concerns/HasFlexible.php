@@ -3,8 +3,8 @@
 namespace NovaFlexibleContent\Concerns;
 
 use Illuminate\Support\Collection as BaseCollection;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Layouts\LayoutsCollection;
 
 trait HasFlexible
 {

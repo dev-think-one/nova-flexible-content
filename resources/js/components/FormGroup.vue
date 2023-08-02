@@ -134,10 +134,10 @@ export default {
     },
 
     descriptionText() {
-      if (this.group.configs.tagInfoFrom) {
+      if (this.group.configs.fieldUsedForDescription) {
         const groupSeparator = Nova.config('flexible-content-field.group-separator');
 
-        const field = find(this.group.fields, {attribute: `${this.group.key}${groupSeparator}${this.group.configs.tagInfoFrom}`});
+        const field = find(this.group.fields, {attribute: `${this.group.key}${groupSeparator}${this.group.configs.fieldUsedForDescription}`});
         if (field) {
           if (Array.isArray(field.options)) {
             const text = find(field.options, (option) => ((`${option?.value}`) === `${field.value}`))?.label;
