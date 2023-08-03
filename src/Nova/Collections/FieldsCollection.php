@@ -28,6 +28,7 @@ class FieldsCollection extends NovaFieldCollection
 
     public function findFieldUsedInFlexibleByAttribute($attribute, mixed $default = null)
     {
+        /** @var NovaRequest $request */
         $request = resolve(NovaRequest::class);
 
         /** @var Resource $resource */

@@ -58,11 +58,6 @@ class Layout extends Fluent
         $this->setRawAttributes($this->setEmptyValuesToNull($attributes));
     }
 
-    public static function make(...$args): static
-    {
-        return new static(...$args);
-    }
-
     /**
      * Resolve and return the result
      *

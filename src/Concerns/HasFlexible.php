@@ -30,7 +30,7 @@ trait HasFlexible
             return LayoutsCollection::make();
         }
 
-        return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter();
+        return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter()->values();
     }
 
     /**
@@ -39,13 +39,13 @@ trait HasFlexible
     protected function getFlexibleArrayFromValue(mixed $value): ?array
     {
         if (is_string($value)) {
-            $value = json_decode($value);
+            $value = json_decode($value, true);
 
             return is_array($value) ? $value : null;
         }
 
         if (is_a($value, BaseCollection::class)) {
-            return $value->toArray();
+            return $value->all();
         }
 
         if (is_array($value)) {
@@ -74,13 +74,12 @@ trait HasFlexible
         $key        = null;
         $attributes = [];
 
-        if (is_string($item)) {
-            $item = json_decode($item, true);
-        }
-
-        // Check about is_a($item, Fluent::class)
         if (is_a($item, \stdClass::class)) {
             $item = json_decode(json_encode($item), true);
+        }
+
+        if (is_string($item)) {
+            $item = json_decode($item, true);
         }
 
         if (is_array($item)) {
@@ -89,11 +88,11 @@ trait HasFlexible
             $attributes = (array) $item['attributes'] ?? [];
         } elseif (is_a($item, Layout::class)) {
             $name       = $item->name();
-            $key        = $item->key();
+            $key        = (string) $item->key();
             $attributes = $item->getAttributes();
         }
 
-        if (is_null($name)) {
+        if (!$name) {
             return null;
         }
 
