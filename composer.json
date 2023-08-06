@@ -1,17 +1,18 @@
 {
-    "name": "yaroslawww/nova-flexible-content",
+    "name": "think.studio/nova-flexible-content",
     "description": "Flexible Content & Repeater Fields for Laravel Nova.",
-    "license": "MIT",
     "keywords": [
         "laravel",
         "nova",
         "flexible",
         "repeater"
     ],
+    "homepage": "https://github.com/dev-think-one/nova-flexible-content",
+    "license": "MIT",
     "authors": [
         {
             "name": "Yaroslav Georgitsa",
-            "email": "yaroslav.georgitsa@gmail.com",
+            "email": "yg@think.studio",
             "homepage": "https://github.com/yaroslawww",
             "role": "Developer"
         }

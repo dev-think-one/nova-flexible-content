@@ -2,7 +2,7 @@
 
 namespace NovaFlexibleContent\Nova\Fields\TraitsForFlexible;
 
-use NovaFlexibleContent\Contracts\ResolverInterface;
+use NovaFlexibleContent\Value\DefaultResolver;
 use NovaFlexibleContent\Value\Resolver;
 
 trait HasResolver
@@ -10,30 +10,30 @@ trait HasResolver
     /**
      * The field's value setter & getter
      */
-    protected ResolverInterface $resolver;
+    protected Resolver $resolver;
 
     /**
      * Initialise trait in Flexible constructor.
      */
     protected function initializeHasResolver(): void
     {
-        $this->setResolver(Resolver::class);
+        $this->setResolver(DefaultResolver::class);
     }
 
     /**
      * Set the field's resolver.
      *
-     * @param ResolverInterface|class-string<ResolverInterface> $resolver
+     * @param Resolver|class-string<Resolver> $resolver
      * @return static
      */
-    public function setResolver(ResolverInterface|string $resolver): static
+    public function setResolver(Resolver|string $resolver): static
     {
         if (is_string($resolver)
-            && is_a($resolver, ResolverInterface::class, true)) {
+            && is_a($resolver, Resolver::class, true)) {
             $resolver = new $resolver();
         }
 
-        if (!($resolver instanceof ResolverInterface)) {
+        if (!($resolver instanceof Resolver)) {
             throw new \InvalidArgumentException('Resolver Class does not implement ResolverInterface.');
         }
 
@@ -45,7 +45,7 @@ trait HasResolver
     /**
      * @deprecated
      */
-    public function resolver(ResolverInterface|string $resolver): static
+    public function resolver(Resolver|string $resolver): static
     {
         return $this->setResolver($resolver);
     }

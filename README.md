@@ -1,11 +1,11 @@
 # Laravel Nova Flexible Content
 
-[![Packagist License](https://img.shields.io/packagist/l/yaroslawww/nova-flexible-content?color=%234dc71f)](https://github.com/yaroslawww/nova-flexible-content/blob/master/LICENSE.md)
-[![Packagist Version](https://img.shields.io/packagist/v/yaroslawww/nova-flexible-content)](https://packagist.org/packages/yaroslawww/nova-flexible-content)
-[![Total Downloads](https://img.shields.io/packagist/dt/yaroslawww/nova-flexible-content)](https://packagist.org/packages/yaroslawww/nova-flexible-content)
-[![Build Status](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/build.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/build-status/master)
-[![Code Coverage](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yaroslawww/nova-flexible-content/?branch=master)
+![Packagist License](https://img.shields.io/packagist/l/think.studio/nova-flexible-content?color=%234dc71f)
+[![Packagist Version](https://img.shields.io/packagist/v/think.studio/nova-flexible-content)](https://packagist.org/packages/think.studio/nova-flexible-content)
+[![Total Downloads](https://img.shields.io/packagist/dt/think.studio/nova-flexible-content)](https://packagist.org/packages/think.studio/nova-flexible-content)
+[![Build Status](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/badges/build.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/build-status/main)
+[![Code Coverage](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/?branch=main)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/nova-flexible-content/?branch=main)
 
 **This is fork from great package `whitecube/nova-flexible-content` but reworked without easy possibility to merge
 functionality to main package**
@@ -17,12 +17,12 @@ An easy & complete Flexible Field for Laravel Nova, perfect for repeated and fle
 | Nova | Package |
 |------|---------|
 | V1   | V1 V2   |
-| V4   | V3      |
+| V4   | V3 V4   |
 
 ## Installation
 
-```
-composer require yaroslawww/nova-flexible-content
+```shell
+composer require think.studio/nova-flexible-content
 # optional publish configs
 php artisan vendor:publish --provider="NovaFlexibleContent\ServiceProvider" --tag="config"
 ```
@@ -41,12 +41,6 @@ layouts you'll obtain a Flexible Content.
 
 #### Layout definition
 
-Define your layout class manually or using artisan command.
-
-```shell
-php artisan flexible:make:layout SimpleWysiwygLayout wysiwyg
-```
-
 ```php
 namespace App\Nova\Flexible\Layouts;
 
@@ -54,21 +48,11 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Markdown;
 use NovaFlexibleContent\Layouts\Layout;
 
-class SimpleWysiwygLayout extends Layout
+class VideoLayout extends Layout
 {
-    /**
-     * The layout's unique identifier.
-     * The `name` parameter used to store the chosen layout in the field's value. 
-     * Choose it wisely, you'll probably use it to identify the layouts in your application.
-     */
-    protected string $name = 'wysiwyg';
 
-    /**
-     * The displayed title.
-     *
-     * @var string
-     */
-    protected string $title = 'Simple content section';
+    // Optionally you limit count of this layout in flexible groups
+    // protected int $limit = 3;
 
     /**
      * Get the fields displayed by the layout.
@@ -76,8 +60,18 @@ class SimpleWysiwygLayout extends Layout
     public function fields(): array
     {
         return [
-            Text::make('Title'),
-            Markdown::make('Content')
+            Text::make('Title', 'title')
+                ->help('Optional'),
+            FileForFlexible::make('Video', 'video')
+                           ->prunable()
+                           ->acceptedTypes('video/mp4')
+                           ->deletable()
+                           ->help('Aspect ratio 16:9. Please do not upload a large file.'),
+            ImageForFlexible::make('Poster', 'poster')
+                            ->prunable()
+                            ->rules(['max:' . 1024 * 10])
+                            ->deletable()
+                            ->help('Aspect ratio 16:9.'),
         ];
     }
 }
@@ -86,99 +80,28 @@ class SimpleWysiwygLayout extends Layout
 Then use this layout
 
 ```php
-Flexible::make('Content')
-    ->useLayout(\App\Nova\Flexible\Layouts\SimpleWysiwygLayout::class)
+\NovaFlexibleContent\Flexible::make('Content')
+    ->useLayout(\App\Nova\Flexible\Layouts\VideoLayout::class)
     ->useLayout(\App\Nova\Flexible\Layouts\FooLayout::class)
     ->useLayout(\App\Nova\Flexible\Layouts\BarLayout::class);
 ```
 
-![Example of Flexible layouts](docs/assets/example_layouts.png)
+![Example of Flexible layout](docs/assets/example_layout.png)
 
-#### Customizing the button label
+#### Customizing display
 
-You can change the default "Add layout" button's text like so:
-
-```php
-Flexible::make('Content')->button('Add something amazing!');
-```
-
-![Add something amazing](docs/assets/add_something_amazing.png)
-
-#### Making the field full width
-
-You can make the flexible field full width, taking up all available space on the form, and moving the label above the
-field by doing the following:
+You can change the display by call methods:
 
 ```php
-Flexible::make('Content')->fullWidth()
+\NovaFlexibleContent\Flexible::make('Content')
+    ->fullWidth()
+    ->useSearchableLayoutsMenu()
+    ->layoutsMenuButton('Add Video')
+    ->limit(3)
+    ->withGroupRemovingConfirmation('Are you sure?', 'Yes :)', 'Ahh, no');
 ```
 
-#### Limiting layouts
-
-There two possibility to limit layouts
-
-##### Total layouts instances limit
-
-You can limit how many times the "Add Layout" button will appear by doing the following:
-
-```php
-Flexible::make('Content')->limit(2);
-```
-
-You can specify any integer, or no integer at all; in that case it will default to 1.
-
-##### Specific layout limit
-
-Specify `$limit` variable to value greater then 0.
-
-```php
-namespace App\Nova\Flexible\Layouts;
-
-use NovaFlexibleContent\Layouts\Layout;
-
-class SimpleWysiwygLayout extends Layout
-{
-    protected int $limit = 3;
-    
-    // other code
-}
-```
-
-#### Group removal confirmation
-
-You can choose to display a confirmation prompt after user click on delete group icon:
-
-```php
-Flexible::make('Content')->confirmRemove($label = '', $yes = 'Delete', $no = 'Cancel');
-```
-
-![Add something amazing](docs/assets/confirm_remove.png)
-
-#### Layout selection menu
-
-You can customize the way your user selects a layout, you can choose between 'flexible-drop-menu' and '
-flexible-search-menu' or create your own custom menu component.
-
-```php
-// Default, simple list of all layouts
-Flexible::make('Content')->menu('flexible-drop-menu');
-
-// searchable select field
-Flexible::make('Content')->menu('flexible-search-menu');
-
-// customized searchable select field
-Flexible::make('Content')
-    ->menu(
-        'flexible-search-menu',
-        [
-            'selectLabel' => 'Press enter to select',
-            // the property on the layout entry
-            'label' => 'title',
-            // 'top', 'bottom', 'auto'
-            'openDirection' => 'bottom',
-        ]
-    );
-```
+![Add something amazing](docs/assets/remove_confirmation.png)
 
 ### Value resolver
 
@@ -188,21 +111,17 @@ Flexible Content field instead of a traditional BelongsToMany or HasMany field).
 
 #### Resolver definition
 
-Define your Resolver class manually or using artisan command.
-
-```shell
-php artisan flexible:make:resolver WysiwygPageResolver
-```
-
-Each Resolver MUST implement the `NovaFlexibleContent\Value\ResolverInterface` contract and therefore feature at least
+Each Resolver MUST implement the `NovaFlexibleContent\Value\Resolver` contract and therefore feature at least
 two methods: `set` and `get`.
 
 ```php
 namespace App\Nova\Flexible\Resolvers;
 
-use NovaFlexibleContent\Contracts\ResolverInterface;use NovaFlexibleContent\Layouts\Collections\GroupsCollection;use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
+use NovaFlexibleContent\Layouts\Collections\GroupsCollection;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
+use NovaFlexibleContent\Value\Resolver;
 
-class WysiwygPageResolver implements ResolverInterface
+class WysiwygPageResolver implements Resolver
 {
     public function get(mixed $resource, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
@@ -270,12 +189,6 @@ benefit of cleaning up your Nova Resource classes, if your Flexible field has a 
 
 #### Preset definition
 
-Define your Preset class manually or using artisan command.
-
-```shell
-php artisan flexible:make:preset WysiwygPagePreset
-```
-
 ```php
 namespace App\Nova\Flexible\Presets;
 
@@ -288,13 +201,14 @@ class WysiwygPagePreset extends Preset
      */
     protected array $usedLayouts = [
         \App\Nova\Flexible\Layouts\SimpleWysiwygLayout::class,
-        \App\Nova\Flexible\Layouts\FooLayout::class
+        \App\Nova\Flexible\Layouts\FooLayout::class,
     ];
     
-    public function handle(Flexible $field)
+    public function handle(\NovaFlexibleContent\Flexible $field)
     {
-        parent::handle($field)
-            ->button('Add new block')
+        parent::handle($field);
+        
+        $field->layoutsMenuButton('Add new block')
             ->setResolver(\App\Nova\Flexible\Resolvers\WysiwygPageResolver::class)
             ->help('Example help.');
     }
@@ -302,7 +216,7 @@ class WysiwygPagePreset extends Preset
 ```
 
 ```php
-Flexible::make('Content')
+\NovaFlexibleContent\Flexible::make('Content')
     ->preset(\App\Nova\Flexible\Presets\WysiwygPagePreset::class);
 ```
 
@@ -337,12 +251,6 @@ class Post extends Model
     }
 }
 ```
-
-## Tests
-
-When adding a new feature or fixing a bug, please add corresponding unit tests.
-
-Run PHPUnit by calling `composer test`.
 
 ## Credits
 
