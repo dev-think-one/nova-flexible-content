@@ -21,7 +21,7 @@ trait ParsesFlexibleAttributes
     {
         return (
             ($request->isMethod('POST') || $request->isMethod('PUT')) &&
-            $request->filled(FlexibleAttribute::REGISTER)
+            $request->filled(FlexibleAttribute::REGISTER_FLEXIBLE_FIELD_NAME)
         );
     }
 
@@ -33,7 +33,7 @@ trait ParsesFlexibleAttributes
      */
     protected function getParsedFlexibleInputs(Request $request): array
     {
-        $this->registerFlexibleFields($request->input(FlexibleAttribute::REGISTER));
+        $this->registerFlexibleFields($request->input(FlexibleAttribute::REGISTER_FLEXIBLE_FIELD_NAME));
 
         return array_reduce(array_keys($request->all()), function ($carry, $attribute) use ($request) {
             $value = $request->input($attribute);

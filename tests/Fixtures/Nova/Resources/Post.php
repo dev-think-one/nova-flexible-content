@@ -2,6 +2,7 @@
 
 namespace NovaFlexibleContent\Tests\Fixtures\Nova\Resources;
 
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use NovaFlexibleContent\Flexible;
@@ -20,6 +21,7 @@ class Post extends Resource
     public function fields(NovaRequest $request)
     {
         return [
+            Text::make('Title', 'title'),
             Flexible::make('Content')
                 ->useLayout(SimpleNumberLayout::make())
                 ->useLayout(FeatureListLayout::make()),

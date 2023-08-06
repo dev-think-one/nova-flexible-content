@@ -29,7 +29,7 @@ class InterceptFlexibleAttributes
         }
 
         $request->merge($this->getParsedFlexibleInputs($request));
-        $request->request->remove(FlexibleAttribute::REGISTER);
+        $request->request->remove(FlexibleAttribute::REGISTER_FLEXIBLE_FIELD_NAME);
 
         $response = $next($request);
 

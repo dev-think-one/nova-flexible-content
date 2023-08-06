@@ -18,12 +18,12 @@ class HasFieldsRulesTest extends TestCase
 
         $this->assertInstanceOf(FlexibleAttribute::class, $rules['content.attributes.order']['attribute']);
         $this->assertIsArray($rules['content.attributes.order']['rules']);
-        $this->assertCount(3, $rules['content.attributes.order']['rules']);
+        $this->assertCount(4, $rules['content.attributes.order']['rules']);
 
         $rules = $layout->generateRules(app(ScopedRequest::class), 'content', 'update');
 
         $this->assertInstanceOf(FlexibleAttribute::class, $rules['content.attributes.order']['attribute']);
         $this->assertIsArray($rules['content.attributes.order']['rules']);
-        $this->assertCount(4, $rules['content.attributes.order']['rules']);
+        $this->assertCount(5, $rules['content.attributes.order']['rules']);
     }
 }

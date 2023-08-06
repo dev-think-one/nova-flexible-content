@@ -17,7 +17,7 @@ class SimpleNumberLayout extends Layout
         return [
             Number::make('Order', 'order')
                 ->updateRules(['max:100'])
-                ->rules('required', 'min:0', 'max:999')
+                ->rules('required', 'integer', 'min:0', 'max:999')
                 ->displayUsing(fn () => 100),
         ];
     }

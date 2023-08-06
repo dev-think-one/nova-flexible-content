@@ -11,7 +11,7 @@ class FlexibleAttribute
      *
      * @var string
      */
-    const REGISTER = '___nova_flexible_content_fields';
+    const REGISTER_FLEXIBLE_FIELD_NAME = '___nova_flexible_content_fields';
 
     /**
      * The string that identifies an "upload" value.
@@ -103,7 +103,7 @@ class FlexibleAttribute
      */
     public function isFlexibleFieldsRegister(): bool
     {
-        return $this->name === static::REGISTER;
+        return $this->name === static::REGISTER_FLEXIBLE_FIELD_NAME;
     }
 
     /**

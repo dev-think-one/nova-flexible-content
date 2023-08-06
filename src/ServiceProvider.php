@@ -23,7 +23,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             Nova::style('flexible-content-field', __DIR__ . '/../dist/css/field.css');
 
             Nova::provideToScript([
-                'flexible-content-field.flexible-attribute-key-name' => FlexibleAttribute::REGISTER,
+                'flexible-content-field.flexible-attribute-key-name' => FlexibleAttribute::REGISTER_FLEXIBLE_FIELD_NAME,
                 'flexible-content-field.file-indicator-prefix'       => FlexibleAttribute::FILE_INDICATOR,
                 'flexible-content-field.group-separator'             => FlexibleAttribute::GROUP_SEPARATOR,
             ]);

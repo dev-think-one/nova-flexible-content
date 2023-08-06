@@ -14,6 +14,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
+            \Inertia\ServiceProvider::class,
             NovaCoreServiceProvider::class,
             NovaServiceProvider::class,
             \NovaFlexibleContent\ServiceProvider::class,
