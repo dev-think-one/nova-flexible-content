@@ -15,6 +15,9 @@ class Post extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+    ];
+
     protected static function newFactory(): PostFactory
     {
         return new PostFactory();

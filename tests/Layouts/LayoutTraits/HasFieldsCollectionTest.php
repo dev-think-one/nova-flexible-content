@@ -14,10 +14,10 @@ class HasFieldsCollectionTest extends TestCase
     {
         $layout = LinkLayout::make();
 
-        $this->assertCount(2, $layout->fieldsCollection());
+        $this->assertCount(4, $layout->fieldsCollection());
 
         $layout->filterForDetail(app(NovaRequest::class), new Post());
 
-        $this->assertCount(1, $layout->fieldsCollection());
+        $this->assertCount(3, $layout->fieldsCollection());
     }
 }

@@ -138,7 +138,7 @@ trait ParsesFlexibleAttributes
      * @param null|string $group
      * @return void
      */
-    protected function registerFlexibleFields(?string $value, ? string $group = null): void
+    protected function registerFlexibleFields(array|string|null $value, ? string $group = null): void
     {
         if (!$value) {
             return;

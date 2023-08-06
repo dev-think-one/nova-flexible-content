@@ -30,7 +30,6 @@ class UpdateFlexibleTest extends TestCase
     public function if_no_flexible_registered_then_go_to_next()
     {
         $groupKey    = 'c'.Str::random(15);
-        $groupPrefix = FlexibleAttribute::formatGroupPrefix($groupKey);
 
         $response = $this->actingAs($this->admin)
             ->put("/nova-api/{$this->uriKey}/{$this->post->getKey()}", [
@@ -66,6 +65,9 @@ class UpdateFlexibleTest extends TestCase
 
         $response->assertSuccessful();
         $response->assertJsonPath('id', $this->post->getKey());
+        $response->assertJsonPath('resource.content.0.layout', 'simple_number');
+        $response->assertJsonPath('resource.content.0.key', $groupKey);
+        $response->assertJsonPath('resource.content.0.collapsed', true);
         $response->assertJsonPath('resource.content.0.attributes.order', 33);
     }
 

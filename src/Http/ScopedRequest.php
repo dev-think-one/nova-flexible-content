@@ -88,7 +88,7 @@ class ScopedRequest extends NovaRequest
             $input[$attribute->name] = $value;
         }
 
-        return [$input, $files];
+        return [$input, array_filter($files)];
     }
 
     /**
@@ -103,23 +103,23 @@ class ScopedRequest extends NovaRequest
         $files = [];
         $key   = $this->isFlexibleStructure($iterable) ? $iterable['key'] : $group;
 
-        foreach ($iterable as $original => $value) {
-            if (is_array($value)) {
-                $files = array_merge($files, $this->getNestedFiles($value, $key));
+        foreach ($iterable as $original => $fieldKeyName) {
+            if (is_array($fieldKeyName)) {
+                $files = array_merge($files, $this->getNestedFiles($fieldKeyName, $key));
 
                 continue;
             }
 
             $attribute = FlexibleAttribute::make($original, $group);
 
-            if (!$attribute->isFlexibleFile($value)) {
+            if (!$attribute->isFlexibleFile($fieldKeyName)) {
                 continue;
             }
 
-            $files[] = $attribute->getFlexibleFileAttribute($value);
+            $files[] = $attribute->getFlexibleFileAttribute($fieldKeyName);
         }
 
-        return $files;
+        return array_filter($files);
     }
 
     /**
@@ -163,7 +163,7 @@ class ScopedRequest extends NovaRequest
      *
      * @param null $iterable
      * @param FlexibleAttribute|null $original
-     * @return array
+     * @return array<FlexibleAttribute>
      */
     protected function getFlattenedFiles($iterable = null, FlexibleAttribute $original = null): array
     {
@@ -181,7 +181,7 @@ class ScopedRequest extends NovaRequest
             $files = array_merge($files, $this->getFlattenedFiles($value, $attribute));
         }
 
-        return $files;
+        return array_filter($files);
     }
 
     /**
@@ -193,10 +193,6 @@ class ScopedRequest extends NovaRequest
     protected function isFlexibleStructure(array $iterable): bool
     {
         $keys = array_keys($iterable);
-
-        if (count($keys) !== 3) {
-            return false;
-        }
 
         return  in_array('layout', $keys, true)
             && in_array('key', $keys, true)

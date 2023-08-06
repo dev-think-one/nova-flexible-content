@@ -33,7 +33,11 @@ class Resolver implements ResolverInterface
     {
         return GroupsCollection::make(
             $this->extractValueFromResource($resource, $attribute)
-        )->map(function ($item) use ($groups) {
+        )->map(function ($item) use ($groups, $attribute) {
+            if($item instanceof Layout) {
+                return $item;
+            }
+
             if ($layout = $groups->find($item->layout)) {
                 return $layout->duplicate($item->key, (array)$item->attributes)
                     ->setCollapsed((bool)($item->collapsed ?? false));
@@ -55,11 +59,10 @@ class Resolver implements ResolverInterface
         $value = data_get($resource, str_replace('->', '.', $attribute)) ?? [];
 
         if ($value instanceof Collection) {
-            $value = $value->toArray();
+            $value = $value->all();
         } elseif (is_string($value)) {
             $value = json_decode($value) ?? [];
         }
-
 
         // Fail silently in case data is invalid
         if (!is_array($value)) {
