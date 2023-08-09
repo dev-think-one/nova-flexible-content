@@ -48,10 +48,10 @@ class Layout extends Fluent
         array                 $attributes = [],
         ?\Closure             $removeCallbackMethod = null
     ) {
-        // Override properties or set default provided ny developer
-        $this->title                = $title ?: $this->title;
-        $this->name                 = $name ?: $this->name;
-        $this->fields               = FieldCollection::make($fields ?: $this->fields());
+        // Override properties or set default provided by developer
+        $this->title                = $title ?? $this->title;
+        $this->name                 = $name ?? $this->name;
+        $this->fields               = FieldCollection::make($fields ?? $this->fields());
         $this->removeCallbackMethod = $removeCallbackMethod;
 
         $this->key = is_null($key) ? null : $this->generateValidLayoutKey($key);
