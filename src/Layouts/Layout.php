@@ -50,8 +50,8 @@ class Layout extends Fluent
     ) {
         // Override properties or set default provided by developer
         $this->title                = $title ?? $this->title;
-        $this->name                 = $name ?? $this->name;
-        $this->fields               = FieldCollection::make($fields ?? $this->fields());
+        $this->name                 = $name  ?? $this->name;
+        $this->fields               = FieldCollection::make($fields ?: $this->fields());
         $this->removeCallbackMethod = $removeCallbackMethod;
 
         $this->key = is_null($key) ? null : $this->generateValidLayoutKey($key);

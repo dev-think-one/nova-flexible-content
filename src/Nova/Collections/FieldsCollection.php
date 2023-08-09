@@ -49,6 +49,6 @@ class FieldsCollection extends NovaFieldCollection
             }
         }
 
-        return $default;
+        return value($default);
     }
 }

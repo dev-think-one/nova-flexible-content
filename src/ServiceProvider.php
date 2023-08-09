@@ -2,6 +2,8 @@
 
 namespace NovaFlexibleContent;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use NovaFlexibleContent\Http\FlexibleAttribute;
@@ -38,6 +40,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 //
             ]);
         }
+
+        $this->registerCollectionMacros();
     }
 
     /**
@@ -71,5 +75,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 [InterceptFlexibleAttributes::class]
             ));
         }
+    }
+
+    protected function registerCollectionMacros(): void
+    {
+        Collection::macro('isAssoc', function () {
+            return Arr::isAssoc($this->toBase()->all());
+        });
     }
 }
