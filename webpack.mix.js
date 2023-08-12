@@ -12,4 +12,4 @@ mix
     '@': path.resolve('resources/js'),
     'nova-mixins': path.join(__dirname,'./vendor/laravel/nova/resources/js/mixins')
   })
-  .nova('yaroslawww/nova-flexible-content')
+  .nova('think.studio/nova-flexible-content')
