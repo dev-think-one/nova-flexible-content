@@ -4,11 +4,11 @@ namespace NovaFlexibleContent\Tests\Models;
 
 use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\FeatureListLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\LinkLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\TeamMemberLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\FeatureListLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\LinkLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\TeamMemberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class FlexibleMethodTest extends TestCase
@@ -50,9 +50,28 @@ class FlexibleMethodTest extends TestCase
             'feature-list' => FeatureListLayout::class,
         ])->find('feature-list');
         $this->assertInstanceOf(FeatureListLayout::class, $layout);
-        $this->assertInstanceOf(LayoutsCollection::class, $layout->links);
-        $this->assertCount(2, $layout->links);
-        $this->assertInstanceOf(LinkLayout::class, $layout->links[0]);
+        $this->assertInstanceOf(LayoutsCollection::class, $layout->flexibleLinks);
+        $this->assertCount(2, $layout->flexibleLinks);
+        $this->assertInstanceOf(LinkLayout::class, $layout->flexibleLinks[0]);
+
+        // Get using function.
+        $this->assertCount(2, $layout->groups('links'));
+        $this->assertCount(2, $layout->groups('links', 'link'));
+        $this->assertCount(2, $layout->groups('links', ['link']));
+        $this->assertCount(0, $layout->groups('links', ['image']));
+        $this->assertInstanceOf(LinkLayout::class, $layout->group('links'));
+        $this->assertInstanceOf(LinkLayout::class, $layout->group('links', 'link'));
+        $this->assertInstanceOf(LinkLayout::class, $layout->group('links', ['link']));
+        $this->assertNull($layout->group('links', ['image']));
+
+        // If preset not exists
+        $this->assertInstanceOf(LayoutsCollection::class, $layout->groups('images'));
+        $this->assertCount(0, $layout->groups('images'));
+        $this->assertNull($layout->group('images'));
+
+        // Get from attribute.
+        $this->assertEquals('default.svg', $layout->imageLink);
+        $this->assertEquals('default.svg', $layout->image_link);
     }
 
     /** @test */

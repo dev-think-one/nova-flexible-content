@@ -3,8 +3,8 @@
 namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use Laravel\Nova\Http\Requests\NovaRequest;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class HasFieldsCollectionTest extends TestCase

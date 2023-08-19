@@ -6,7 +6,7 @@ use Mockery\MockInterface;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\Preset;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleTextLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleTextLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class PresetTest extends TestCase

@@ -15,6 +15,6 @@ class User extends \Illuminate\Foundation\Auth\User
 
     protected static function newFactory(): UserFactory
     {
-        return new UserFactory();
+        return UserFactory::new();
     }
 }

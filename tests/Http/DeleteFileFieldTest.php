@@ -43,4 +43,16 @@ class DeleteFileFieldTest extends TestCase
         $this->assertNull($content[0]['attributes']['links'][0]['attributes']['file']);
     }
 
+    /** @test */
+    public function delete_not_existing_file()
+    {
+        $content = json_decode($this->post->refresh()->content, true);
+        $this->assertNotEmpty($content[0]['attributes']['links'][0]['attributes']['file']);
+        $this->assertStringEndsWith('.jpg', $content[0]['attributes']['links'][0]['attributes']['file']);
+
+        $response = $this->actingAs($this->admin)
+            ->deleteJson("/nova-api/{$this->uriKey}/{$this->post->getKey()}/field/fake000000000000__file");
+
+        $response->assertNotFound();
+    }
 }

@@ -3,9 +3,9 @@
 namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use NovaFlexibleContent\Flexible;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\FeatureListLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\FeatureListLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class HasFlexibleFieldInLayoutTest extends TestCase

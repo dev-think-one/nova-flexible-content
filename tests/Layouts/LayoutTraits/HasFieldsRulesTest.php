@@ -4,7 +4,7 @@ namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
 use NovaFlexibleContent\Http\FlexibleAttribute;
 use NovaFlexibleContent\Http\ScopedRequest;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class HasFieldsRulesTest extends TestCase

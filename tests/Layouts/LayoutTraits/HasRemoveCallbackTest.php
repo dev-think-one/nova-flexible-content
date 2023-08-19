@@ -6,8 +6,8 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Nova\Fields\ImageForFlexible;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\TeamMemberLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\TeamMemberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class HasRemoveCallbackTest extends TestCase

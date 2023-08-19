@@ -2,7 +2,7 @@
 
 namespace NovaFlexibleContent\Tests\Layouts\LayoutTraits;
 
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class ModelEmulatesTest extends TestCase

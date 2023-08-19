@@ -4,8 +4,8 @@ namespace NovaFlexibleContent\Tests\Layouts;
 
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Http\ScopedRequest;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
 use NovaFlexibleContent\Tests\Fixtures\Models\Post;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class LayoutTest extends TestCase

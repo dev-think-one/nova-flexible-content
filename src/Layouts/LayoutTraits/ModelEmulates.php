@@ -4,6 +4,9 @@ namespace NovaFlexibleContent\Layouts\LayoutTraits;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
+use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\Preset;
 
 trait ModelEmulates
 {
@@ -89,5 +92,41 @@ trait ModelEmulates
         }
 
         return $this;
+    }
+
+    public function groups(string $fieldName, string|array|null $type = null): LayoutsCollection
+    {
+        $methodName = "{$fieldName}Preset";
+        if ($fieldName && method_exists($this, $methodName)) {
+            $preset = $this->$methodName();
+            if ($preset instanceof Preset) {
+                $value = $this->flexible($fieldName, $preset);
+                if ($type) {
+                    $value = $value->whereName($type);
+                }
+
+                return $value;
+            }
+        }
+
+        return LayoutsCollection::make();
+    }
+
+    public function group(string $fieldName, string|array|null $type = null): ?Layout
+    {
+        return $this->groups($fieldName, $type)->first();
+    }
+
+    public function __get($key)
+    {
+        if (Str::startsWith($key, 'flexible')) {
+            $field = Str::camel(Str::after($key, 'flexible'));
+
+            if ($value = $this->groups($field)) {
+                return $value;
+            }
+        }
+
+        return parent::__get($key);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Fixtures\Layouts\Feature;
+namespace NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature;
 
 use Laravel\Nova\Fields\Text;
 use NovaFlexibleContent\Layouts\Layout;

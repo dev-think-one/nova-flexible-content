@@ -5,6 +5,7 @@ namespace NovaFlexibleContent\Concerns;
 use Illuminate\Support\Collection as BaseCollection;
 use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
+use NovaFlexibleContent\Layouts\Preset;
 
 trait HasFlexible
 {
@@ -12,7 +13,7 @@ trait HasFlexible
     /**
      * Parse a Flexible Content attribute.
      */
-    public function flexible(string $attribute, array $layoutMapping = []): LayoutsCollection
+    public function flexible(string $attribute, array|Preset $layoutMapping = []): LayoutsCollection
     {
         $value = data_get($this->attributes, $attribute);
 
@@ -22,7 +23,7 @@ trait HasFlexible
     /**
      * Parse a Flexible Content from value.
      */
-    public function toFlexibleCollection(mixed $value, array $layoutMapping = []): LayoutsCollection
+    public function toFlexibleCollection(mixed $value, array|Preset $layoutMapping = []): LayoutsCollection
     {
         $flexible = $this->getFlexibleArrayFromValue($value);
 
@@ -58,7 +59,7 @@ trait HasFlexible
     /**
      * Map array with Flexible Content Layouts.
      */
-    protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping): array
+    protected function getMappedFlexibleLayouts(array $flexible, array|Preset $layoutMapping = []): array
     {
         return array_map(function ($item) use ($layoutMapping) {
             return $this->getMappedLayout($item, $layoutMapping);
@@ -68,7 +69,7 @@ trait HasFlexible
     /**
      * Transform given layout value into a usable Layout instance.
      */
-    protected function getMappedLayout(mixed $item, array $layoutMapping): ?Layout
+    protected function getMappedLayout(mixed $item, array|Preset $layoutMapping = []): ?Layout
     {
         $name       = null;
         $key        = null;
@@ -102,8 +103,12 @@ trait HasFlexible
     /**
      * Transform given layout value into a usable Layout instance.
      */
-    protected function createMappedLayout(string $name, string $key, array $attributes, array $layoutMapping): Layout
+    protected function createMappedLayout(string $name, string $key, array $attributes, array|Preset $layoutMapping = []): Layout
     {
+        if($layoutMapping instanceof Preset) {
+            $layoutMapping = $layoutMapping->layouts();
+        }
+
         $classname = array_key_exists($name, $layoutMapping)
             ? $layoutMapping[$name]
             : Layout::class;

@@ -6,8 +6,8 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Nova\Collections\FieldsCollection;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\FeatureListLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\FeatureListLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
 class FieldsCollectionTest extends TestCase

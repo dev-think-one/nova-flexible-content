@@ -2,6 +2,7 @@
 
 namespace NovaFlexibleContent\Layouts\Collections;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
 use NovaFlexibleContent\Layouts\Layout;
 
@@ -19,4 +20,12 @@ class LayoutsCollection extends BaseCollection
     {
         return $this->first(fn (Layout $layout) => $layout->name() === $name, $default);
     }
+
+    public function whereName(string|array $names): static
+    {
+        $names = array_filter(array_unique(Arr::wrap($names)));
+
+        return $this->filter(fn (Layout $layout) => in_array($layout->name(), $names));
+    }
+
 }

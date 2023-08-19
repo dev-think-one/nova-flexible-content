@@ -25,7 +25,12 @@ trait HasFieldsCollection
      */
     public function fieldsCollection(): FieldCollection
     {
-        return $this->fields ?? FieldCollection::make();
+        $fields = $this->fields;
+        if(!$fields || $fields->isEmpty()) {
+            $fields = $this->fields();
+        }
+
+        return FieldCollection::make($fields);
     }
 
     /**

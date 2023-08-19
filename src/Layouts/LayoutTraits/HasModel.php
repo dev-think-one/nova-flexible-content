@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use NovaFlexibleContent\Layouts\Layout;
 
 /**
+ * I have no Idea where this used, and why we should keep it?
  * @deprecated
  */
 trait HasModel

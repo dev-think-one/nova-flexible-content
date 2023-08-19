@@ -1,7 +1,8 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Fixtures\Layouts\Feature;
+namespace NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Fields\Text;
 use NovaFlexibleContent\Flexible;
@@ -27,28 +28,26 @@ class FeatureListLayout extends Layout
         return [
             Text::make('Title', 'title'),
             ImageForFlexible::make('Image', 'src')
-                            ->prunable()
-                            ->rules(['max:'. 1024 * 10])
-                            ->deletable(),
+                ->prunable()
+                ->rules(['max:' . 1024 * 10])
+                ->deletable(),
             Flexible::make('Links', 'links')
-                    ->preset($this->linksPreset())
-                    ->layoutsMenuButton('Add link'),
+                ->preset($this->linksPreset())
+                ->layoutsMenuButton('Add link'),
         ];
     }
 
-    public function getLinksAttribute()
+    public function imageLink(): Attribute
     {
-        return $this->flexible('links', $this->linksPreset()->layouts());
-    }
+        return Attribute::get(function () {
+            $path    = $this->getAttribute('src');
+            $storage = Storage::disk();
+            if ($path && $storage->exists($path)) {
+                return $storage->url($path);
+            }
 
-    public function getImageLinkAttribute()
-    {
-        $path    = $this->getAttribute('src');
-        $storage = Storage::disk();
-        if ($path && $storage->exists($path)) {
-            return $storage->url($path);
-        }
+            return 'default.svg';
+        });
 
-        return 'default.svg';
     }
 }

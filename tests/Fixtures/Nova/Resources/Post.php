@@ -7,8 +7,8 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Nova\Resources\HasFlexibleField;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\FeatureListLayout;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\FeatureListLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
 
 /**
  * @extends Resource<\NovaFlexibleContent\Tests\Fixtures\Models\Post>

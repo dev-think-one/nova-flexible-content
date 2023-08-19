@@ -3,6 +3,7 @@
 namespace NovaFlexibleContent\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Laravel\Nova\NovaCoreServiceProvider;
 use NovaFlexibleContent\Tests\Fixtures\NovaServiceProvider;
 use Orchestra\Testbench\Database\MigrateProcessor;
@@ -10,6 +11,13 @@ use Orchestra\Testbench\Database\MigrateProcessor;
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Artisan::call('nova:publish');
+    }
 
     protected function getPackageProviders($app)
     {

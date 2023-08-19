@@ -1,11 +1,11 @@
 <?php
 
-namespace NovaFlexibleContent\Tests\Fixtures\Layouts;
+namespace NovaFlexibleContent\Tests\Fixtures\Nova\Layouts;
 
 use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Nova\Fields\ImageForFlexible;
-use NovaFlexibleContent\Tests\Fixtures\Layouts\Feature\LinkLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\LinkLayout;
 
 class TeamMemberLayout extends Layout
 {
