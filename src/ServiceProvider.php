@@ -37,7 +37,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'config');
 
             $this->commands([
-                //
+                \NovaFlexibleContent\Console\Commands\GenerateIdeHelperLayoutsCommand::class,
             ]);
         }
 

@@ -53,6 +53,13 @@ class VideoLayout extends Layout
 
     // Optionally you limit count of this layout in flexible groups
     // protected int $limit = 3;
+    
+     protected function linksPreset()
+    {
+        return Preset::withLayouts([
+            LinkLayout::class,
+        ]);
+    }
 
     /**
      * Get the fields displayed by the layout.
@@ -72,6 +79,10 @@ class VideoLayout extends Layout
                             ->rules(['max:' . 1024 * 10])
                             ->deletable()
                             ->help('Aspect ratio 16:9.'),
+            // Recursive flexible
+            \NovaFlexibleContent\Flexible::make('Links', 'links')
+                        ->preset($this->linksPreset())
+                        ->layoutsMenuButton('Add link'),
         ];
     }
 }
@@ -250,6 +261,16 @@ class Post extends Model
         ]);
     }
 }
+```
+
+## IDE Helper
+
+Create helper file for IDE your Flexible Layouts in application.
+
+```shell
+php artisan nova-flexible-content:ide-helper:layouts
+# or
+php artisan  nova-flexible-content:ide-helper:layouts --filename custom-file.php
 ```
 
 ## Credits
