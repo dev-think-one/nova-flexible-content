@@ -2,6 +2,7 @@
 
 namespace NovaFlexibleContent;
 
+use Illuminate\Support\Str;
 use Laravel\Nova\Contracts\Downloadable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\SupportsDependentFields;
@@ -75,6 +76,8 @@ class Flexible extends Field implements Downloadable
                 $this->{$method}();
             }
         }
+
+        $this->layoutsMenuButton(__('Add ' . Str::singular(Str::lcfirst(trim($this->name)))));
     }
 
     /**
@@ -493,7 +496,7 @@ class Flexible extends Field implements Downloadable
     {
         static::$validatedKeys = array_merge(
             static::$validatedKeys,
-            array_filter(array_map(fn ($field) => $field['attribute']??null, $rules))
+            array_filter(array_map(fn ($field) => $field['attribute'] ?? null, $rules))
         );
     }
 
