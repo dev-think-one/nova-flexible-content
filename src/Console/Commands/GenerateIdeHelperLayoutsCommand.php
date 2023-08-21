@@ -51,7 +51,7 @@ class GenerateIdeHelperLayoutsCommand extends Command
     protected function generateDocs(): string
     {
         $formatterPrefix = '@';
-        $output = "<?php
+        $output          = "<?php
 // {$formatterPrefix}formatter:off
 /**
  * A helper file for your Flexible Layouts
@@ -66,10 +66,10 @@ class GenerateIdeHelperLayoutsCommand extends Command
 
         foreach ((new Finder())->in(app_path('Nova'))->files() as $resource) {
             $resource = $namespace . str_replace(
-                    ['/', '.php'],
-                    ['\\', ''],
-                    Str::after($resource->getPathname(), app_path() . DIRECTORY_SEPARATOR)
-                );
+                ['/', '.php'],
+                ['\\', ''],
+                Str::after($resource->getPathname(), app_path() . DIRECTORY_SEPARATOR)
+            );
 
             if (
                 is_subclass_of($resource, Layout::class) &&
@@ -92,11 +92,11 @@ class GenerateIdeHelperLayoutsCommand extends Command
      */
     protected function createLayoutPhpDocs(string $layout): string
     {
-        $output = '';
-        $parentClassName = Layout::class;
+        $output                     = '';
+        $parentClassName            = Layout::class;
         $layoutsCollectionClassName = LayoutsCollection::class;
-        $className = class_basename($layout);
-        $namespace = trim(Str::beforeLast($layout, $className), '\\');
+        $className                  = class_basename($layout);
+        $namespace                  = trim(Str::beforeLast($layout, $className), '\\');
 
         $output .= "namespace {$namespace} {\n\n";
 
@@ -130,8 +130,8 @@ class GenerateIdeHelperLayoutsCommand extends Command
         if ($methods) {
             sort($methods);
             foreach ($methods as $method) {
-                $reflection = new \ReflectionMethod($layout, $method);
-                $type = $this->getReturnTypeFromReflection($reflection);
+                $reflection  = new \ReflectionMethod($layout, $method);
+                $type        = $this->getReturnTypeFromReflection($reflection);
                 $isAttribute = is_a($type, Attribute::class, true);
                 if (
                     Str::startsWith($method, 'get') && Str::endsWith(
@@ -142,7 +142,7 @@ class GenerateIdeHelperLayoutsCommand extends Command
                     //Magic get<name>Attribute
                     $name = Str::snake(substr($method, 3, -9));
                     if (!empty($name)) {
-                        $type = $this->getReturnTypeFromReflection($reflection);
+                        $type              = $this->getReturnTypeFromReflection($reflection);
                         $properties[$name] = $type;
                     }
                 } elseif ($isAttribute) {

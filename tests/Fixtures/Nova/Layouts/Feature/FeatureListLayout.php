@@ -9,6 +9,7 @@ use NovaFlexibleContent\Flexible;
 use NovaFlexibleContent\Layouts\Layout;
 use NovaFlexibleContent\Layouts\Preset;
 use NovaFlexibleContent\Nova\Fields\ImageForFlexible;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleTextLayout;
 
 class FeatureListLayout extends Layout
 {
@@ -23,6 +24,13 @@ class FeatureListLayout extends Layout
         ]);
     }
 
+    protected function customOptionsPreset()
+    {
+        return Preset::withLayouts([
+            SimpleTextLayout::class,
+        ]);
+    }
+
     public function fields(): array
     {
         return [
@@ -32,8 +40,9 @@ class FeatureListLayout extends Layout
                 ->rules(['max:' . 1024 * 10])
                 ->deletable(),
             Flexible::make('Links', 'links')
-                ->preset($this->linksPreset())
-                ->layoutsMenuButton('Add link'),
+                ->preset($this->linksPreset()),
+            Flexible::make('Custom Options', 'custom_options')
+                ->preset($this->customOptionsPreset()),
         ];
     }
 

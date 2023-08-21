@@ -8,6 +8,7 @@ use NovaFlexibleContent\Tests\Fixtures\Models\Post;
 use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\FeatureListLayout;
 use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\Feature\LinkLayout;
 use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleNumberLayout;
+use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\SimpleTextLayout;
 use NovaFlexibleContent\Tests\Fixtures\Nova\Layouts\TeamMemberLayout;
 use NovaFlexibleContent\Tests\TestCase;
 
@@ -33,7 +34,7 @@ class FlexibleMethodTest extends TestCase
     {
         /** @var Post $post */
         $post = Post::factory()->create([
-            'content' => '[{"key":"yRhzFoRs6X5CYyz9","layout":"feature-list","collapsed":false,"attributes":{"title":"Foo list","src":null,"links":[{"key":"rrXFJC9c88W9dXok","layout":"link","collapsed":false,"attributes":{"text":"Example","link":"https://example.com"}},{"key":"rrXFJC9c88W9dXos","layout":"link","collapsed":false,"attributes":{"text":"Example2","link":"https://example2.com"}}]}}]',
+            'content' => '[{"key":"yRhzFoRs6X5CYyz9","layout":"feature-list","collapsed":false,"attributes":{"title":"Foo list","src":null,"custom_options":[{"key":"rrXFJC9c08W9dXos","layout":"simple-text","collapsed":false,"attributes":{"slug":"Example2"}}],"links":[{"key":"rrXFJC9c88W9dXok","layout":"link","collapsed":false,"attributes":{"text":"Example","link":"https://example.com"}},{"key":"rrXFJC9c88W9dXos","layout":"link","collapsed":false,"attributes":{"text":"Example2","link":"https://example2.com"}}]}}]',
         ]);
 
         $this->assertNotNull($post->content);
@@ -45,6 +46,9 @@ class FlexibleMethodTest extends TestCase
         $this->assertIsArray($layout->links);
         $this->assertCount(2, $layout->links);
         $this->assertIsArray($layout->links[0]);
+        $this->assertIsArray($layout->custom_options);
+        $this->assertCount(1, $layout->custom_options);
+        $this->assertIsArray($layout->custom_options[0]);
 
         $layout = $post->flexible('content', [
             'feature-list' => FeatureListLayout::class,
@@ -53,6 +57,10 @@ class FlexibleMethodTest extends TestCase
         $this->assertInstanceOf(LayoutsCollection::class, $layout->flexibleLinks);
         $this->assertCount(2, $layout->flexibleLinks);
         $this->assertInstanceOf(LinkLayout::class, $layout->flexibleLinks[0]);
+
+        $this->assertInstanceOf(LayoutsCollection::class, $layout->flexibleCustomOptions);
+        $this->assertCount(1, $layout->flexibleCustomOptions);
+        $this->assertInstanceOf(SimpleTextLayout::class, $layout->flexibleCustomOptions[0]);
 
         // Get using function.
         $this->assertCount(2, $layout->groups('links'));

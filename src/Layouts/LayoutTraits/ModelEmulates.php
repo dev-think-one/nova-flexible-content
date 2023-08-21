@@ -101,6 +101,10 @@ trait ModelEmulates
             $preset = $this->$methodName();
             if ($preset instanceof Preset) {
                 $value = $this->flexible($fieldName, $preset);
+                if($value->isEmpty()) {
+                    // Support snake_case
+                    $value = $this->flexible(Str::snake($fieldName), $preset);
+                }
                 if ($type) {
                     $value = $value->whereName($type);
                 }
