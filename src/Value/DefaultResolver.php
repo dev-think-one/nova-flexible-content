@@ -3,19 +3,30 @@
 namespace NovaFlexibleContent\Value;
 
 use Illuminate\Support\Collection;
+use Laravel\Nova\Makeable;
 use NovaFlexibleContent\Layouts\Collections\GroupsCollection;
 use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
 use NovaFlexibleContent\Layouts\Layout;
 
 class DefaultResolver implements Resolver
 {
+    use Makeable;
+
+    protected ?\Closure $set = null;
+    protected ?\Closure $get = null;
+
+    public function __construct(?\Closure $set = null, ?\Closure $get = null)
+    {
+        $this->set = $set;
+        $this->get = $get;
+    }
 
     /**
      * @inerhitDoc
      */
     public function set(mixed $resource, string $attribute, GroupsCollection $groups): string
     {
-        return $resource->$attribute = $groups->map(function (Layout $group) {
+        $value = $groups->map(function (Layout $group) {
             return [
                 'layout'     => $group->name(),
                 'key'        => $group->key(),
@@ -23,6 +34,14 @@ class DefaultResolver implements Resolver
                 'attributes' => $group->getAttributes(),
             ];
         });
+
+        if ($this->set) {
+            call_user_func($this->set, $resource, $value, $attribute, $groups);
+        } else {
+            $resource->$attribute = $value;
+        }
+
+        return $value;
     }
 
     /**
@@ -30,10 +49,24 @@ class DefaultResolver implements Resolver
      */
     public function get(mixed $resource, string $attribute, LayoutsCollection $groups): GroupsCollection
     {
-        return GroupsCollection::make(
-            $this->extractValueFromResource($resource, $attribute)
-        )->map(function ($item) use ($groups, $attribute) {
-            if($item instanceof Layout) {
+        if ($this->get) {
+            $value = call_user_func($this->get, $resource, $attribute, $groups);
+        } else {
+            $value = $this->extractValueFromResource($resource, $attribute);
+        }
+
+        // Fail silently in case data is invalid
+        if (!is_array($value)) {
+            $value = [];
+        }
+
+        // Force transform arrays to objects
+        $value = array_map(function ($item) {
+            return is_array($item) ? (object)$item : $item;
+        }, $value);
+
+        return GroupsCollection::make($value)->map(function ($item) use ($groups, $attribute) {
+            if ($item instanceof Layout) {
                 return $item;
             }
 
@@ -63,13 +96,6 @@ class DefaultResolver implements Resolver
             $value = json_decode($value) ?? [];
         }
 
-        // Fail silently in case data is invalid
-        if (!is_array($value)) {
-            return [];
-        }
-
-        return array_map(function ($item) {
-            return is_array($item) ? (object)$item : $item;
-        }, $value);
+        return $value;
     }
 }

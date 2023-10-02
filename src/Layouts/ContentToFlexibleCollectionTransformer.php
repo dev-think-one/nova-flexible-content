@@ -1,37 +1,28 @@
 <?php
 
-namespace NovaFlexibleContent\Concerns;
+namespace NovaFlexibleContent\Layouts;
 
 use Illuminate\Support\Collection as BaseCollection;
+use Laravel\Nova\Makeable;
 use NovaFlexibleContent\Layouts\Collections\LayoutsCollection;
-use NovaFlexibleContent\Layouts\ContentToFlexibleCollectionTransformer;
-use NovaFlexibleContent\Layouts\Layout;
-use NovaFlexibleContent\Layouts\Preset;
 
-trait HasFlexible
+class ContentToFlexibleCollectionTransformer
 {
+    use Makeable;
 
-    /**
-     * Parse a Flexible Content attribute.
-     */
-    public function flexible(string $attribute, array|Preset $layoutMapping = []): LayoutsCollection
+    public function transform(mixed $value, array|Preset $layoutMapping = []): LayoutsCollection
     {
-        $value = data_get($this->attributes, $attribute);
+        $flexible = $this->getFlexibleArrayFromValue($value);
 
-        return $this->toFlexibleCollection($value ?: null, $layoutMapping);
-    }
+        if (is_null($flexible)) {
+            return LayoutsCollection::make();
+        }
 
-    /**
-     * Parse a Flexible Content from value.
-     */
-    public function toFlexibleCollection(mixed $value, array|Preset $layoutMapping = []): LayoutsCollection
-    {
-        return ContentToFlexibleCollectionTransformer::make()->transform($value, $layoutMapping)->each(fn (Layout $l) => $l->setModel($this));
+        return LayoutsCollection::make($this->getMappedFlexibleLayouts($flexible, $layoutMapping))->filter()->values();
     }
 
     /**
      * Transform incoming value into an array of usable layouts.
-     * @deprecated see ContentToFlexibleCollectionTransformer
      */
     protected function getFlexibleArrayFromValue(mixed $value): ?array
     {
@@ -54,7 +45,6 @@ trait HasFlexible
 
     /**
      * Map array with Flexible Content Layouts.
-     * @deprecated see ContentToFlexibleCollectionTransformer
      */
     protected function getMappedFlexibleLayouts(array $flexible, array|Preset $layoutMapping = []): array
     {
@@ -65,7 +55,6 @@ trait HasFlexible
 
     /**
      * Transform given layout value into a usable Layout instance.
-     * @deprecated see ContentToFlexibleCollectionTransformer
      */
     protected function getMappedLayout(mixed $item, array|Preset $layoutMapping = []): ?Layout
     {
@@ -100,7 +89,6 @@ trait HasFlexible
 
     /**
      * Transform given layout value into a usable Layout instance.
-     * @deprecated see ContentToFlexibleCollectionTransformer
      */
     protected function createMappedLayout(string $name, string $key, array $attributes, array|Preset $layoutMapping = []): Layout
     {
@@ -112,10 +100,6 @@ trait HasFlexible
             ? $layoutMapping[$name]
             : Layout::class;
 
-        $layout = new $classname($name, $name, [], $key, $attributes);
-
-        $layout->setModel($this);
-
-        return $layout;
+        return new $classname($name, $name, [], $key, $attributes);
     }
 }
