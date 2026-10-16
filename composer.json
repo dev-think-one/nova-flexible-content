@@ -26,16 +26,16 @@
     "require": {
         "php": "^8.1",
         "laravel/nova": "^4.0",
-        "laravel/framework": "^9.0|^10.0"
+        "laravel/framework": "^9.0|^10.0|^11.0|^12.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.16",
         "guzzlehttp/guzzle": "^7.7",
-        "orchestra/testbench": "^8.5",
-        "phpunit/phpunit": "^10.1",
-        "psalm/plugin-laravel": "^2.8",
+        "orchestra/testbench": "^8.5|^9.0|^10.0",
+        "phpunit/phpunit": "^10.1|^11.0",
+        "psalm/plugin-laravel": "^2.8|^3.0",
         "think.studio/nova-video-field": "^1.0",
-        "vimeo/psalm": "^5.11"
+        "vimeo/psalm": "^5.11|^6.0"
     },
     "autoload": {
         "psr-4": {

@@ -65,7 +65,7 @@ class DefaultResolver implements Resolver
             return is_array($item) ? (object)$item : $item;
         }, $value);
 
-        return GroupsCollection::make($value)->map(function ($item) use ($groups, $attribute) {
+        return GroupsCollection::make($value)->map(/** @param Layout|\stdClass $item */ function ($item) use ($groups, $attribute) {
             if ($item instanceof Layout) {
                 return $item;
             }

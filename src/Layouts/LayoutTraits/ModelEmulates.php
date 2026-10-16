@@ -83,8 +83,10 @@ trait ModelEmulates
 
     /**
      * Force Fill the layout with an array of attributes.
+     *
+     * @param array<string, mixed> $attributes
      */
-    public function forceFill(array $attributes)
+    public function forceFill($attributes)
     {
         foreach ($attributes as $key => $value) {
             $attribute = Str::replace('->', '.', $key);
@@ -131,6 +133,7 @@ trait ModelEmulates
             }
         }
 
-        return parent::__get($key);
+        // Do not use parent::__get(), since laravel 11 Fluent::__get() calls value() what skips attribute accessors.
+        return $this->get($key);
     }
 }
